@@ -231,6 +231,15 @@
             "index": 0
           }
         ]
+      ],
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "HTTP Request": {
