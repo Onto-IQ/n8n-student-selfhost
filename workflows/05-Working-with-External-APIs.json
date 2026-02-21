@@ -1,0 +1,114 @@
+{
+  "name": "05 - Working with External APIs",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📚 **แนวทางการสอน HTTP Request**\n\nหัวใจสำคัญของการเชื่อมต่อ n8n กับระบบอื่น:\n• GET Request - ใช้ดึงข้อมูล (เช่น ดูสภาพอากาศ, ขอข้อมูลผู้ใช้)\n• POST Request - ใช้ส่งข้อมูล (เช่น ส่งข้อความเข้า LINE, บันทึกข้อมูลใหม่)\n• Authentication - การยืนยันตัวตน (เช่น API Key, Bearer Token)",
+        "width": 480,
+        "height": 160,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [260, 40]
+    },
+    {
+      "parameters": {},
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [380, 240]
+    },
+    {
+      "parameters": {
+        "content": "📥 **ขั้นตอนที่ 1: GET Request (ดึงข้อมูล)**\n\nทดลองดึงข้อมูลจาก Public API (ไม่ต้องใช้ API Key)\nเราจะใช้ Joke API เพื่อดึงเรื่องตลกมาแสดง\n\nMethod: GET\nURL: https://official-joke-api.appspot.com/random_joke",
+        "width": 360,
+        "height": 160,
+        "color": 2
+      },
+      "name": "Sticky 1 GET",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [540, 40]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://official-joke-api.appspot.com/random_joke",
+        "sendQuery": false,
+        "sendBody": false,
+        "options": {}
+      },
+      "name": "Get Random Joke",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [600, 240]
+    },
+    {
+      "parameters": {
+        "content": "📤 **ขั้นตอนที่ 2: POST Request (ส่งข้อมูล)**\n\nสมมติว่าเราจะส่งเรื่องตลกที่ได้ ไปยังระบบอื่น (เช่น Webhook)\n\nMethod: POST\nURL: https://httpbin.org/post (เว็บสำหรับทดสอบยิง API)\nBody: { \"setup\": \"...\", \"punchline\": \"...\" }",
+        "width": 360,
+        "height": 160,
+        "color": 3
+      },
+      "name": "Sticky 2 POST",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [800, 40]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://httpbin.org/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"joke_setup\": \"{{ $json.setup }}\",\n  \"joke_punchline\": \"{{ $json.punchline }}\"\n}",
+        "options": {}
+      },
+      "name": "Send to HttpBin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [840, 240]
+    },
+    {
+      "parameters": {
+        "content": "🔑 **เกร็ดความรู้: Authentication (การยืนยันตัวตน)**\n\nAPI ส่วนใหญ่ในโลกความจริง (เช่น LINE, OpenAI) ต้องใช้กุญแจ\nใน HTTP Request Node สามารถตั้งค่าได้ที่เมนู Authentication:\n\n• Basic Auth (Username/Password)\n• Header Auth (เช่น X-API-KEY)\n• Bearer Token\n\n💡 การตั้งค่าตรงนี้สำคัญมากเวลาจะสร้าง AI Agent ให้ใช้ Tools",
+        "width": 440,
+        "height": 180,
+        "color": 4
+      },
+      "name": "Sticky 3 Auth",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1060, 40]
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Random Joke",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Random Joke": {
+      "main": [
+        [
+          {
+            "node": "Send to HttpBin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

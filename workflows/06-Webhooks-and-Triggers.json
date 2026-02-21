@@ -1,0 +1,122 @@
+{
+  "name": "06 - Webhooks & Triggers",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📚 **แนวทางการสอน Webhooks**\n\nWebhook คือการเปิดประตูรับข้อมูลจากภายนอก\nเช่น รอรับข้อความจาก LINE, Slack หรือ Form Submission\n\n💡 นี่คือจุดเริ่มต้นสำคัญของ AI Agent ที่โต้ตอบกับผู้ใช้ได้",
+        "width": 440,
+        "height": 140,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [260, 40]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [380, 240]
+    },
+    {
+      "parameters": {
+        "content": "📥 **ขั้นตอนที่ 1: รอรับข้อมูล (Webhook)**\n\n1. ดับเบิลคลิกที่ Webhook Node\n2. เลือก Test URL (ใช้สำหรับตอนทดสอบ)\n3. กด Listen for Test Event\n4. ใช้ Postman หรือเว็บทดสอบ ยิง POST Request มาที่ URL นั้น",
+        "width": 380,
+        "height": 160,
+        "color": 2
+      },
+      "name": "Sticky 1 Listen",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [340, 40]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "reply_message",
+              "value": "=\"สวัสดี คุณ \" + $json.body.name + \" ระบบได้รับข้อมูลของคุณแล้ว!\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Process Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [640, 240]
+    },
+    {
+      "parameters": {
+        "content": "⚙️ **ขั้นตอนที่ 2: ประมวลผลข้อมูล**\n\nสมมติว่าข้อมูลที่ยิงมามีรูปแบบ:\n{ \"name\": \"Student\" }\n\nเราจะดึงค่าจาก $json.body.name มาสร้างข้อความตอบกลับ",
+        "width": 360,
+        "height": 160,
+        "color": 3
+      },
+      "name": "Sticky 2 Process",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [600, 40]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [880, 240]
+    },
+    {
+      "parameters": {
+        "content": "📤 **ขั้นตอนที่ 3: ตอบกลับ (Respond)**\n\nเนื่องจากใน Webhook Node เราตั้งค่า Response Mode = 'Using Respond to Webhook Node'\nเราจึงต้องใช้ Node นี้เพื่อส่งข้อมูลกลับไปยังผู้ที่เรียก API",
+        "width": 380,
+        "height": 160,
+        "color": 4
+      },
+      "name": "Sticky 3 Respond",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [840, 40]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

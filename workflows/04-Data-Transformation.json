@@ -1,0 +1,154 @@
+{
+  "name": "04 - Data Transformation",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📚 **แนวทางการสอน Data Transformation**\n\nการเตรียมข้อมูลให้พร้อมใช้งาน (มักใช้จัดการผลลัพธ์จาก AI):\n• Edit Fields (Set) - เปลี่ยนชื่อฟิลด์, คัดกรองข้อมูลที่ต้องการ\n• Code Node - เขียน JavaScript จัดการข้อมูลที่ซับซ้อน",
+        "width": 440,
+        "height": 140,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [260, 40]
+    },
+    {
+      "parameters": {},
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [380, 240]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "user_first_name", "value": "john" },
+            { "name": "user_last_name", "value": "doe" },
+            { "name": "raw_birth_date", "value": "1990/05/15" },
+            { "name": "unneeded_system_data", "value": "SYS_9982_XYZ" }
+          ]
+        }
+      },
+      "name": "Mock Raw Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [600, 240]
+    },
+    {
+      "parameters": {
+        "content": "🎯 **ขั้นตอนที่ 1: ข้อมูลดิบ (Raw Data)**\n\nจำลองข้อมูลที่ได้จากระบบอื่น (เช่น ฐานข้อมูล หรือ API)\nมักจะมีชื่อฟิลด์ที่อ่านยาก หรือมีข้อมูลที่ไม่จำเป็นติดมาด้วย\n\nเช่น มี unneeded_system_data ที่เราไม่ต้องการใช้",
+        "width": 340,
+        "height": 160,
+        "color": 2
+      },
+      "name": "Sticky 1 Raw",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [540, 40]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "firstName",
+              "value": "={{ $json.user_first_name }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "lastName",
+              "value": "={{ $json.user_last_name }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "birthDate",
+              "value": "={{ $json.raw_birth_date }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Clean Fields (Set)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [820, 240]
+    },
+    {
+      "parameters": {
+        "content": "✨ **ขั้นตอนที่ 2: จัดระเบียบด้วย Set Node**\n\nในเวอร์ชันใหม่ (Edit Fields) เราสามารถ:\n1. เปลี่ยนชื่อฟิลด์ให้อ่านง่ายขึ้น (เช่น user_first_name → firstName)\n2. (สำคัญ) หากเปิด Keep Only Set Fields จะเป็นการตัดข้อมูลขยะทิ้งทั้งหมด!",
+        "width": 360,
+        "height": 160,
+        "color": 3
+      },
+      "name": "Sticky 2 Set",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [780, 40]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ดึงข้อมูลจาก Item ปัจจุบัน\nlet item = $input.item.json;\n\n// 1. แปลงชื่อขึ้นต้นด้วยตัวใหญ่ (Capitalize)\nitem.fullName = item.firstName.charAt(0).toUpperCase() + item.firstName.slice(1) + \" \" + \n                item.lastName.charAt(0).toUpperCase() + item.lastName.slice(1);\n\n// 2. คำนวณอายุจากปีเกิด\nlet birthYear = parseInt(item.birthDate.split(\"/\")[0]);\nlet currentYear = new Date().getFullYear();\nitem.age = currentYear - birthYear;\n\n// ลบฟิลด์เก่าที่ไม่ใช้แล้ว\ndelete item.firstName;\ndelete item.lastName;\n\n// ส่งข้อมูลกลับ\nreturn item;"
+      },
+      "name": "Advanced Clean (Code)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1060, 240]
+    },
+    {
+      "parameters": {
+        "content": "🛠️ **ขั้นตอนที่ 3: จัดการขั้นสูงด้วย Code Node**\n\nเมื่อ Set Node ทำไม่ได้ ต้องพึ่ง JavaScript:\n• รวมชื่อ-นามสกุล และทำตัวพิมพ์ใหญ่ (john doe → John Doe)\n• คำนวณอายุจากปีเกิด (1990 → 34)\n• ลบฟิลด์ที่ไม่ต้องการทิ้งด้วยคำสั่ง delete\n\n💡 ทักษะ JS พื้นฐานจำเป็นมากเวลาทำ AI Agent!",
+        "width": 380,
+        "height": 180,
+        "color": 4
+      },
+      "name": "Sticky 3 Code",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1020, 20]
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [
+        [
+          {
+            "node": "Mock Raw Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Raw Data": {
+      "main": [
+        [
+          {
+            "node": "Clean Fields (Set)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Fields (Set)": {
+      "main": [
+        [
+          {
+            "node": "Advanced Clean (Code)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
