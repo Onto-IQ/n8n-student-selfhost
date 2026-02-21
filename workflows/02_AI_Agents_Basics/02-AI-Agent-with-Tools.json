@@ -48,14 +48,14 @@
       "position": [620, 480]
     },
     {
-      "parameters": { "name": "calculator" },
+      "parameters": {},
       "name": "Calculator Tool",
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
       "position": [800, 480]
     },
     {
-      "parameters": { "name": "wikipedia", "language": "en" },
+      "parameters": { "language": "en" },
       "name": "Wikipedia Tool",
       "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
       "typeVersion": 1,
