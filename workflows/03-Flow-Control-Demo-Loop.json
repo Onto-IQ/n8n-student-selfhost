@@ -11,14 +11,20 @@
       "name": "Sticky 0 Intro",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [260, 40]
+      "position": [
+        260,
+        40
+      ]
     },
     {
       "parameters": {},
       "name": "When clicking Test workflow",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [380, 240]
+      "position": [
+        380,
+        240
+      ]
     },
     {
       "parameters": {
@@ -30,7 +36,10 @@
       "name": "Sticky 1 Array Data",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [540, 40]
+      "position": [
+        540,
+        40
+      ]
     },
     {
       "parameters": {
@@ -46,7 +55,10 @@
       "name": "Mock Array",
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
-      "position": [600, 240]
+      "position": [
+        600,
+        240
+      ]
     },
     {
       "parameters": {
@@ -58,17 +70,23 @@
       "name": "Sticky 2 Split Out",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [780, 60]
+      "position": [
+        780,
+        60
+      ]
     },
     {
       "parameters": {
-        "operation": "splitOut",
-        "fieldToSplitOut": "students"
+        "fieldToSplitOut": "students",
+        "options": {}
       },
       "name": "Split to Items",
       "type": "n8n-nodes-base.itemLists",
       "typeVersion": 2,
-      "position": [820, 240]
+      "position": [
+        820,
+        240
+      ]
     },
     {
       "parameters": {
@@ -80,7 +98,10 @@
       "name": "Sticky 3 Loop Start",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1020, 40]
+      "position": [
+        1020,
+        40
+      ]
     },
     {
       "parameters": {
@@ -90,7 +111,10 @@
       "name": "Loop Over Students",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 2,
-      "position": [1040, 240]
+      "position": [
+        1040,
+        240
+      ]
     },
     {
       "parameters": {
@@ -102,7 +126,10 @@
       "name": "Sticky 4 Process",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1260, 40]
+      "position": [
+        1260,
+        40
+      ]
     },
     {
       "parameters": {
@@ -118,7 +145,10 @@
       "name": "Process Student",
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
-      "position": [1300, 240]
+      "position": [
+        1300,
+        240
+      ]
     },
     {
       "parameters": {
@@ -130,7 +160,10 @@
       "name": "Sticky 5 Loop Back",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1260, 380]
+      "position": [
+        1260,
+        380
+      ]
     },
     {
       "parameters": {
@@ -142,7 +175,10 @@
       "name": "Sticky 6 Done",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1020, 420]
+      "position": [
+        1020,
+        420
+      ]
     }
   ],
   "connections": {
