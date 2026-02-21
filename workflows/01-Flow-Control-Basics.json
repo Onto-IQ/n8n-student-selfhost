@@ -1,265 +1,171 @@
 {
-  "name": "01 - Flow Control Basics (IF, Switch, Loop)",
+  "name": "01 - Flow Control Basics",
   "nodes": [
     {
       "parameters": {},
-      "id": "c6114eb3-8106-4b89-b5f7-640a3e87856e",
-      "name": "When clicking \"Test workflow\"",
+      "name": "When clicking Test workflow",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [
-        380,
-        240
-      ]
+      "position": [380, 240]
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
+        "values": {
+          "string": [
             {
-              "id": "6d1f9cc0-4e3f-42e1-88fc-84807ec14995",
-              "name": "data",
-              "value": "={{ [\n  { \"name\": \"Alice\", \"score\": 85, \"type\": \"student\" },\n  { \"name\": \"Bob\", \"score\": 40, \"type\": \"student\" },\n  { \"name\": \"Charlie\", \"score\": 92, \"type\": \"vip\" },\n  { \"name\": \"David\", \"score\": 55, \"type\": \"student\" }\n] }}",
-              "type": "array"
+              "name": "students",
+              "value": "Alice|85|student,Bob|40|student,Charlie|92|vip,David|55|student"
             }
           ]
-        },
-        "options": {}
+        }
       },
-      "id": "e30e62e2-04fb-4b53-a5bc-b70570b55de5",
-      "name": "Mock Data",
+      "name": "Mock Student Data",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        600,
-        240
-      ],
-      "notesInFlow": true,
-      "notes": "สร้างข้อมูลจำลองนักเรียน 4 คน"
+      "typeVersion": 2,
+      "position": [600, 240]
     },
     {
-      "parameters": {
-        "fieldToSplitOut": "data",
-        "options": {}
-      },
-      "id": "8b51d6ed-dc9b-44cb-b461-89d816ce3492",
-      "name": "Item Lists",
+      "parameters": {},
+      "name": "Item Lists Split",
       "type": "n8n-nodes-base.itemLists",
-      "typeVersion": 3,
-      "position": [
-        820,
-        240
-      ],
-      "notesInFlow": true,
-      "notes": "แยก Array ให้ออกมาเป็นทีละ Item เพื่อประมวลผล"
+      "typeVersion": 2,
+      "position": [820, 240]
     },
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
+          "string": [
             {
-              "id": "c8a4175b-59b4-4b47-b501-8b9eb16e3c03",
-              "leftValue": "={{ $json.type }}",
-              "rightValue": "vip",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
+              "value1": "={{ $json.type }}",
+              "operation": "equals",
+              "value2": "vip"
             }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
+          ]
+        }
       },
-      "id": "18f972b6-0831-4e4b-9e4a-4a6f8b9e6df1",
-      "name": "If (Check VIP)",
+      "name": "If Is VIP",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 3,
-      "position": [
-        1040,
-        240
-      ],
-      "notesInFlow": true,
-      "notes": "เงื่อนไข: เป็น VIP หรือไม่?"
+      "typeVersion": 1,
+      "position": [1040, 240]
     },
     {
       "parameters": {
-        "dataType": "string",
-        "value1": "={{ $json.score >= 80 ? 'A' : $json.score >= 50 ? 'B' : 'F' }}",
-        "rules": {
-          "rules": [
-            {
-              "id": "165bd19a-9e11-4770-8b17-742ccb3e75e9",
-              "value2": "A",
-              "outputKey": "Grade A"
-            },
-            {
-              "id": "c331abec-0c9f-4eb7-a7eb-97992984b6f1",
-              "value2": "B",
-              "outputKey": "Grade B"
-            },
-            {
-              "id": "b1f095fc-1ce2-4752-aee7-f8319e7a27a8",
-              "value2": "F",
-              "outputKey": "Grade F"
-            }
-          ]
-        },
-        "fallbackOutput": 3
+        "mode": "expression",
+        "output": "={{ $json.score >= 80 ? 0 : ($json.score >= 50 ? 1 : 2) }}"
       },
-      "id": "51eb8df3-df46-4ef3-a3d5-0f0c0b39f3dc",
-      "name": "Switch (Grade)",
+      "name": "Switch Grade",
       "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
-      "position": [
-        1260,
-        420
-      ],
-      "notesInFlow": true,
-      "notes": "แยก Flow ตามเกรด (A, B, F)"
+      "typeVersion": 1,
+      "position": [1260, 420]
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
+        "values": {
+          "string": [
             {
-              "id": "9ef36dc9-4a0b-47e0-b6f1-3ecf124505f0",
-              "name": "status",
-              "value": "Auto Pass (VIP)",
-              "type": "string"
+              "name": "result",
+              "value": "VIP Member - Auto Pass"
             }
           ]
-        },
-        "options": {}
+        }
       },
-      "id": "a9a2a91b-6878-4ea7-8b01-fb5ea1d0d939",
-      "name": "Set VIP Status",
+      "name": "Set VIP Result",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1260,
-        60
-      ]
+      "typeVersion": 2,
+      "position": [1260, 60]
     },
     {
-      "parameters": {},
-      "id": "d16c9e0d-c052-476f-8703-f38b2dd29272",
-      "name": "Merge",
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "Grade A - Excellent"
+            }
+          ]
+        }
+      },
+      "name": "Set Grade A",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1500, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "Grade B - Pass"
+            }
+          ]
+        }
+      },
+      "name": "Set Grade B",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1500, 420]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "Grade F - Fail"
+            }
+          ]
+        }
+      },
+      "name": "Set Grade F",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1500, 540]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "name": "Merge All",
       "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [
-        1700,
-        240
-      ],
-      "notesInFlow": true,
-      "notes": "รวม Flow กลับมาจุดเดียว"
+      "typeVersion": 1,
+      "position": [1800, 300]
     }
   ],
-  "pinData": {},
   "connections": {
-    "When clicking \"Test workflow\"": {
+    "When clicking Test workflow": {
+      "main": [[{ "node": "Mock Student Data", "type": "main", "index": 0 }]]
+    },
+    "Mock Student Data": {
+      "main": [[{ "node": "Item Lists Split", "type": "main", "index": 0 }]]
+    },
+    "Item Lists Split": {
+      "main": [[{ "node": "If Is VIP", "type": "main", "index": 0 }]]
+    },
+    "If Is VIP": {
       "main": [
-        [
-          {
-            "node": "Mock Data",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Set VIP Result", "type": "main", "index": 0 }],
+        [{ "node": "Switch Grade", "type": "main", "index": 0 }]
       ]
     },
-    "Mock Data": {
+    "Set VIP Result": {
+      "main": [[{ "node": "Merge All", "type": "main", "index": 0 }]]
+    },
+    "Switch Grade": {
       "main": [
-        [
-          {
-            "node": "Item Lists",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Set Grade A", "type": "main", "index": 0 }],
+        [{ "node": "Set Grade B", "type": "main", "index": 0 }],
+        [{ "node": "Set Grade F", "type": "main", "index": 0 }]
       ]
     },
-    "Item Lists": {
-      "main": [
-        [
-          {
-            "node": "If (Check VIP)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Set Grade A": {
+      "main": [[{ "node": "Merge All", "type": "main", "index": 0 }]]
     },
-    "If (Check VIP)": {
-      "main": [
-        [
-          {
-            "node": "Set VIP Status",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Switch (Grade)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Set Grade B": {
+      "main": [[{ "node": "Merge All", "type": "main", "index": 0 }]]
     },
-    "Switch (Grade)": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ],
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ],
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          }
-        ],
-        []
-      ]
-    },
-    "Set VIP Status": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Set Grade F": {
+      "main": [[{ "node": "Merge All", "type": "main", "index": 0 }]]
     }
-  },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "versionId": "f78de1c0-0f2d-4bf0-ba3e-00a8bb03cf79",
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "id": "XmZ2mJ1D8mFzLhP9",
-  "tags": []
+  }
 }
