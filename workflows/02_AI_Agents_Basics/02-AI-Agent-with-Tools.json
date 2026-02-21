@@ -11,20 +11,14 @@
       "name": "Sticky 0 Intro",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        260,
-        40
-      ]
+      "position": [260, 40]
     },
     {
       "parameters": {},
       "name": "When chat message received",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
-      "position": [
-        380,
-        240
-      ]
+      "position": [380, 240]
     },
     {
       "parameters": {
@@ -34,196 +28,95 @@
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
-      "position": [
-        600,
-        240
-      ]
+      "position": [600, 240]
     },
     {
       "parameters": {
         "model": "gpt-4o-mini",
-        "options": {
-          "temperature": 0.7
-        }
+        "options": { "temperature": 0.7 }
       },
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
-      "position": [
-        460,
-        480
-      ]
+      "position": [460, 480]
     },
     {
-      "parameters": {
-        "sessionKey": "={{ $json.session_id || \"demo-session-2\" }}"
-      },
+      "parameters": { "sessionKey": "={{ $json.session_id || \"demo-session-2\" }}" },
       "name": "Window Buffer Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.2,
-      "position": [
-        620,
-        480
-      ]
+      "position": [620, 480]
     },
     {
-      "parameters": {
-        "name": "calculator"
-      },
+      "parameters": { "name": "calculator" },
       "name": "Calculator Tool",
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1,
-      "position": [
-        800,
-        480
-      ]
+      "position": [800, 480]
     },
     {
-      "parameters": {
-        "language": "en",
-        "name": "wikipedia"
-      },
+      "parameters": { "name": "wikipedia", "language": "en" },
       "name": "Wikipedia Tool",
       "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
       "typeVersion": 1,
-      "position": [
-        960,
-        480
-      ]
+      "position": [960, 480]
     },
     {
       "parameters": {
-        "description": "Call this tool to get the current weather for a specific city. You MUST provide the city name in English (e.g., Bangkok, Khon Kaen).",
         "name": "weather_api",
+        "description": "Get current weather for a city. Provide city name in English.",
         "method": "GET",
-        "url": "https://wttr.in/={{$fromAI(\"city\")}}?format=j1",
-        "sendQuery": false,
-        "sendBody": false,
-        "options": {}
+        "url": "https://wttr.in/={{$fromAI(\"city\")}}?format=j1"
       },
       "name": "Weather API Tool",
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
       "typeVersion": 1.1,
-      "position": [
-        1120,
-        480
-      ]
+      "position": [1120, 480]
     },
     {
       "parameters": {
-        "content": "💬 **วิธีทดสอบ (Testing)**\n\nเปิดแผง Chat ขึ้นมา แล้วลองพิมพ์คำถามเหล่านี้ทีละข้อ:\n\n1. \"(3245 * 12) + 897 เท่ากับเท่าไหร่?\" (AI จะเรียกใช้ Calculator)\n2. \"ใครคือผู้ก่อตั้งบริษัท Apple?\" (AI จะค้นหาจาก Wikipedia)\n3. \"สภาพอากาศที่ขอนแก่นเป็นยังไงบ้าง?\" (AI จะดึงข้อมูลจาก Weather API)\n\n💡 สังเกตการตัดสินใจเลือกใช้ Tool ของ AI ในหน้าต่าง Log!",
+        "content": "💬 **วิธีทดสอบ**\n\n1. \"(3245 * 12) + 897 = ?\" → Calculator\n2. \"Who founded Apple?\" → Wikipedia\n3. \"Weather in Bangkok?\" → Weather API",
         "width": 440,
-        "height": 220,
+        "height": 180,
         "color": 2
       },
       "name": "Sticky 1 Chat",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        800,
-        40
-      ]
+      "position": [800, 40]
     },
     {
       "parameters": {
-        "content": "🧰 **Tools ที่มีให้ใช้งานสำเร็จรูป**\n\nn8n มี Tools หลายตัวที่ไม่ต้องเขียนโค้ดเพิ่ม เช่น:\n• Calculator: ใช้คำนวณคณิตศาสตร์แม่นยำ 100%\n• Wikipedia: ใช้หาข้อมูลความรู้ทั่วไป",
+        "content": "🧰 **Native Tools**\n• calculator - Math calculations\n• wikipedia - General knowledge",
         "width": 320,
-        "height": 160,
+        "height": 140,
         "color": 4
       },
-      "name": "Sticky 2 Native Tools",
+      "name": "Sticky 2 Native",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        780,
-        660
-      ]
+      "position": [780, 660]
     },
     {
       "parameters": {
-        "content": "⚙️ **Custom Tool (เชื่อมต่อ HTTP Request)**\n\nถ้าไม่มี Tool สำเร็จรูป เราสร้างเองได้โดยต่อ HTTP Request ไว้ข้างล่าง\n**หัวใจสำคัญคือ Description:**\nต้องอธิบายให้ AI เข้าใจว่า Tool นี้ใช้ทำอะไร และต้องส่งตัวแปรอะไรมาให้บ้าง\n(ในที่นี้คือตัวแปร `city` สำหรับดูสภาพอากาศ)",
+        "content": "⚙️ **Custom Tool**\nweather_api uses wttr.in API\nVariable: {{$fromAI(\"city\")}}",
         "width": 380,
-        "height": 180,
+        "height": 140,
         "color": 3
       },
-      "name": "Sticky 3 Custom Tool",
+      "name": "Sticky 3 Custom",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [
-        1120,
-        840
-      ]
+      "position": [1120, 840]
     }
   ],
   "connections": {
-    "When chat message received": {
-      "main": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Window Buffer Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Calculator Tool": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wikipedia Tool": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Weather API Tool": {
-      "ai_tool": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    }
+    "When chat message received": { "main": [[{ "node": "AI Agent", "type": "main", "index": 0 }]] },
+    "OpenAI Chat Model": { "ai_languageModel": [[{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]] },
+    "Window Buffer Memory": { "ai_memory": [[{ "node": "AI Agent", "type": "ai_memory", "index": 0 }]] },
+    "Calculator Tool": { "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]] },
+    "Wikipedia Tool": { "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]] },
+    "Weather API Tool": { "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]] }
   },
-  "settings": {
-    "executionOrder": "v1"
-  }
+  "settings": { "executionOrder": "v1" }
 }
