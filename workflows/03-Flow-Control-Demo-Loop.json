@@ -1,0 +1,209 @@
+{
+  "name": "03 - Flow Control Demo (Loop)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📚 **แนวทางการสอน Loop (การวนซ้ำ)**\n\nWorkflow นี้สาธิตการใช้งาน:\n• Item Lists (Split Out) - แยกข้อมูล Array เป็นรายบุคคล\n• Loop Node - วนทำงานทีละรายการจนครบ\n• Set Node - ประมวลผลแต่ละรายการ",
+        "width": 400,
+        "height": 140,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [260, 40]
+    },
+    {
+      "parameters": {},
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [380, 240]
+    },
+    {
+      "parameters": {
+        "content": "🎯 **ขั้นตอนที่ 1: สร้าง Array นักเรียน**\n\nสมมติว่าดึงข้อมูลมาจาก Database ได้ 3 คน:\n[ { name: \"Alice\" }, { name: \"Bob\" }, { name: \"Charlie\" } ]\n\nข้อมูลมาเป็น 1 ก้อน (1 Item) ที่ข้างในมี Array",
+        "width": 320,
+        "height": 160,
+        "color": 2
+      },
+      "name": "Sticky 1 Array Data",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [540, 40]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "students",
+              "value": "={{ [ { \"name\": \"Alice\", \"score\": 85 }, { \"name\": \"Bob\", \"score\": 40 }, { \"name\": \"Charlie\", \"score\": 92 } ] }}"
+            }
+          ]
+        }
+      },
+      "name": "Mock Array",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [600, 240]
+    },
+    {
+      "parameters": {
+        "content": "✂️ **ขั้นตอนที่ 2: แยก Array (Split Out)**\n\nใช้ Item Lists โหมด Split Out\nแยก Array 1 ก้อน ให้กลายเป็น 3 Items (3 แถว)\nเพื่อเตรียมส่งให้ Loop ทำงานทีละคน",
+        "width": 300,
+        "height": 140,
+        "color": 3
+      },
+      "name": "Sticky 2 Split Out",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [780, 60]
+    },
+    {
+      "parameters": {
+        "operation": "splitOut",
+        "fieldToSplitOut": "students"
+      },
+      "name": "Split to Items",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 2,
+      "position": [820, 240]
+    },
+    {
+      "parameters": {
+        "content": "🔄 **ขั้นตอนที่ 3: เริ่ม Loop**\n\nLoop Node จะส่งผ่านข้อมูลไปทีละ 1 Item (Batch Size = 1)\nไปตามเส้นทาง loop\n\nเมื่อหมดแล้วจะวิ่งไปเส้นทาง done",
+        "width": 320,
+        "height": 160,
+        "color": 4
+      },
+      "name": "Sticky 3 Loop Start",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1020, 40]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Loop Over Students",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 2,
+      "position": [1040, 240]
+    },
+    {
+      "parameters": {
+        "content": "⚙️ **ขั้นตอนที่ 4: ประมวลผลทีละคน**\n\nทำอะไรบางอย่างกับนักเรียนคนนั้นๆ เช่น:\n• เช็คคะแนน\n• เพิ่มสถานะ\n• หรือส่ง Email\n\n(ในตัวอย่างนี้แค่เติมข้อความทักทาย)",
+        "width": 320,
+        "height": 160,
+        "color": 5
+      },
+      "name": "Sticky 4 Process",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1260, 40]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "={{ $json.score >= 50 ? \"Pass!\" : \"Fail!\" }}"
+            }
+          ]
+        }
+      },
+      "name": "Process Student",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1300, 240]
+    },
+    {
+      "parameters": {
+        "content": "🏁 **วนกลับไปรับคนต่อไป**\n\n‼️ สำคัญมาก: ต้องลากเส้นกลับไปที่ Loop Node เสมอ\nเพื่อให้ระบบรู้ว่าทำงานเสร็จ 1 รอบแล้ว\nพร้อมรับ Item ต่อไป",
+        "width": 320,
+        "height": 140,
+        "color": 1
+      },
+      "name": "Sticky 5 Loop Back",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1260, 380]
+    },
+    {
+      "parameters": {
+        "content": "🎉 **สิ้นสุดการทำงาน**\n\nเมื่อ Loop ครบทุกคนแล้ว ข้อมูลจะออกมาทางช่อง done\n(สามารถนำไปใช้สรุปผลต่อได้)",
+        "width": 280,
+        "height": 140,
+        "color": 6
+      },
+      "name": "Sticky 6 Done",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1020, 420]
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [
+        [
+          {
+            "node": "Mock Array",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Array": {
+      "main": [
+        [
+          {
+            "node": "Split to Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split to Items": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Students",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Students": {
+      "main": [
+        [
+          {
+            "node": "Process Student",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Process Student": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Students",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
