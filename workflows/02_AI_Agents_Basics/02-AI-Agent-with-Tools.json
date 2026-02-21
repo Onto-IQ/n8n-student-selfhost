@@ -11,14 +11,20 @@
       "name": "Sticky 0 Intro",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [260, 40]
+      "position": [
+        260,
+        40
+      ]
     },
     {
       "parameters": {},
       "name": "When chat message received",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
-      "position": [380, 240]
+      "position": [
+        380,
+        240
+      ]
     },
     {
       "parameters": {
@@ -28,7 +34,10 @@
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
-      "position": [600, 240]
+      "position": [
+        600,
+        240
+      ]
     },
     {
       "parameters": {
@@ -40,7 +49,10 @@
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
-      "position": [460, 480]
+      "position": [
+        460,
+        480
+      ]
     },
     {
       "parameters": {
@@ -49,32 +61,48 @@
       "name": "Window Buffer Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.2,
-      "position": [620, 480]
-    },
-    {
-      "parameters": {},
-      "name": "Calculator Tool",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [800, 480]
+      "position": [
+        620,
+        480
+      ]
     },
     {
       "parameters": {
-        "language": "en"
+        "name": "calculator"
+      },
+      "name": "Calculator Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        800,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "language": "en",
+        "name": "wikipedia"
       },
       "name": "Wikipedia Tool",
       "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
       "typeVersion": 1,
-      "position": [960, 480]
+      "position": [
+        960,
+        480
+      ]
     },
     {
       "parameters": {
-        "description": "Call this tool to get the current weather for a specific city. You MUST provide the city name in English (e.g., Bangkok, Khon Kaen)."
+        "description": "Call this tool to get the current weather for a specific city. You MUST provide the city name in English (e.g., Bangkok, Khon Kaen).",
+        "name": "weather_api"
       },
       "name": "Weather API Tool",
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
       "typeVersion": 1.1,
-      "position": [1120, 480]
+      "position": [
+        1120,
+        480
+      ]
     },
     {
       "parameters": {
@@ -87,7 +115,10 @@
       "name": "HTTP Request",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1120, 680]
+      "position": [
+        1120,
+        680
+      ]
     },
     {
       "parameters": {
@@ -99,7 +130,10 @@
       "name": "Sticky 1 Chat",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [800, 40]
+      "position": [
+        800,
+        40
+      ]
     },
     {
       "parameters": {
@@ -111,7 +145,10 @@
       "name": "Sticky 2 Native Tools",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [780, 660]
+      "position": [
+        780,
+        660
+      ]
     },
     {
       "parameters": {
@@ -123,7 +160,10 @@
       "name": "Sticky 3 Custom Tool",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1120, 840]
+      "position": [
+        1120,
+        840
+      ]
     }
   ],
   "connections": {
