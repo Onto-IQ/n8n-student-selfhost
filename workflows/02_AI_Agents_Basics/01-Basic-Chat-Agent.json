@@ -1,0 +1,153 @@
+{
+  "name": "01 - Basic Chat Agent & Memory",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🤖 **01 - พื้นฐาน AI Agent & หน่วยความจำ**\n\nหัวใจของการสร้างผู้ช่วยอัจฉริยะ (AI Agent) ประกอบด้วย 3 ส่วนหลัก:\n1. **AI Agent Node:** ตัวสั่งการหลัก (สมองส่วนควบคุม)\n2. **Language Model (LLM):** สมองส่วนคิด (เช่น OpenAI, Anthropic)\n3. **Memory:** ความจำระยะสั้น เพื่อให้ AI จำบทสนทนาก่อนหน้าได้",
+        "width": 480,
+        "height": 160,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        260,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        380,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ .chatInput }}"
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        600,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        600,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "sessionKey": "={{ $json.session_id || \"demo-session\" }}"
+      },
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        740,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "content": "💬 **วิธีทดสอบ (Testing)**\n\nคลิกปุ่ม Chat ที่มุมซ้ายล่างของจอ n8n\n(หรือดับเบิลคลิกที่ AI Agent แล้วพิมพ์ในช่อง Message)\n\nลองพิมพ์ว่า: ฉันชื่อสมชาย\nแล้วถามต่อว่า: ฉันชื่ออะไร?\n\n💡 สังเกตว่า AI จะจำชื่อคุณได้ เพราะมี Window Buffer Memory",
+        "width": 360,
+        "height": 180,
+        "color": 2
+      },
+      "name": "Sticky 1 Chat",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "🧠 **LLM (สมองส่วนคิด)**\n\nต้องเชื่อมต่อใต้ AI Agent เสมอ!\nเราเลือกใช้ OpenAI (GPT-4o-mini) เพราะเร็วและถูก\n\n*อย่าลืมตั้งค่า Credentials ของ OpenAI ก่อนเริ่มใช้งาน*",
+        "width": 300,
+        "height": 140,
+        "color": 3
+      },
+      "name": "Sticky 2 LLM",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "content": "📓 **Memory (ความจำ)**\n\nถ้าไม่มี Memory, AI จะเป็นโรคปลาทอง (จำคำถามก่อนหน้าไม่ได้)\n\n• Session Key: ใช้แยกว่าใครกำลังคุยอยู่\n(เช่น ใช้ User ID จาก LINE เพื่อไม่ให้ความจำของนาย A ไปปนกับนาย B)",
+        "width": 340,
+        "height": 160,
+        "color": 4
+      },
+      "name": "Sticky 3 Memory",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        580
+      ]
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

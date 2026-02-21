@@ -1,0 +1,188 @@
+{
+  "name": "02 - AI Agent with Tools (Function Calling)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🛠️ **02 - การให้เครื่องมือกับ AI Agent (Tools)**\n\nAI ไม่ได้มีแค่ความรู้เดิมๆ แต่สามารถใช้ Tools ค้นหาข้อมูลหรือทำสิ่งที่ทำไม่ได้ เช่น:\n• คำนวณเลขที่ซับซ้อน (Calculator Tool)\n• ดึงข้อมูลจาก API ภายนอก (HTTP Request Tool)\n• เข้าถึงฐานข้อมูล\n\n💡 นี่คือจุดที่ทำให้ AI Agent แตกต่างจาก Chatbot ธรรมดา!",
+        "width": 480,
+        "height": 160,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        260,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        380,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ .chatInput }}"
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        600,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        560,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "sessionKey": "={{ $json.session_id || \"demo-session-2\" }}"
+      },
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        700,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to get the current weather for a specific city. You MUST provide the city name in English (e.g., Bangkok, Khon Kaen)."
+      },
+      "name": "Weather API Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://wttr.in/={{$fromAI(\"city\")}}?format=j1",
+        "sendQuery": false,
+        "sendBody": false,
+        "options": {}
+      },
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        860,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "content": "💬 **วิธีทดสอบ (Testing)**\n\nเปิดแผง Chat ขึ้นมา แล้วลองพิมพ์:\n\"อากาศที่เชียงใหม่เป็นยังไง?\"\n\n💡 สังเกตที่ Log:\n1. AI จะรู้ว่าตัวเองไม่รู้สภาพอากาศปัจจุบัน\n2. AI จะตัดสินใจเรียกใช้ 'Weather API Tool'\n3. AI จะอ่านผลลัพธ์จาก API แล้วมาสรุปตอบคุณ",
+        "width": 380,
+        "height": 200,
+        "color": 2
+      },
+      "name": "Sticky 1 Chat",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "🧰 **Custom Tool (เครื่องมือที่เราสร้างเอง)**\n\nการสร้าง Tool สิ่งสำคัญที่สุดคือ **Description**\nต้องอธิบายให้ AI เข้าใจอย่างละเอียดว่า:\n• Tool นี้ใช้ทำอะไร?\n• ต้องส่งข้อมูลอะไรมาให้บ้าง?\n\n(ในที่นี้เราบอกให้ AI ส่งชื่อเมืองเป็นภาษาอังกฤษมาให้)",
+        "width": 380,
+        "height": 180,
+        "color": 3
+      },
+      "name": "Sticky 2 Tool",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        920,
+        580
+      ]
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weather API Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Weather API Tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

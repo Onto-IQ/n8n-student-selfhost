@@ -1,0 +1,238 @@
+{
+  "name": "03 - Simple RAG (In-Memory Vector Store)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🧠 **03 - Simple RAG (Retrieval-Augmented Generation)**\n\n**ปัญหา:** AI ไม่รู้จักข้อมูลบริษัทของคุณ หรือข้อมูลที่เพิ่งเกิดใหม่\n**ทางแก้:** RAG คือเทคนิคการ \"แนบเอกสาร\" ไปให้ AI อ่านก่อนตอบคำถาม\n\n💡 ใน Workflow นี้เราจะใช้ **In-Memory Vector Store** ซึ่งเป็นฐานข้อมูลจำลองใน RAM ทำให้สร้าง RAG ได้ทันทีโดยไม่ต้องไปสมัครบริการเสริมภายนอก (เหมาะสำหรับการเรียนรู้และ Prototype)",
+        "width": 600,
+        "height": 180,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        260,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        380,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ .chatInput }}"
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        600,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        560,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to search through the company documents and knowledge base. Use this tool BEFORE answering any questions about the company."
+      },
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        860,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "load"
+      },
+      "name": "In-Memory Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1,
+      "position": [
+        860,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small"
+      },
+      "name": "OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        760,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "chunkOverlap": 50,
+          "chunkSize": 500
+        }
+      },
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        980,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "text",
+              "value": "บริษัท Onto-IQ ก่อตั้งขึ้นในปี 2026 โดยมีเป้าหมายเพื่อผลักดันการใช้งาน AI Agents ในองค์กร สินค้าหลักคือระบบ RAG อัจฉริยะที่ช่วยพนักงานค้นหาข้อมูลภายในได้รวดเร็วขึ้น 50% ปัจจุบันมีลูกค้ากว่า 100 องค์กรทั่วประเทศ"
+            }
+          ]
+        }
+      },
+      "name": "Mock Company Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "content": "💬 **วิธีทดสอบ (Testing)**\n\n1. คลิก Chat แล้วพิมพ์: \"บริษัท Onto-IQ ทำอะไร และตั้งขึ้นเมื่อไหร่?\"\n2. AI จะรู้ว่าต้องใช้ 'Vector Store Tool' เพื่อค้นหาข้อมูล\n3. Tool จะไปดึงข้อมูลจาก In-Memory Vector Store (ซึ่งอ่านค่ามาจาก Mock Company Data) แล้วส่งกลับไปให้ AI ตอบคุณ",
+        "width": 440,
+        "height": 180,
+        "color": 2
+      },
+      "name": "Sticky 1 Chat",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        900,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "content": "🗄️ **โครงสร้างของ RAG (แนวทางใหม่ ปี 2026)**\n\nแทนที่จะต้องยุ่งยากกับการสมัคร Pinecone หรือ Qdrant,\nn8n 2.x มี 'In-Memory Vector Store'\nให้เราจำลองฐานข้อมูลใน RAM ได้เลย\n\n1. **Data Loader** อ่านข้อมูลดิบ (เช่น Text, PDF)\n2. **Embeddings** แปลงข้อความเป็นตัวเลข (Vector)\n3. **Vector Store** เก็บข้อมูลและค้นหาให้ Tool ใช้งาน",
+        "width": 420,
+        "height": 200,
+        "color": 3
+      },
+      "name": "Sticky 2 Architecture",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        580
+      ]
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "In-Memory Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "In-Memory Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "In-Memory Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Company Data": {
+      "main": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
