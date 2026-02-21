@@ -1,0 +1,414 @@
+{
+  "name": "01 - Learn JSON Basics",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📚 **บทเรียน: JSON พื้นฐานสำหรับ n8n**\n\nWorkflow นี้จะสอนแก่นแท้ของ JSON ที่ต้องรู้ก่อนใช้ n8n:\n• String - ข้อความ\n• Number - ตัวเลข\n• Boolean - ค่าจริง/เท็จ\n• Array - รายการข้อมูล\n• Object - โครงสร้างข้อมูล\n• Null - ค่าว่าง\n\n💡 JSON คือภาษาที่โปรแกรมใช้สื่อสารกัน",
+        "width": 400,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -272
+      ],
+      "id": "47e49770-6742-44e9-b610-bdc42fcb8085"
+    },
+    {
+      "parameters": {},
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        384,
+        240
+      ],
+      "id": "9954b235-ae05-41a1-84b1-c50b92d46ae8"
+    },
+    {
+      "parameters": {
+        "content": "🔑 **หลักการสำคัญ: Key-Value Pair**\n\nทุกอย่างใน JSON สร้างจากคู่นี้:\n• Key = ชื่อข้อมูล (ในเครื่องหมาย \"\")\n• Value = ค่าข้อมูล\n\nตัวอย่าง:\n\"name\": \"Alice\"\n\"age\": 25\n\n💡 นี่คือตัวต่อสร้างโครงสร้างข้อมูลทั้งหมด",
+        "height": 244,
+        "width": 300,
+        "color": 2
+      },
+      "name": "Sticky 1 KeyValue",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -48
+      ],
+      "id": "0a5e78c2-c7bf-41b2-a0af-80163099e16d"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "my_name",
+              "value": "Alice"
+            },
+            {
+              "name": "my_city",
+              "value": "Bangkok"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "01 - String (ข้อความ)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        608,
+        240
+      ],
+      "id": "46e73076-892a-4580-b64d-9492b7cadd0a"
+    },
+    {
+      "parameters": {
+        "content": "📝 **String: ข้อความ**\n\n• ข้อความใดๆ ในเครื่องหมาย \" \"\n• ตัวอย่าง: \"Hello\", \"Thailand\", \"n8n\"\n\n⚠️ สิ่งในเครื่องหมาย \" \" คือ String เสมอ\n\"25\" ≠ 25 (String กับ Number ต่างกัน)",
+        "width": 280,
+        "color": 3
+      },
+      "name": "Sticky 2 String",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        528,
+        416
+      ],
+      "id": "9dc053d2-e245-469e-8937-99173b67b179"
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "age",
+              "value": 25
+            },
+            {
+              "name": "price",
+              "value": 199.5
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "02 - Number (ตัวเลข)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        832,
+        240
+      ],
+      "id": "9bb0e3b4-19fa-4aa0-9892-9eaf0f149f27"
+    },
+    {
+      "parameters": {
+        "content": "🔢 **Number: ตัวเลข**\n\n• เลขจำนวนเต็ม: 10, 25, 100\n• เลขทศนิยม: 12.5, 199.99\n\n✅ ไม่มีเครื่องหมาย \" \"\n✅ ใช้คำนวณได้ (บวก ลบ คูณ หาร)\n\n💡 n8n แยกแยะ Number กับ String เสมอ",
+        "width": 280,
+        "color": 4
+      },
+      "name": "Sticky 3 Number",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        736,
+        -32
+      ],
+      "id": "e1c58a57-be4d-41d7-8a89-38745cd241a2"
+    },
+    {
+      "parameters": {
+        "values": {
+          "boolean": [
+            {
+              "name": "is_active",
+              "value": true
+            },
+            {
+              "name": "is_vip"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "03 - Boolean (จริง/เท็จ)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        240
+      ],
+      "id": "e3531da0-1f37-44f4-9e0f-df35b7372456"
+    },
+    {
+      "parameters": {
+        "content": "✅❌ **Boolean: จริงหรือเท็จ**\n\n• มีแค่ 2 ค่า: true หรือ false\n• ตัวพิมพ์เล็กเท่านั้น (ไม่ใช่ True/False)\n\n💡 ใช้ในเงื่อนไข IF:\n- ถ้า is_vip = true → ให้ส่วนลด\n- ถ้า is_active = false → ส่งเตือน",
+        "height": 192,
+        "width": 280,
+        "color": 5
+      },
+      "name": "Sticky 4 Boolean",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        976,
+        416
+      ],
+      "id": "e03c49a3-f211-457d-80cc-8719c3e965a1"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "hobbies",
+              "value": "[\"reading\", \"gaming\", \"cooking\"]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "04 - Array (รายการ)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        240
+      ],
+      "id": "9d8a1bb3-6ebb-4e1c-8d5f-41b6cb0253c4"
+    },
+    {
+      "parameters": {
+        "content": "📋 **Array: รายการข้อมูล**\n\n• เริ่มด้วย [ จบด้วย ]\n• คั่นด้วย comma ,\n• เก็บอะไรก็ได้หลายๆ อย่าง\n\nตัวอย่าง:\n[\"Alice\", \"Bob\", \"Charlie\"]\n[10, 20, 30]\n\n💡 สั่งซื้อหลายรายการ = Array",
+        "height": 240,
+        "width": 280
+      },
+      "name": "Sticky 5 Array",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -32
+      ],
+      "id": "e9cf8e3f-006a-4286-81ef-a39f667d4525"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "student_data",
+              "value": "{\"name\": \"Alice\", \"age\": 25, \"grade\": \"A\"}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "05 - Object (โครงสร้าง)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        240
+      ],
+      "id": "7c5ae2ad-0c44-4464-bcca-4335f45a7837"
+    },
+    {
+      "parameters": {
+        "content": "📦 **Object: โครงสร้างข้อมูล**\n\n• เริ่มด้วย { จบด้วย }\n• เก็บ Key-Value หลายคู่\n• รวมทุก data type ได้\n\nตัวอย่างข้อมูลนักเรียน:\n{\n  \"name\": \"Alice\",\n  \"age\": 25,\n  \"grade\": \"A\"\n}\n\n💡 API ส่วนใหญ่ส่ง Object กลับมา",
+        "height": 296,
+        "width": 300,
+        "color": 6
+      },
+      "name": "Sticky 6 Object",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        416
+      ],
+      "id": "558a4403-0d18-418d-b411-61788ec4e75f"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "middle_name",
+              "value": "null"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "06 - Null (ค่าว่าง)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        240
+      ],
+      "id": "017a501c-d844-439f-86fc-89ef7beb7436"
+    },
+    {
+      "parameters": {
+        "content": "⚪ **Null: ไม่มีค่า**\n\n• หมายถึง \"ไม่มีข้อมูล\"\n• ต่างจาก \"\" (String ว่าง)\n• ต่างจาก 0 (Number ศูนย์)\n\n💡 ใช้เมื่อ field นั้นไม่มีข้อมูล เช่น\n- middle_name: null (ไม่มีชื่อกลาง)\n- phone: null (ยังไม่ได้ระบุ)",
+        "height": 224,
+        "width": 280,
+        "color": 7
+      },
+      "name": "Sticky 7 Null",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        -32
+      ],
+      "id": "eeef214a-0450-4c0a-99c1-04421f82bc59"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "greeting",
+              "value": "=Hello {{ $json.my_name }}, you are {{ $('02 - Number (ตัวเลข)').item.json.age }} years old!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "07 - Using Expressions",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        240
+      ],
+      "id": "84dd9d88-18b7-43ac-b29b-fd86b0f1ed12"
+    },
+    {
+      "parameters": {
+        "content": "⭐ **การใช้ Expressions**\n\nใน n8n ใช้ {{ }} เพื่อดึงข้อมูลจาก node อื่น:\n\n• {{ $json.my_name }} → ดึงจาก node ปัจจุบัน\n• {{ $('02 - Number').item.json.age }} → ดึงจาก node \"02 - Number\"\n\n💡 นี่คือพลังของ n8n - เชื่อมโยงข้อมูลระหว่าง nodes!",
+        "height": 228,
+        "width": 340,
+        "color": 3
+      },
+      "name": "Sticky 8 Expressions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        432
+      ],
+      "id": "2e3860a8-f1d2-46ff-8b1c-127100519410"
+    },
+    {
+      "parameters": {
+        "content": "🎓 **สรุป JSON พื้นฐาน**\n\n| Type | ตัวอย่าง | ใช้เมื่อไหร่ |\n|------|---------|-------------|\n| String | \"Hello\" | ข้อความ |\n| Number | 25, 99.5 | คำนวณ |\n| Boolean | true, false | เงื่อนไข |\n| Array | [1,2,3] | รายการ |\n| Object | {\"a\":1} | โครงสร้าง |\n| Null | null | ไม่มีค่า |\n\n✅ พร้อมใช้งาน n8n แล้ว!",
+        "height": 264,
+        "width": 360,
+        "color": 6
+      },
+      "name": "Sticky 9 Summary",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2192,
+        96
+      ],
+      "id": "b88aec85-ee91-48a7-8578-da56b493ba59"
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [
+        [
+          {
+            "node": "01 - String (ข้อความ)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "01 - String (ข้อความ)": {
+      "main": [
+        [
+          {
+            "node": "02 - Number (ตัวเลข)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 - Number (ตัวเลข)": {
+      "main": [
+        [
+          {
+            "node": "03 - Boolean (จริง/เท็จ)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03 - Boolean (จริง/เท็จ)": {
+      "main": [
+        [
+          {
+            "node": "04 - Array (รายการ)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04 - Array (รายการ)": {
+      "main": [
+        [
+          {
+            "node": "05 - Object (โครงสร้าง)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "05 - Object (โครงสร้าง)": {
+      "main": [
+        [
+          {
+            "node": "06 - Null (ค่าว่าง)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "06 - Null (ค่าว่าง)": {
+      "main": [
+        [
+          {
+            "node": "07 - Using Expressions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  }
+}

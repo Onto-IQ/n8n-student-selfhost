@@ -1,0 +1,401 @@
+{
+  "name": "02 - Flow Control Demo (IF & Switch)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📚 **แนวทางการสอน Flow Control**\n\nWorkflow นี้สาธิตการใช้งาน:\n• IF Node - ตรวจสอบเงื่อนไข (VIP หรือไม่)\n• Switch Node - แยกกรณีตามคะแนน\n• Merge Node - รวมผลลัพธ์จากหลายทาง",
+        "height": 120,
+        "width": 380,
+        "color": 6
+      },
+      "name": "Sticky Note 0",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        144,
+        -160
+      ],
+      "id": "d89bbe42-5335-4ed5-aa8a-ea15e8f35e42"
+    },
+    {
+      "parameters": {},
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        384,
+        240
+      ],
+      "id": "beff4d59-ad30-409e-8d0a-a7c48fdb837f"
+    },
+    {
+      "parameters": {
+        "content": "🎯 **ขั้นตอนที่ 1: สร้างข้อมูลจำลอง**\n\nสร้างข้อมูลนักเรียน:\n• name: Alice\n• score: 85\n• type: student\n\nนักเรียนทั่วไป (ไม่ใช่ VIP) จะถูกส่งไปตรวจสอบเกรด",
+        "height": 140,
+        "width": 320,
+        "color": 2
+      },
+      "name": "Sticky Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        64
+      ],
+      "id": "92a0a88a-2f05-4eae-8026-3e3900d8aeed"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "name",
+              "value": "Alice"
+            },
+            {
+              "name": "score",
+              "value": "85"
+            },
+            {
+              "name": "type",
+              "value": "student"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Mock Student",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        608,
+        240
+      ],
+      "id": "824bfdee-f8be-4a4c-8a33-49b96de3ba25"
+    },
+    {
+      "parameters": {
+        "content": "🔀 **ขั้นตอนที่ 2: แยกสายงานด้วย IF**\n\nตรวจสอบเงื่อนไข: type = 'vip'?\n\n✅ **True (บน)**: ถ้าเป็น VIP → ผ่านอัตโนมัติ\n❌ **False (ล่าง)**: ถ้าเป็นนักเรียนทั่วไป → ไปตรวจสอบเกรด",
+        "width": 320,
+        "color": 3
+      },
+      "name": "Sticky Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        464
+      ],
+      "id": "f8126979-fa97-4daa-9a94-cda250a3074c"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.type }}",
+              "operation": "equals",
+              "value2": "vip"
+            }
+          ]
+        }
+      },
+      "name": "Check VIP Status",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        832,
+        240
+      ],
+      "id": "db23da12-5175-4a6c-9e74-f51c5e0d5cee"
+    },
+    {
+      "parameters": {
+        "content": "👑 **กรณี VIP**\n\nสมาชิก VIP ได้รับสิทธิพิเศษ:\n• ผ่านอัตโนมัติไม่ต้องดูคะแนน\n• ได้สถานะ 'VIP Member'\n\n💡 ตัวอย่างการใช้ IF แยกกรณีพิเศษ",
+        "height": 140,
+        "width": 280,
+        "color": 5
+      },
+      "name": "Sticky Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        32
+      ],
+      "id": "c8a5cd2f-4ead-4fa0-b811-b59923fbda08"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "VIP Member - Auto Pass!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "VIP Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        224
+      ],
+      "id": "302fe162-1123-4ae9-905a-4624d1f2b6ff"
+    },
+    {
+      "parameters": {
+        "content": "📊 **ขั้นตอนที่ 3: แยกเกรดด้วย Switch**\n\nตรวจสอบคะแนนและแยกเป็น 3 กรณี:\n\n🟢 Output 0: score ≥ 80 → เกรด A\n🟡 Output 1: score ≥ 50 → เกรด B\n🔴 Output 2: score < 50 → เกรด F\n\n💡 ใช้ expression: {{ $json.score >= 80 ? 0 : ($json.score >= 50 ? 1 : 2) }}",
+        "height": 180,
+        "width": 340,
+        "color": 4
+      },
+      "name": "Sticky Note 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        -32
+      ],
+      "id": "9bc28474-218a-40fd-9402-0f2012480293"
+    },
+    {
+      "parameters": {
+        "mode": "expression",
+        "output": "={{ $json.score >= 80 ? 0 : ($json.score >= 50 ? 1 : 2) }}"
+      },
+      "name": "Grade Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        496
+      ],
+      "id": "f0432b45-009d-4a29-9103-77b4d3f2448b"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "Grade A - Excellent!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Grade A Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        240
+      ],
+      "id": "09500563-7b97-4297-ad07-a1715ca02e11"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "Grade B - Pass"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Grade B Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        448
+      ],
+      "id": "0f509dfe-84b1-4865-bcde-52e25054a70d"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "Grade F - Fail"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Grade F Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        1488,
+        624
+      ],
+      "id": "403c0322-14b2-4f9d-93d2-7d2c1bf5f60f"
+    },
+    {
+      "parameters": {
+        "content": "🔄 **ขั้นตอนที่ 4: รวมผลลัพธ์**\n\nMerge Node รวมข้อมูลจากทุกสายงาน:\n• VIP Result (ถ้าเป็น VIP)\n• Grade A, B, F (ถ้าเป็นนักเรียนทั่วไป)\n\n💡 ใช้ Mode: Append เพื่อต่อท้ายข้อมูล",
+        "height": 140,
+        "width": 320
+      },
+      "name": "Sticky Note 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        32
+      ],
+      "id": "60388b97-1e06-49ec-9287-f045e0d69d72"
+    },
+    {
+      "parameters": {},
+      "name": "Merge Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 1,
+      "position": [
+        1840,
+        240
+      ],
+      "id": "f2299765-7584-4f38-8a50-b863fa6de9eb"
+    },
+    {
+      "parameters": {
+        "content": "✅ **สรุปการเรียนรู้**\n\n• IF = แยก 2 ทาง (True/False)\n• Switch = แยกหลายทาง (3+ outputs)\n• Merge = รวมกลับมาเป็นทางเดียว\n\n🎓 เหมาะสำหรับสอนการควบคุม flow ใน n8n",
+        "height": 140,
+        "width": 300,
+        "color": 6
+      },
+      "name": "Sticky Note 6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        576
+      ],
+      "id": "e7e79518-b5c6-4f01-92a7-19d702efcaa6"
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [
+        [
+          {
+            "node": "Mock Student",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Student": {
+      "main": [
+        [
+          {
+            "node": "Check VIP Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check VIP Status": {
+      "main": [
+        [
+          {
+            "node": "VIP Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Grade Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VIP Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grade Switch": {
+      "main": [
+        [
+          {
+            "node": "Grade A Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Grade B Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Grade F Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grade A Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grade B Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grade F Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  }
+}

@@ -2,3 +2,5 @@
 data/
 .DS_Store
 Thumbs.db
+.windsurf/
+.windsurfrules
