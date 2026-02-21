@@ -94,7 +94,12 @@
     {
       "parameters": {
         "description": "Call this tool to get the current weather for a specific city. You MUST provide the city name in English (e.g., Bangkok, Khon Kaen).",
-        "name": "weather_api"
+        "name": "weather_api",
+        "method": "GET",
+        "url": "https://wttr.in/={{$fromAI(\"city\")}}?format=j1",
+        "sendQuery": false,
+        "sendBody": false,
+        "options": {}
       },
       "name": "Weather API Tool",
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
@@ -102,22 +107,6 @@
       "position": [
         1120,
         480
-      ]
-    },
-    {
-      "parameters": {
-        "method": "GET",
-        "url": "https://wttr.in/={{$fromAI(\"city\")}}?format=j1",
-        "sendQuery": false,
-        "sendBody": false,
-        "options": {}
-      },
-      "name": "HTTP Request",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1120,
-        680
       ]
     },
     {
@@ -228,26 +217,6 @@
           {
             "node": "AI Agent",
             "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ],
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Weather API Tool",
-            "type": "main",
             "index": 0
           }
         ]
