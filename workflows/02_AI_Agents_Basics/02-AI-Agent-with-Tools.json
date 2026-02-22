@@ -95,9 +95,11 @@
       "id": "chat-response-01",
       "name": "Respond to Chat",
       "parameters": {
-        "message": "={{ $json.output }}"
+        "operation": "send",
+        "message": "={{ $json.output }}",
+        "options": {}
       },
-      "position": [820, 240],
+      "position": [1328, 240],
       "type": "@n8n/n8n-nodes-langchain.chat",
       "typeVersion": 1.2
     },
