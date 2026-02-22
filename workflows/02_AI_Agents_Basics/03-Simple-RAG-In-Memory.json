@@ -59,7 +59,9 @@
     },
     {
       "parameters": {
-        "description": "Call this tool to search through the company documents and knowledge base. Use this tool BEFORE answering any questions about the company."
+        "description": "Call this tool to search through the company documents and knowledge base. Use this tool BEFORE answering any questions about the company.",
+        "name": "company_data",
+        "topK": 4
       },
       "name": "Vector Store Tool",
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
@@ -71,7 +73,9 @@
     },
     {
       "parameters": {
-        "mode": "load"
+        "mode": "load",
+        "memoryKey": "vector_store_key",
+        "prompt": "={{ $fromAI('question', 'The user question to search for') }}"
       },
       "name": "In-Memory Vector Store",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
@@ -105,6 +109,19 @@
       "typeVersion": 1,
       "position": [
         980,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 50,
+        "chunkSize": 500
+      },
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1160,
         840
       ]
     },
@@ -209,6 +226,17 @@
       ]
     },
     "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Recursive Character Text Splitter",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
       "ai_document": [
         [
           {
