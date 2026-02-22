@@ -9,28 +9,27 @@
           "systemMessage": "🎭 คุณคือ 'เพื่อน AI จอย' - ผู้ช่วยอัจฉริยะที่เป็นเพื่อนคู่คิดสำหรับนักเรียน n8n!\n\n✨ Personality ของคุณ:\n- ใช้ภาษาไทยที่สุภาพแต่เป็นกันเอง\n- ตอบสั้น กระชับ ไม่เกิน 3-5 ประโยค\n- ใส่ emoji ได้ตามความเหมาะสม\n- ถ้าถามเรื่อง n8n ให้ตอบอย่างมือโปร\n- ถ้าถามทั่วไป ให้ตอบแบบเพื่อนเล่าให้ฟัง\n- จำบทสนทนาก่อนหน้าได้ (มีความจำ!)\n\n💡 Tips:\n- เรียกตัวเองว่า 'จอย'\n- ชอบช่วยเหลือและให้กำลังใจ\n- ถ้าไม่รู้จริงๆ ให้บอกว่าไม่รู้ อย่าเสแสร้ง"
         }
       },
-      "id": "330d037e-d508-4bbc-b58c-d9997f53341f",
+      "id": "0a5f24a5-5ea3-4954-939d-31546a42e0dd",
       "name": "AI Agent",
       "position": [
-        1184,
-        48
+        1024,
+        352
       ],
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1
     },
     {
       "parameters": {
-        "modelName": "models/gemini-2.0-flash",
         "options": {
           "maxOutputTokens": 2048,
           "temperature": 0.6
         }
       },
-      "id": "b6bdc364-b879-4371-9366-17e92d1e3ae9",
+      "id": "2916be03-545c-4a5f-96d4-51455942c577",
       "name": "Google Gemini Chat Model",
       "position": [
-        880,
-        304
+        720,
+        608
       ],
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
@@ -47,11 +46,11 @@
         "sessionKey": "={{ $('Line Messaging Trigger').item.json.source.userId }}",
         "contextWindowLength": 20
       },
-      "id": "203b47ee-235e-4963-a571-1d4b168dfc99",
+      "id": "9eea5c5c-1e37-44fc-ad1a-6052aef991fb",
       "name": "Simple Memory",
       "position": [
-        1232,
-        288
+        1072,
+        592
       ],
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3
@@ -60,11 +59,11 @@
       "parameters": {
         "options": {}
       },
-      "id": "c83f4391-4dac-4888-b169-968db748d93e",
+      "id": "161e38e4-6e1c-4136-b0d7-31fee7e9d481",
       "name": "Respond 200",
       "position": [
-        1920,
-        48
+        1760,
+        352
       ],
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5
@@ -80,11 +79,11 @@
           ]
         }
       },
-      "id": "b15acfad-ee5d-4396-8df6-d6183b6ad7fc",
+      "id": "a5969b4a-6558-45cb-9e11-b447154b19a1",
       "name": "Line Messaging",
       "position": [
-        1744,
-        48
+        1584,
+        352
       ],
       "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
       "typeVersion": 1,
@@ -101,11 +100,11 @@
           "message"
         ]
       },
-      "id": "f2bcfa04-ccb9-49e5-96b1-046dc17fe8bb",
+      "id": "eb69c7f2-443e-4f3c-85fa-0a5d5bbeeb1d",
       "name": "Line Messaging Trigger",
       "position": [
-        704,
-        48
+        544,
+        352
       ],
       "type": "@aotoki/n8n-nodes-line-messaging.lineMessagingTrigger",
       "typeVersion": 1,
@@ -123,11 +122,11 @@
         "height": 120,
         "width": 320
       },
-      "id": "sticky-note-01",
+      "id": "242de064-f6ae-443f-915a-a2391c9d5325",
       "name": "Note: Overview",
       "position": [
-        592,
-        -112
+        432,
+        192
       ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
@@ -138,11 +137,11 @@
         "width": 280,
         "color": 2
       },
-      "id": "sticky-note-02",
+      "id": "cd60c791-c48d-4e0a-ad1e-a5173e79c0f9",
       "name": "Note: AI Agent",
       "position": [
-        1152,
-        -144
+        992,
+        160
       ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
@@ -154,11 +153,11 @@
         "width": 200,
         "color": 3
       },
-      "id": "sticky-note-03",
+      "id": "34752b3c-b2f3-4b60-91b4-dc6ecdaa4e35",
       "name": "Note: Memory",
       "position": [
-        1344,
-        304
+        1184,
+        608
       ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
@@ -170,11 +169,11 @@
         "width": 200,
         "color": 5
       },
-      "id": "sticky-note-04",
+      "id": "b6819e19-4031-487a-9c55-fa6d09baab3f",
       "name": "Note: Reply",
       "position": [
-        1680,
-        -80
+        1520,
+        224
       ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
@@ -186,11 +185,11 @@
         "width": 280,
         "color": 6
       },
-      "id": "sticky-note-05",
+      "id": "0ddacf26-c06d-4dcf-93e3-4ad4ef7c0ead",
       "name": "Note: Test",
       "position": [
-        1632,
-        208
+        1472,
+        512
       ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
@@ -202,9 +201,9 @@
       "main": [
         [
           {
-            "index": 0,
             "node": "Line Messaging",
-            "type": "main"
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -213,9 +212,9 @@
       "ai_languageModel": [
         [
           {
-            "index": 0,
             "node": "AI Agent",
-            "type": "ai_languageModel"
+            "type": "ai_languageModel",
+            "index": 0
           }
         ]
       ]
@@ -224,9 +223,9 @@
       "main": [
         [
           {
-            "index": 0,
             "node": "Respond 200",
-            "type": "main"
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -235,9 +234,9 @@
       "main": [
         [
           {
-            "index": 0,
             "node": "AI Agent",
-            "type": "main"
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -246,9 +245,9 @@
       "ai_memory": [
         [
           {
-            "index": 0,
             "node": "AI Agent",
-            "type": "ai_memory"
+            "type": "ai_memory",
+            "index": 0
           }
         ]
       ]
@@ -264,7 +263,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "4a4e52ff-6e94-437f-a03d-56300262465a",
+  "versionId": "15d2f71d-db2e-4b41-9489-49a1fa529c9d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "cb1b027a5238410dc7b357f3ae9b7ae44201f4d2fd2a646370dabfb7c8c2f056"
