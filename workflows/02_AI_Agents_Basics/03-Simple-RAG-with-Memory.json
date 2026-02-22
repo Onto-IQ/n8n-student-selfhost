@@ -1,0 +1,381 @@
+{
+  "name": "03-Simple-RAG-with-Memory",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "61de39e2-ddf6-460a-a290-2f84fa8aa276",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        1136,
+        544
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "5kanIJKH5rgtA0cb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "id": "02f86dae-db0a-4630-86b0-1b1c096ac5be",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        1024,
+        224
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key",
+          "cachedResultName": "vector_store_key"
+        }
+      },
+      "id": "7d494c68-7e54-4b13-8f8a-e8d5df609e36",
+      "name": "Insert Data to Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "position": [
+        720,
+        64
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "knowledge_base",
+        "toolDescription": "Use this knowledge base to answer questions from the user",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "id": "9d350d24-4cb4-414d-9c1e-6328fe7963ba",
+      "name": "Query Data Tool",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "position": [
+        1744,
+        272
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "คุณเป็นผู้ช่วย HR อัจฉริยะของบริษัท สมสมัยงาน AI จำกัด\n\n**บทบาท:**\n- ตอบคำถามพนักงานเกี่ยวกับนโยบายการเดินทางและเบิกจ่าย\n- ใช้เครื่องมือ 'Vector Store Tool' เพื่อหาข้อมูลที่ถูกต้อง\n- จำบทสนทนาก่อนหน้าเพื่อตอบอย่างต่อเนื่อง\n\n**คำแนะนำ:**\n- ถ้าไม่แน่ใจ ให้บอกว่าจะสอบถาม HR ก่อน\n- ตอบด้วยภาษาที่สุภาพและเป็นกันเอง"
+        }
+      },
+      "id": "0b493b2f-6940-4947-88ae-37ad66a23ba5",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1600,
+        48
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "de9adc08-603c-42da-bb3e-ef9bc76a72a9",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        1392,
+        48
+      ],
+      "webhookId": "4091fa09-fb9a-4039-9411-7104d213f601",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "6aa91ff8-abb5-480e-bce7-5ad9e314ea8e",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1392,
+        272
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "5kanIJKH5rgtA0cb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1584,
+        272
+      ],
+      "id": "3ac629c7-9710-4ebe-a4df-a3681e249499",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "id": "37c9c625-de20-4c4e-bb13-ab28e3fd885e",
+      "name": "Index Trigger",
+      "position": [
+        336,
+        64
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mock-data",
+              "name": "text",
+              "type": "string",
+              "value": "=นโยบายการเดินทางและเบิกจ่าย (Corporate Travel & Expense Policy)\nบริษัท สมสมัยงาน AI จำกัด (Sommai Ngarn AI Co., Ltd.)\nเลขที่เอกสาร: HR-POL-2026-001\nเวอร์ชัน: 1.4 (Ultimate Governance Edition)\nวันที่มีผลบังคับใช้: 1 มกราคม 2569\nสถานะ: อนุมัติแล้ว (โดย CEO และ Board of Directors)\n1. วัตถุประสงค์และขอบเขต (Purpose & Scope)\nนโยบายนี้กำหนดมาตรฐานและหลักเกณฑ์การเบิกจ่ายค่าใช้จ่ายที่เกิดขึ้นจากการเดินทางเพื่อปฏิบัติงานของพนักงานบริษัท สมสมัยงาน AI จำกัด ทุกระดับ ครอบคลุมทั้งการเดินทางภายในประเทศและต่างประเทศ เพื่อให้เกิดความคุ้มค่า (Cost-effectiveness) และความโปร่งใสสูงสุด\n2. ขั้นตอนการอนุมัติ (Approval Process)\nพนักงานต้องดำเนินการขออนุมัติการเดินทางผ่านระบบ AI-Flow ล่วงหน้าตามเงื่อนไขดังนี้:\nการเดินทางในประเทศ: ต้องได้รับอนุมัติจากผู้จัดการสายงาน (Line Manager) ล่วงหน้าอย่างน้อย 3 วันทำการ\nการเดินทางต่างประเทศ: ต้องได้รับอนุมัติจากผู้อำนวยการฝ่าย (Director) และแจ้งฝ่ายบัญชีล่วงหน้าอย่างน้อย 7 วันทำการ\nกรณีเร่งด่วน (Urgent Trip): หากไม่สามารถดำเนินการตามกำหนดเวลาข้างต้นได้ พนักงานต้องระบุเหตุผลความจำเป็นทางธุรกิจ และต้องได้รับอนุมัติเป็นลายลักษณ์อักษรจาก CEO เท่านั้น\n3. การเดินทางโดยเครื่องบิน (Air Travel)\nมาตรฐานชั้นที่นั่ง (Class of Service) พิจารณาจากระดับตำแหน่งและระยะเวลาการบินต่อเนื่อง (Single Flight Duration) ดังนี้:\nระดับพนักงาน (Grade)\nระยะเวลาบิน < 6 ชม.\nระยะเวลาบิน ≥ 6 ชม.\nระดับปฏิบัติการ (Staff, Senior Staff)\nEconomy Class\nEconomy Class\nระดับบริหาร (Manager, Director)\nEconomy Class\nBusiness Class\nระดับบริหารระดับสูง (C-Level)\nBusiness Class\nBusiness Class\n\nข้อยกเว้นและกฎเพิ่มเติม:\nหากพนักงานระดับปฏิบัติการต้องเดินทางพร้อม C-Level เพื่อปฏิบัติงานในเที่ยวบินเดียวกัน ให้สิทธิ์อัปเกรดเป็น Business Class โดยต้องระบุรหัสโปรเจกต์ \"CLIENT-VIP\"\nการสะสมไมล์ (Frequent Flyer Miles) พนักงานสามารถเก็บไว้เป็นสิทธิ์ส่วนตัวได้ แต่บริษัทจะไม่จ่ายค่าส่วนต่างหากพนักงานเลือกสายการบินที่แพงกว่าเพียงเพื่อสะสมไมล์\n4. ค่าที่พักและโรงแรม (Accommodation)\nตารางที่ 1: วงเงินค่าที่พักสูงสุด (หน่วย: บาท / คืน)\nพื้นที่ (Region)\nระดับ Staff/Senior\nระดับ Manager ขึ้นไป\nกรุงเทพฯ และปริมณฑล\n2,500\n4,000\nหัวเมืองใหญ่ (เชียงใหม่, ภูเก็ต, ชลบุรี)\n3,000\n4,500\nจังหวัดอื่นๆ ในประเทศไทย\n1,800\n3,000\nต่างประเทศ (ทุกโซน)\nเบิกตามจ่ายจริง\nเบิกตามจ่ายจริง\n\nกฎการจองที่พัก:\nสำหรับการเดินทางต่างประเทศ ต้องเลือกโรงแรมที่มีคะแนนรีวิวไม่ต่ำกว่า 4 ดาว และห้ามจองประเภท \"Luxury Suite\" หรือ \"Penthouse\"\nการพักค้างคืนที่บ้านญาติ/คนรู้จัก: พนักงานไม่สามารถเบิกค่าที่พักได้ แต่สามารถเบิก \"ค่าของขวัญขอบคุณเจ้าบ้าน\" ได้ในวงเงินเหมาจ่าย 500 บาทต่อทริป\n5. เบี้ยเลี้ยงและค่าอาหาร (Per Diem)\nตารางที่ 2: อัตราเบี้ยเลี้ยงเหมาจ่าย (หน่วย: บาท / วัน)\nประเภทการเดินทาง\nอัตราเบี้ยเลี้ยง\nภายในประเทศ\n500\nต่างประเทศ (โซน A)\n2,500\nต่างประเทศ (โซน B)\n1,800\n\nเงื่อนไขการคำนวณ:\nการหักค่าอาหาร: หากมีการเลี้ยงอาหาร (Lunch/Dinner) ให้หักมื้อละ 25% ของอัตราต่อวัน\nวันเดินทาง (Fractional Days): วันไปและวันกลับ ให้คิดเบี้ยเลี้ยง 50% ของอัตราปกติ\nการเดินทางแบบไป-กลับในวันเดียว (Same-day Trip): ให้เบี้ยเลี้ยงในอัตรา 50% ของวันปกติ และหักค่าอาหารตามจริงหากมีการจัดเลี้ยง\n6. การแบ่งโซนประเทศ (Country Zone Classification)\nโซน A: สิงคโปร์, ญี่ปุ่น, เกาหลีใต้, สหรัฐอเมริกา, แคนาดา, กลุ่มประเทศยุโรป (EU/UK), ออสเตรเลีย, นิวซีแลนด์ และกลุ่มประเทศตะวันออกกลาง (UAE, Qatar, Saudi Arabia)\nโซน B: จีน, ไต้หวัน, ฮ่องกง, อินเดีย, กลุ่มประเทศอาเซียน (ยกเว้นสิงคโปร์) และประเทศอื่นๆ ทั่วโลกที่ไม่ได้ระบุไว้ในโซน A\n7. การเดินทางโดยใช้พาหนะส่วนตัว (Personal Vehicle Allowance)\nอัตราเงินชดเชยเหมาจ่าย (Mileage Rate): 6 บาทต่อกิโลเมตร (รวมค่าน้ำมัน, ค่าเสื่อมสภาพ, และค่าบำรุงรักษาแล้ว)\nหลักเกณฑ์การคำนวณระยะทาง: อ้างอิงจาก Google Maps และให้นำระยะทางจริงลบด้วยระยะทางจากบ้านพักมายังสำนักงาน (Work-to-Home Deduction)\nค่าใช้จ่ายที่เบิกเพิ่มได้ตามจริง: ค่าทางด่วน และค่าที่จอดรถ (ต้องมีใบเสร็จ)\n8. การใช้บัตรเครดิตบริษัท (Corporate Credit Card)\nมอบให้ระดับ Manager ขึ้นไป เท่านั้น:\nขอบเขต: ค่าตั๋วเครื่องบิน, ค่าที่พัก, และค่ารับรองลูกค้า\nข้อห้าม: ห้ามใช้จ่ายส่วนตัวเด็ดขาด หากพบต้องชดใช้คืนพร้อมดอกเบี้ย 15% ต่อปี\nกำหนดการ: ต้องอัปโหลดใบเสร็จเข้าระบบภายใน 7 วันทำการ\n9. เงินสำรองจ่ายฉุกเฉิน (Emergency Travel Advance)\nสำหรับระดับ Staff และ Senior Staff:\nวงเงิน: ไม่เกิน 10,000 บาท (ในประเทศ) หรือ 1,000 USD (ต่างประเทศ)\nขั้นตอน: ต้องขอผ่านระบบ AI-Flow ล่วงหน้า 5 วันทำการ\nการคืนเงิน: ต้องล้างยอด (Settlement) ภายใน 7 วันทำการหลังจบการเดินทาง\n10. การประกันภัยและการดูแลสุขภาพ (Insurance & Health)\nประกันการเดินทางต่างประเทศ: บริษัทฯ จัดทำประกันกลุ่มให้พนักงานทุกคน (ครอบคลุมค่ารักษาพยาบาลฉุกเฉินวงเงิน 2,000,000 บาท)\nการเจ็บป่วยระหว่างเดินทาง: พนักงานสามารถเบิกค่ารักษาพยาบาล (กรณีฉุกเฉิน) ที่เกินจากวงเงินประกันได้ตามจ่ายจริง โดยต้องได้รับความเห็นชอบจาก HR Director\nวัคซีน: พนักงานสามารถเบิกค่าฉีดวัคซีนที่จำเป็นตามข้อกำหนดของประเทศปลายทางได้ 100%\n11. การยกเลิกและเปลี่ยนแปลงการเดินทาง (Cancellation & Modification)\nเหตุจากธุรกิจ: หากบริษัทฯ ขอยกเลิกหรือเลื่อนการเดินทาง บริษัทฯ จะรับผิดชอบค่าธรรมเนียมการเลื่อนหรือค่าที่พักที่เรียกเก็บคืนไม่ได้ (Non-refundable) ทั้งหมด\nเหตุส่วนตัว: หากพนักงานขอยกเลิกด้วยเหตุผลส่วนตัว (ยกเว้นเหตุสุดวิสัยหรือการเจ็บป่วยที่มีใบรับรองแพทย์) พนักงานต้องเป็นผู้รับผิดชอบค่าธรรมเนียมที่เกิดขึ้นเองทั้งหมด\n12. ความปลอดภัยของข้อมูลและทรัพย์สิน (Data & Asset Security)\nอุปกรณ์ไอที: พนักงานต้องดูแลคอมพิวเตอร์พกพา (Laptop) และข้อมูลบริษัทอย่างเคร่งครัด ห้ามโหลดข้อมูลระดับ \"Confidential\" ลงในอุปกรณ์ส่วนตัวระหว่างเดินทาง\nการสูญหาย: หาก Laptop ของบริษัทสูญหาย พนักงานต้องแจ้งฝ่ายไอทีภายใน 2 ชม. เพื่อทำการ Remote Wipe ข้อมูล\n13. ค่าใช้จ่ายที่ไม่อนุญาตให้เบิก (Non-Reimbursable Expenses)\nค่าเครื่องดื่มแอลกอฮอล์ (เว้นแต่มื้อรับรองลูกค้า), ค่าบริการซักรีด (สำหรับการเดินทาง < 4 คืน), ค่าปรับจราจร, และค่ามินิบาร์\n14. หลักเกณฑ์การเบิกจ่ายและจริยธรรม (Compliance)\nกำหนดส่งเอกสาร: ภายใน 15 วันทำการ หากเกิน 30 วันทำการ ระบบจะระงับสิทธิ์อัตโนมัติ\nจริยธรรม: การปลอมแปลงใบเสร็จหรือการเบิกจ่ายเกินจริง ถือเป็นความผิดวินัยร้ายแรง มีโทษสูงสุดคือเลิกจ้างโดยไม่จ่ายค่าชดเชย\nจัดทำโดย ฝ่ายบริหารทรัพยากรบุคคล (HR) และฝ่ายบัญชี (Accounting)\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "75ef0fdd-45a0-49e4-be43-71a5176a9ecf",
+      "name": "Mock Policy Data",
+      "position": [
+        528,
+        64
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "### 🧠 03 - Simple RAG พร้อม Memory\n\n**โครงสร้าง:**\n1. 📚 ส่วนเตรียมข้อมูล (Load Data): อัปโหลดเอกสาร → สร้าง Vector Store\n2. 🐕 ส่วนถามตอบ (Retriever): ถามคำถาม → AI ค้นหาคำตอบจากเอกสาร\n\n**คู่มือการใช้งาน:**\n1. กดปุ่ม Execute Workflow เพื่อรัน Load Data\n2. เปิด Chat แล้วถามคำถามเกี่ยวกับนโยบายบริษัท",
+        "height": 280,
+        "width": 440,
+        "color": 6
+      },
+      "id": "note-thai-1",
+      "name": "Note: คำอธิบายหลัก",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📚 ส่วนเตรียมข้อมูล (Load Data Flow)\n\n**ขั้นตอน:**\n1. Index Trigger → เริ่มต้น workflow\n2. Mock Policy Data → ข้อมูลนโยบายบริษัท\n3. Default Data Loader → แปลงเป็นเอกสาร\n4. Insert Data to Store → สร้าง Vector Store\n5. Embeddings OpenAI → แปลงเป็น Vector\n\n**หมายเหตุ:** Data Loader มี Text Splitting ในตัว (ถ้าตั้งค่า custom)",
+        "height": 652,
+        "width": 912,
+        "color": 7
+      },
+      "id": "note-thai-2",
+      "name": "Note: ส่วนเตรียมข้อมูล",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🐕 ส่วนถามตอบ (Retriever Flow)\n\n**ขั้นตอน:**\n1. Chat Trigger → รับข้อความจากผู้ใช้\n2. AI Agent → ประมวลผลคำถาม\n3. Simple Memory → จำบทสนทนาก่อนหน้า (5 ข้อความ)\n4. Query Data Tool → ค้นหาข้อมูลจาก Vector Store\n5. OpenAI Chat Model → สร้างคำตอบ\n\n**ความสามารถพิเศษ:**\n- จำบทสนทนา (Memory)\n- ค้นหาข้อมูลจากเอกสาร (RAG)",
+        "height": 672,
+        "width": 812,
+        "color": 5
+      },
+      "id": "note-thai-3",
+      "name": "Note: ส่วนถามตอบ",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 🔢 หลักการทำงานของ Embeddings\n\n**สิ่งสำคัญ:** Insert และ Retrieve ใช้ Embeddings node **ตัวเดียวกัน**\n\n**ทำไมต้องใช้ตัวเดียวกัน?**\n- รับประกันว่าใช้ model และ settings เหมือนกัน\n- ถ้าแยกกัน Vector จะไม่ตรงกัน → ค้นหาไม่เจอ\n\n**หมายเหตุ:** ถ้าต้องการแยก ต้องใช้ model/params เหมือนกันเป๊ะ",
+        "height": 264,
+        "width": 468,
+        "color": 4
+      },
+      "id": "note-thai-4",
+      "name": "Note: คำอธิบาย Embeddings",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1312,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 📋 นโยบายการเดินทางและเบิกจ่าย\n\n**บริษัท:** สมสมัยงาน AI จำกัด\n**เอกสาร:** HR-POL-2026-001\n**เวอร์ชัน:** 1.4\n\n**เนื้อหาครอบคลุม:**\n- ขั้นตอนการอนุมัติ\n- การเดินทางโดยเครื่องบิน\n- ค่าที่พัก\n- เบี้ยเลี้ยง\n- โซนประเทศ (A/B)\n- การใช้รถส่วนตัว\n- บัตรเครดิตบริษัท\n- เงินสำรองจ่าย\n- การประกันภัย\n- ความปลอดภัย",
+        "height": 392,
+        "width": 360,
+        "color": 3
+      },
+      "id": "note-thai-5",
+      "name": "Note: ข้อมูลนโยบาย",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        384,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 💬 ตัวอย่างคำถามที่ทดสอบได้\n\n1. \"เบี้ยเลี้ยงไปญี่ปุ่นเท่าไหร่?\"\n2. \"Manager พักโรงแรมกรุงเทพฯ วงเงินเท่าไหร่?\"\n3. \"ขั้นตอนขออนุมัติเดินทางต่างประเทศ?\"\n4. \"ใช้รถส่วนตัวไปประชุมที่ขอนแก่น เบิกค่าน้ำมันได้เท่าไหร่?\"\n5. \"Staff ขอบัตรเครดิตบริษัทได้ไหม?\"\n\n**ลองถามแบบต่อเนื่อง:**\n- \"แล้วเกาหลีล่ะ?\" (AI จะรู้ว่าหมายถึงเบี้ยเลี้ยง)",
+        "height": 340,
+        "width": 360,
+        "color": 2
+      },
+      "id": "note-thai-6",
+      "name": "Note: ตัวอย่างคำถาม",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        -128
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Query Data Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Query Data Tool",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Index Trigger": {
+      "main": [
+        [
+          {
+            "node": "Mock Policy Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Policy Data": {
+      "main": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "c8a2177a-1eea-4f75-8d6f-203f4dea0d37",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cb1b027a5238410dc7b357f3ae9b7ae44201f4d2fd2a646370dabfb7c8c2f056"
+  },
+  "id": "fM7qZb3zek3TGepk",
+  "tags": []
+}
