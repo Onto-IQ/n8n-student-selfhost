@@ -21,37 +21,37 @@
 
 *นี่คือหน้าจอที่จะโผล่มาถามว่า "คุณอนุญาตให้แอปนี้เข้าถึงข้อมูลไหม?"*
 
-Google ได้เปลี่ยน UI ใหม่ โปรดทำตามขั้นตอนนี้อย่างเคร่งครัด:
+1. ที่เมนูด้านซ้าย เลือก "APIs & Services" > "OAuth consent screen"
 
-1. ที่เมนูด้านซ้าย เลือก **"Google Auth Platform"** > **"Branding"**
+2. จะปรากฎ **"Google Auth Platform"** เลือก **"Branding"**
    - หรือไปที่ลิงก์นี้โดยตรง: https://console.cloud.google.com/auth/branding
    - ถ้ายังไม่เคยตั้งค่า จะเห็นปุ่ม **"Get Started"** ให้คลิกเลย
 
-2. ในหน้า **App Information** (ขั้นตอนแรก):
+3. ในหน้า **App Information** (ขั้นตอนแรก):
    - **App name**: ใส่ชื่อแอป เช่น `n8n Student App` (หรือชื่ออะไรก็ได้)
    - **User support email**: เลือก/ใส่อีเมลของคุณ
    - กด **Next** (ปุ่มอยู่ล่างขวา)
 
-3. ในหน้า **Audience** (ขั้นตอนที่ 2):
+4. ในหน้า **Audience** (ขั้นตอนที่ 2):
    - **User Type**: เลือก **"External"** (หรือ Internal ถ้าคุณใช้ Google Workspace ขององค์กร)
    - กด **Next**
 
-4. ในหน้า **Contact Information** (ขั้นตอนที่ 3):
+5. ในหน้า **Contact Information** (ขั้นตอนที่ 3):
    - **Email address**: ใส่อีเมลของคุณ (สำหรับรับการแจ้งเตือนจาก Google)
    - กด **Next**
 
-5. ในหน้า **Finish** (ขั้นตอนสุดท้าย):
+6. ในหน้า **Finish** (ขั้นตอนสุดท้าย):
    - ✅ ติ๊ก **"I agree to the Google API Services User Data Policy"**
    - กด **Continue**
    - กด **Create**
 
-6. **เพิ่ม Test Users** (สำคัญมาก! ถ้าเลือก External):
+7. **เพิ่ม Test Users** (สำคัญมาก! ถ้าเลือก External):
    - ไปที่ **"Google Auth Platform"** > **"Audience"** (หรือคลิกลิงก์ Audience)
    - เลื่อนลงมาที่ **"Test users"**
    - คลิก **"Add users"**
    - ใส่อีเมลของคุณ (อีเมลที่จะใช้ทดสอบ) แล้วกด **Save**
 
-7. **Publish App** (สำคัญ! จะได้ไม่ต้องกังวลเรื่อง Token หมดอายุใน 7 วัน):
+8. **Publish App** (สำคัญ! จะได้ไม่ต้องกังวลเรื่อง Token หมดอายุใน 7 วัน):
    - ไปที่ **"Google Auth Platform"** > **"Audience"**
    - ที่ส่วน **"Publishing status"** คลิกปุ่ม **"Publish App"** และกด **Confirm**
    - สถานะจะเปลี่ยนเป็น **"In production"**
