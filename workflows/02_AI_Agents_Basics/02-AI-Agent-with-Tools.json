@@ -77,11 +77,11 @@
     },
     {
       "id": "weather-tool-01",
-      "name": "BTC Price",
+      "name": "CryptoPrice",
       "parameters": {
-        "description": "Get the current Bitcoin price in USD. No parameters needed.",
+        "description": "Get cryptocurrency prices and trends. Provide coin IDs like: bitcoin, ethereum, cardano, solana. Returns current price in USD and 24h change percentage.",
         "method": "GET",
-        "url": "https://api.coindesk.com/v1/bpi/currentprice.json",
+        "url": "https://api.coingecko.com/api/v3/simple/price?ids={{ $fromAI('coins') || 'bitcoin' }}&vs_currencies=usd&include_24hr_change=true",
         "authentication": "none",
         "sendQuery": false,
         "sendBody": false
@@ -108,7 +108,7 @@
       "name": "Sticky 1 Chat",
       "parameters": {
         "color": 2,
-        "content": "💬 **วิธีทดสอบ**\n\n1. \"(3245 * 12) + 897 = ?\" → Calculator\n2. \"Who founded Apple?\" → Wikipedia\n3. \"What is Bitcoin price?\" → BTC Price",
+        "content": "💬 **วิธีทดสอบ**\n\n1. \"(3245 * 12) + 897 = ?\" → Calculator\n2. \"Who founded Apple?\" → Wikipedia\n3. \"Price of Bitcoin and Ethereum\" → CryptoPrice",
         "height": 180,
         "width": 440
       },
@@ -134,7 +134,7 @@
       "name": "Sticky 3 Custom",
       "parameters": {
         "color": 3,
-        "content": "⚙️ **Custom Tool**\nbtc_price uses CoinDesk API\nReturns current Bitcoin price in USD",
+        "content": "⚙️ **Custom Tool**\ncrypto_price uses CoinGecko API\nInput: coin IDs (bitcoin, ethereum, etc.)\nReturns: Price USD + 24h trend %",
         "height": 140,
         "width": 380
       },
@@ -147,7 +147,7 @@
       "name": "Sticky 4 System",
       "parameters": {
         "color": 5,
-        "content": "📚 **System Prompt**\nAI ถูกกำหนดให้ใช้ Tools เมื่อจำเป็น\n- Calculator: สำหรับคำนวณ\n- Wikipedia: สำหรับความรู้ทั่วไป\n- BTC Price: สำหรับราคา Bitcoin",
+        "content": "📚 **System Prompt**\nAI ถูกกำหนดให้ใช้ Tools เมื่อจำเป็น\n- Calculator: สำหรับคำนวณ\n- Wikipedia: สำหรับความรู้ทั่วไป\n- CryptoPrice: สำหรับราคา Crypto และแนวโน้ม",
         "height": 140,
         "width": 320
       },
@@ -212,7 +212,7 @@
         ]
       ]
     },
-    "BTC Price": {
+    "CryptoPrice": {
       "ai_tool": [
         [
           {
