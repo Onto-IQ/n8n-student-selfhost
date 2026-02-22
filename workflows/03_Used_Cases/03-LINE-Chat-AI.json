@@ -1,0 +1,316 @@
+{
+  "name": "03 - LINE Chat AI (n8n 2.8.3)",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=นำข้อความข้างล่าง\n*** {{ $json.message.text }} ***\n\nตอบในโทนสุภาพน่าเชื่อถือ",
+        "options": {
+          "systemMessage": "You are a helpful assistant for chat.\n\nPlease Reply in Thai Language."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1184,
+        48
+      ],
+      "id": "330d037e-d508-4bbc-b58c-d9997f53341f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-preview-09-2025",
+        "options": {
+          "maxOutputTokens": 2048,
+          "temperature": 0.6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        880,
+        304
+      ],
+      "id": "b6bdc364-b879-4371-9366-17e92d1e3ae9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JLGU5vGoDgMyevUA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line2",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        704,
+        -128
+      ],
+      "id": "76655b28-01e4-44d7-9d57-39e05f3bd3ce",
+      "name": "Webhook",
+      "webhookId": "41b1accd-c3f0-4474-af9b-02469396ae32",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c07f983a-9547-4295-9437-62055d80edff",
+              "name": "message",
+              "value": "={{ $json.body.events[0].message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "c735a47d-f5b6-4020-9c72-144d3cc82ee4",
+              "name": "replyToken",
+              "value": "={{ $json.body.events[0].replyToken }}",
+              "type": "string"
+            },
+            {
+              "id": "338387c2-4ead-4bc6-b58c-b7bbc9ff6bb0",
+              "name": "userid",
+              "value": "={{ $json.body.events[0].source.userId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        -128
+      ],
+      "id": "abf76242-edeb-4801-87f2-366f96e1c34e",
+      "name": "Edit Fields",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c83f4391-4dac-4888-b169-968db748d93e",
+      "name": "Respond 200",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1952,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Line Messaging Trigger').item.json.source.userId }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        1168,
+        320
+      ],
+      "id": "203b47ee-235e-4963-a571-1d4b168dfc99",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Output: items[0].json = { replyToken, messages: Array<{type:\"text\", text:string}> }\n\n// ---------- utilities ----------\nfunction sanitizeForJsonAndLine(raw) {\n  let s = (raw ?? \"\").toString();\n\n  // Remove BOM\n  s = s.replace(/\\uFEFF/g, \"\");\n\n  // Normalize Unicode\n  s = s.normalize(\"NFC\");\n\n  // Drop control chars (เว้น \\n \\r \\t)\n  s = s.replace(/[\\u0000-\\u0008\\u000B-\\u000C\\u000E-\\u001F\\u007F]/g, \"\");\n\n  // Remove fenced code ```...``` → คง inner\n  s = s.replace(/```[\\s\\S]*?```/g, (m) => {\n    const inner = m.replace(/```/g, \"\").trim();\n    return inner ? `\\n${inner}\\n` : \"\";\n  });\n\n  // Remove inline `code`\n  s = s.replace(/`([^`]+)`/g, \"$1\");\n\n  // Strip HTML\n  s = s.replace(/<\\/?[^>]+>/g, \"\");\n\n  // Normalize newline & blank lines\n  s = s.replace(/\\r\\n/g, \"\\n\").replace(/\\n{3,}/g, \"\\n\\n\").trim();\n\n  // Bullet normalize\n  s = s.replace(/^\\s*-\\s+/gm, \"• \");\n\n  // Escape U+2028/U+2029 (กัน parser บางตัว)\n  s = s.replace(/\\u2028/g, '\\\\u2028').replace(/\\u2029/g, '\\\\u2029');\n\n  // Fix unpaired surrogates → �\n  s = s.replace(\n    /([\\uD800-\\uDBFF])(?![\\uDC00-\\uDFFF])|(?<![\\uD800-\\uDBFF])([\\uDC00-\\uDFFF])/g,\n    \"�\"\n  );\n\n  return s;\n}\n\nfunction splitGraphemes(str) {\n  if (typeof Intl !== \"undefined\" && Intl.Segmenter) {\n    const seg = new Intl.Segmenter(\"th\", { granularity: \"grapheme\" });\n    return Array.from(seg.segment(str), s => s.segment);\n  }\n  return Array.from(str); // fallback (UTF-16 code units)\n}\n\n// เพดานต่อข้อความ: ใช้ 4,800 (< 5,000 ของ LINE) เพื่อเผื่อ margin\nconst MAX_PER_MESSAGE = 4800;\n\nfunction chunkByGrapheme(text, limit = MAX_PER_MESSAGE) {\n  const g = splitGraphemes(text);\n  const chunks = [];\n  let buf = [];\n  let len = 0;\n  for (const ch of g) {\n    const chLen = ch.length; // UTF-16 code units\n    if (len + chLen > limit) {\n      if (buf.length) chunks.push(buf.join(\"\"));\n      buf = [ch];\n      len = chLen;\n    } else {\n      buf.push(ch);\n      len += chLen;\n    }\n  }\n  if (buf.length) chunks.push(buf.join(\"\"));\n  return chunks;\n}\n\nfunction packIntoAtMostFive(chunks, perLimit = MAX_PER_MESSAGE) {\n  if (chunks.length === 0) return [];\n  if (chunks.length <= 5) return chunks;\n\n  const packed = [];\n  let cur = \"\";\n  for (const piece of chunks) {\n    if (piece.length > perLimit) {\n      const re = chunkByGrapheme(piece, perLimit);\n      for (const r of re) {\n        if (!cur) cur = r;\n        else if (cur.length + 1 + r.length <= perLimit) cur += \"\\n\" + r;\n        else { packed.push(cur); cur = r; }\n      }\n      continue;\n    }\n    if (!cur) cur = piece;\n    else if (cur.length + 1 + piece.length <= perLimit) cur += \"\\n\" + piece;\n    else { packed.push(cur); cur = piece; }\n  }\n  if (cur) packed.push(cur);\n\n  // ยืดเพดานแบบ adaptive (แต่ไม่เกิน 5000) หากยัง >5\n  while (packed.length > 5) {\n    const totalLen = packed.reduce((s, x) => s + x.length, 0);\n    const adaptive = Math.min(5000, Math.ceil(totalLen / 5) + 100);\n    if (adaptive <= perLimit) break;\n\n    const re = [];\n    let cur2 = \"\";\n    for (const p of packed) {\n      for (const block of p.split(\"\\n\")) {\n        if (!block) continue;\n        if (!cur2) cur2 = block;\n        else if (cur2.length + 1 + block.length <= adaptive) cur2 += \"\\n\" + block;\n        else { re.push(cur2); cur2 = block; }\n      }\n    }\n    if (cur2) re.push(cur2);\n    if (re.length >= packed.length) break;\n    packed.splice(0, packed.length, ...re);\n    perLimit = adaptive;\n  }\n\n  if (packed.length > 5) {\n    const sliced = packed.slice(0, 4);\n    const trimmedCount = packed.length - 4;\n    const notice = `…(ตัดข้อความออก ${trimmedCount} ชิ้นเพื่อให้สอดคล้องกับข้อจำกัดการส่งของ LINE)`;\n    const rest = packed.slice(4).join(\"\\n\\n\");\n    const last = (notice + \"\\n\\n\" + rest).slice(0, 5000);\n    sliced.push(last);\n    return sliced;\n  }\n  return packed;\n}\n\n// ---------- คำนวณขนาด UTF-8 โดยไม่ใช้ TextEncoder ----------\nfunction utf8ByteLength(str) {\n  // เดินตาม \"code point\" ด้วย for...of (ES6) ปลอดภัยต่อ surrogate pair\n  let bytes = 0;\n  for (const ch of str) {\n    const cp = ch.codePointAt(0);\n    if (cp <= 0x7F) bytes += 1;\n    else if (cp <= 0x7FF) bytes += 2;\n    else if (cp <= 0xFFFF) bytes += 3;\n    else bytes += 4;\n  }\n  return bytes;\n}\n\n// ---------- ดึงข้อมูลจาก node อื่น (Code v2) ----------\nfunction getItemFrom(nodeName) {\n  const arr = $items(nodeName, 0, 0);\n  return (arr && arr[0]) ? arr[0].json : {};\n}\n\nconst jEdit = getItemFrom(\"Edit Fields\"); // { message, replyToken, userid }\nconst jAI   = getItemFrom(\"AI Agent\");    // อาจมี { output/text/result/content }\n\n// 1) เลือกแหล่งข้อความ (AI ก่อน, ไม่งั้นใช้ข้อความผู้ใช้)\nconst sourceText = (\n  jAI.output ?? jAI.text ?? jAI.result ?? jAI.content ?? jEdit.message ?? \"\"\n).toString();\n\n// 2) sanitize → JSON-safe\nconst cleaned = sanitizeForJsonAndLine(sourceText);\n\n// 3) chunk + pack ≤ 5\nconst rough = chunkByGrapheme(cleaned, MAX_PER_MESSAGE);\nconst parts = packIntoAtMostFive(rough, MAX_PER_MESSAGE);\n\n// 4) fallback: ห้ามว่าง\nconst safeParts = (Array.isArray(parts) && parts.length > 0)\n  ? parts\n  : [\"(ไม่มีข้อความจากระบบ จึงตอบกลับค่าเริ่มต้น)\"];\n\n// 5) guard ขนาด request โดยประมาณ (เผื่อ limit 2MB)\nconst preview = safeParts.join(\"\\n\\n\");\nif (utf8ByteLength(preview) > 1_800_000) {\n  const short = preview.slice(0, 300_000) + \"\\n\\n…(ตัดเนื้อหาเนื่องจากขนาดเกินกำหนด)\";\n  const shortParts = packIntoAtMostFive(chunkByGrapheme(short, MAX_PER_MESSAGE), MAX_PER_MESSAGE);\n  const messages = shortParts.map(p => ({ type: \"text\", text: p }));\n  return [{ json: { replyToken: jEdit.replyToken, messages } }];\n}\n\n// 6) messages array + ตรวจ serialize ล่วงหน้า\nconst messages = safeParts.map(p => ({ type: \"text\", text: p }));\ntry {\n  JSON.stringify({ replyToken: jEdit.replyToken, messages });\n} catch {\n  const fallback = \"(ไม่สามารถแปลงเป็น JSON ได้ จึงส่งข้อความย่อแทน)\";\n  return [{ json: { replyToken: jEdit.replyToken, messages: [{ type: \"text\", text: fallback }] } }];\n}\n\nreturn [{ json: { replyToken: jEdit.replyToken, messages } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        -128
+      ],
+      "id": "c3d7ee07-056f-48af-a087-97f205745192",
+      "name": "Build LINE Payload",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "replyToken": "={{ $('Line Messaging Trigger').item.json.replyToken }}",
+        "messages": {
+          "values": [
+            {
+              "text": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        48
+      ],
+      "id": "b15acfad-ee5d-4396-8df6-d6183b6ad7fc",
+      "name": "Line Messaging",
+      "credentials": {
+        "lineMessagingApi": {
+          "id": "wamr2ZDiQfnZSmYY",
+          "name": "Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "events": [
+          "message"
+        ]
+      },
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessagingTrigger",
+      "typeVersion": 1,
+      "position": [
+        704,
+        48
+      ],
+      "id": "f2bcfa04-ccb9-49e5-96b1-046dc17fe8bb",
+      "name": "Line Messaging Trigger",
+      "webhookId": "7784b1b1-1156-40fe-a827-629f9763b767",
+      "credentials": {
+        "lineMessagingApi": {
+          "id": "wamr2ZDiQfnZSmYY",
+          "name": "Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"replyToken\":\"{{ $('Edit Fields').item.json.replyToken }}\",\n    \"messages\":{{ $json.messages.toJsonString() }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1744,
+        -128
+      ],
+      "id": "57f35037-0803-4b21-a272-260503907087",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "GmYGNVPgNgrDwmyo",
+          "name": "Header Auth account"
+        },
+        "httpBearerAuth": {
+          "id": "MTvAW2tJ7k75sYwX",
+          "name": "LINE Bot Bearer Auth account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Line Messaging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build LINE Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Line Messaging": {
+      "main": [
+        [
+          {
+            "node": "Respond 200",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Line Messaging Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ce11b0a5-520c-428a-8e9d-144379ef1d6c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f60ac0af1fa0d5e1f55d6da8eec31f14dc8958f7bc06a0896aa49a99ab27778f"
+  },
+  "id": "aKEBnIKz0QcKmfvV",
+  "tags": []
+}
