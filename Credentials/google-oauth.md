@@ -17,21 +17,44 @@
 
 ---
 
-## 🛡️ ขั้นตอนที่ 2: ตั้งค่า OAuth Consent Screen
+## 🛡️ ขั้นตอนที่ 2: ตั้งค่า OAuth Consent Screen (ผ่าน Google Auth Platform)
 
 *นี่คือหน้าจอที่จะโผล่มาถามว่า "คุณอนุญาตให้แอปนี้เข้าถึงข้อมูลไหม?"*
 
-1. ที่เมนูด้านซ้าย เลือก **"APIs & Services"** > **"OAuth consent screen"**
-2. ในส่วน User Type ให้เลือก **"External"** (หรือ Internal ถ้าคุณใช้ Google Workspace ขององค์กร) แล้วกด **Create**
-3. กรอกข้อมูล **App information**:
-   - **App name**: `n8n Student App` (หรือชื่ออะไรก็ได้)
-   - **User support email**: ใส่อีเมลของคุณ
-4. เลื่อนลงมาล่างสุดที่ **Developer contact information**:
-   - ใส่อีเมลของคุณอีกครั้ง
-5. กด **Save and Continue** 
-6. หน้า Scopes ข้ามไปก่อนได้ กด **Save and Continue**
-7. หน้า Test users สำคัญมาก! คลิก **"ADD USERS"** และใส่อีเมลของคุณ (อีเมลที่จะใช้ทดสอบ) กด **Add** และ **Save and Continue**
-8. (สำคัญ) ในหน้าสรุป กลับไปที่ Dashboard ของ OAuth consent screen คลิกปุ่ม **"PUBLISH APP"** และกดยืนยัน (Confirm) เพื่อเปลี่ยนสถานะเป็น In production (จะได้ไม่ต้องกังวลเรื่อง Token หมดอายุใน 7 วัน)
+Google ได้เปลี่ยน UI ใหม่ โปรดทำตามขั้นตอนนี้อย่างเคร่งครัด:
+
+1. ที่เมนูด้านซ้าย เลือก **"Google Auth Platform"** > **"Branding"**
+   - หรือไปที่ลิงก์นี้โดยตรง: https://console.cloud.google.com/auth/branding
+   - ถ้ายังไม่เคยตั้งค่า จะเห็นปุ่ม **"Get Started"** ให้คลิกเลย
+
+2. ในหน้า **App Information** (ขั้นตอนแรก):
+   - **App name**: ใส่ชื่อแอป เช่น `n8n Student App` (หรือชื่ออะไรก็ได้)
+   - **User support email**: เลือก/ใส่อีเมลของคุณ
+   - กด **Next** (ปุ่มอยู่ล่างขวา)
+
+3. ในหน้า **Audience** (ขั้นตอนที่ 2):
+   - **User Type**: เลือก **"External"** (หรือ Internal ถ้าคุณใช้ Google Workspace ขององค์กร)
+   - กด **Next**
+
+4. ในหน้า **Contact Information** (ขั้นตอนที่ 3):
+   - **Email address**: ใส่อีเมลของคุณ (สำหรับรับการแจ้งเตือนจาก Google)
+   - กด **Next**
+
+5. ในหน้า **Finish** (ขั้นตอนสุดท้าย):
+   - ✅ ติ๊ก **"I agree to the Google API Services User Data Policy"**
+   - กด **Continue**
+   - กด **Create**
+
+6. **เพิ่ม Test Users** (สำคัญมาก! ถ้าเลือก External):
+   - ไปที่ **"Google Auth Platform"** > **"Audience"** (หรือคลิกลิงก์ Audience)
+   - เลื่อนลงมาที่ **"Test users"**
+   - คลิก **"Add users"**
+   - ใส่อีเมลของคุณ (อีเมลที่จะใช้ทดสอบ) แล้วกด **Save**
+
+7. **Publish App** (สำคัญ! จะได้ไม่ต้องกังวลเรื่อง Token หมดอายุใน 7 วัน):
+   - ไปที่ **"Google Auth Platform"** > **"Audience"**
+   - ที่ส่วน **"Publishing status"** คลิกปุ่ม **"Publish App"** และกด **Confirm**
+   - สถานะจะเปลี่ยนเป็น **"In production"**
 
 ---
 
