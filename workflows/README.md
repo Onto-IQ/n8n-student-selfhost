@@ -20,6 +20,9 @@ workflows/
 │   ├── 01-Simple-AI-Agent.json
 │   └── 02-AI-Agent-with-Tools.json
 │
+├── 03_Used_Cases/                # Use Cases จริง
+│   └── 03 - LINE Chat Gemini Model.json
+│
 └── README.md                     # ไฟล์นี้
 ```
 
