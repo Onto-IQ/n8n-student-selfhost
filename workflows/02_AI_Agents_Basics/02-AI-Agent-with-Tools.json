@@ -6,7 +6,7 @@
       "name": "When chat message received",
       "parameters": {
         "options": {
-          "responseMode": "responseNode"
+          "responseMode": "responseNodes"
         }
       },
       "position": [380, 240],
@@ -61,37 +61,31 @@
     },
     {
       "id": "calc-tool-01",
-      "name": "Calculator Tool",
-      "parameters": {
-        "name": "calculator"
-      },
+      "name": "Calculator",
+      "parameters": {},
       "position": [800, 480],
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1
     },
     {
       "id": "wiki-tool-01",
-      "name": "Wikipedia Tool",
-      "parameters": {
-        "description": "Search Wikipedia for general knowledge, facts, and information about people, places, history, science, and any topic. Use this when the user asks about factual information, biographies, definitions, or historical events.",
-        "language": "en",
-        "name": "wikipedia"
-      },
+      "name": "Wikipedia",
+      "parameters": {},
       "position": [960, 480],
       "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
       "typeVersion": 1
     },
     {
       "id": "weather-tool-01",
-      "name": "Weather API Tool",
+      "name": "WeatherAPI",
       "parameters": {
-        "description": "Get current weather information for any city in the world. Provide the city name in English. Returns temperature, conditions, humidity, and wind information.",
-        "jsonQuery": "={{ JSON.stringify([{ name: 'city', value: $fromAI('city') }]) }}",
-        "method": "GET",
-        "name": "weather_api",
+        "url": "https://wttr.in/={{$fromAI('city')}}?format=j1",
         "sendQuery": true,
-        "specifyBy": "json",
-        "url": "https://wttr.in/={{$fromAI('city')}}?format=j1"
+        "parametersQuery": {
+          "values": [
+            {}
+          ]
+        }
       },
       "position": [1120, 480],
       "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
@@ -125,7 +119,7 @@
       "name": "Sticky 1 Chat",
       "parameters": {
         "color": 2,
-        "content": "💬 **วิธีทดสอบ**\n\n1. \"(3245 * 12) + 897 = ?\" → Calculator\n2. \"Who founded Apple?\" → Wikipedia\n3. \"Weather in Bangkok?\" → Weather API",
+        "content": "💬 **วิธีทดสอบ**\n\n1. \"(3245 * 12) + 897 = ?\" → Calculator\n2. \"Who founded Apple?\" → Wikipedia\n3. \"Weather in Bangkok?\" → WeatherAPI",
         "height": 180,
         "width": 440
       },
@@ -164,7 +158,7 @@
       "name": "Sticky 4 System",
       "parameters": {
         "color": 5,
-        "content": "📚 **System Prompt**\nAI ถูกกำหนดให้ใช้ Tools เมื่อจำเป็น\n- Calculator: สำหรับคำนวณ\n- Wikipedia: สำหรับความรู้ทั่วไป\n- Weather API: สำหรับสภาพอากาศ",
+        "content": "📚 **System Prompt**\nAI ถูกกำหนดให้ใช้ Tools เมื่อจำเป็น\n- Calculator: สำหรับคำนวณ\n- Wikipedia: สำหรับความรู้ทั่วไป\n- WeatherAPI: สำหรับสภาพอากาศ",
         "height": 140,
         "width": 320
       },
@@ -218,7 +212,7 @@
         ]
       ]
     },
-    "Calculator Tool": {
+    "Calculator": {
       "ai_tool": [
         [
           {
@@ -229,7 +223,7 @@
         ]
       ]
     },
-    "Wikipedia Tool": {
+    "Wikipedia": {
       "ai_tool": [
         [
           {
@@ -240,7 +234,7 @@
         ]
       ]
     },
-    "Weather API Tool": {
+    "WeatherAPI": {
       "ai_tool": [
         [
           {
