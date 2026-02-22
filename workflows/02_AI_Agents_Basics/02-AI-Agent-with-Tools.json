@@ -2,19 +2,22 @@
   "name": "02 - AI Agent with Tools (Function Calling)",
   "nodes": [
     {
+      "id": "chat-trigger-01",
+      "name": "When chat message received",
       "parameters": {
         "options": {
           "responseMode": "responseNode"
         }
       },
+      "position": [380, 240],
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
-      "position": [380, 240],
-      "id": "chat-trigger-01",
-      "name": "When chat message received",
-      "webhookId": "chat-trigger-webhook-01"
+      "waitBetweenTries": 1,
+      "webhookId": "ai-tools-chat-trigger"
     },
     {
+      "id": "ai-agent-01",
+      "name": "AI Agent",
       "parameters": {
         "promptType": "define",
         "text": "={{ $json.chatInput }}",
@@ -22,146 +25,152 @@
           "systemMessage": "=You are a helpful AI assistant with access to various tools.\n\n## Available Tools:\n1. **Calculator** - Use for any mathematical calculations\n2. **Wikipedia** - Use for general knowledge and facts\n3. **Weather API** - Use to get current weather for any city\n\nWhen a user asks something that requires using a tool, you MUST call the appropriate tool first before responding."
         }
       },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
       "position": [600, 240],
-      "id": "ai-agent-01",
-      "name": "AI Agent"
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8
     },
     {
+      "id": "openai-model-01",
+      "name": "OpenAI Chat Model",
       "parameters": {
         "model": "gpt-4o-mini",
-        "options": { "temperature": 0.7 }
+        "options": {
+          "temperature": 0.7
+        }
       },
+      "position": [460, 480],
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
-      "position": [460, 480],
-      "id": "openai-model-01",
-      "name": "OpenAI Chat Model"
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI account"
+        }
+      }
     },
     {
-      "parameters": { 
-        "sessionKey": "={{ $json.session_id || 'demo-session-tools' }}",
-        "contextWindowLength": 5
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.2,
-      "position": [620, 480],
       "id": "memory-01",
-      "name": "Window Buffer Memory"
+      "name": "Window Buffer Memory",
+      "parameters": {
+        "contextWindowLength": 5,
+        "sessionKey": "={{ $json.session_id || 'demo-session-tools' }}"
+      },
+      "position": [620, 480],
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2
     },
     {
+      "id": "calc-tool-01",
+      "name": "Calculator Tool",
       "parameters": {
         "name": "calculator"
       },
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
       "position": [800, 480],
-      "id": "calc-tool-01",
-      "name": "Calculator Tool"
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1
     },
     {
-      "parameters": { 
-        "name": "wikipedia",
-        "language": "en" 
-      },
-      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
-      "typeVersion": 1,
-      "position": [960, 480],
       "id": "wiki-tool-01",
-      "name": "Wikipedia Tool"
+      "name": "Wikipedia Tool",
+      "parameters": {
+        "description": "Search Wikipedia for general knowledge, facts, and information about people, places, history, science, and any topic. Use this when the user asks about factual information, biographies, definitions, or historical events.",
+        "language": "en",
+        "name": "wikipedia"
+      },
+      "position": [960, 480],
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1
     },
     {
+      "id": "weather-tool-01",
+      "name": "Weather API Tool",
       "parameters": {
-        "name": "weather_api",
-        "description": "Get current weather for a city. Provide city name in English.",
+        "description": "Get current weather information for any city in the world. Provide the city name in English. Returns temperature, conditions, humidity, and wind information.",
+        "jsonQuery": "={{ JSON.stringify([{ name: 'city', value: $fromAI('city') }]) }}",
         "method": "GET",
-        "url": "https://wttr.in/={{$fromAI('city')}}?format=j1",
+        "name": "weather_api",
         "sendQuery": true,
         "specifyBy": "json",
-        "jsonQuery": "={{ JSON.stringify([{ name: 'city', value: $fromAI('city') }]) }}"
+        "url": "https://wttr.in/={{$fromAI('city')}}?format=j1"
       },
-      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
-      "typeVersion": 1.1,
       "position": [1120, 480],
-      "id": "weather-tool-01",
-      "name": "Weather API Tool"
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1
     },
     {
-      "parameters": {
-        "content": "🛠️ **02 - การให้เครื่องมือกับ AI Agent (Tools)**\n\nAI ไม่ได้มีแค่ความรู้เดิมๆ แต่สามารถใช้ Tools ค้นหาข้อมูลหรือทำสิ่งที่ทำไม่ได้ เช่น:\n• คำนวณเลขที่ซับซ้อน (Calculator Tool)\n• ค้นหาข้อมูลใหม่ๆ จาก Wikipedia\n• ดึงข้อมูลจาก API ภายนอก (HTTP Request Tool)\n\n� นี่คือจุดที่ทำให้ AI Agent แตกต่างจาก Chatbot ธรรมดา!",
-        "width": 480,
-        "height": 160,
-        "color": 6
-      },
-      "name": "Sticky 0 Intro",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [260, 40],
-      "id": "sticky-01"
-    },
-    {
-      "parameters": {
-        "content": "�💬 **วิธีทดสอบ**\n\n1. \"(3245 * 12) + 897 = ?\" → Calculator\n2. \"Who founded Apple?\" → Wikipedia\n3. \"Weather in Bangkok?\" → Weather API",
-        "width": 440,
-        "height": 180,
-        "color": 2
-      },
-      "name": "Sticky 1 Chat",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [800, 40],
-      "id": "sticky-02"
-    },
-    {
-      "parameters": {
-        "content": "🧰 **Native Tools**\n• calculator - Math calculations\n• wikipedia - General knowledge",
-        "width": 320,
-        "height": 140,
-        "color": 4
-      },
-      "name": "Sticky 2 Native",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [780, 660],
-      "id": "sticky-03"
-    },
-    {
-      "parameters": {
-        "content": "⚙️ **Custom Tool**\nweather_api uses wttr.in API\nVariable: {{$fromAI('city')}}",
-        "width": 380,
-        "height": 140,
-        "color": 3
-      },
-      "name": "Sticky 3 Custom",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [1120, 660],
-      "id": "sticky-04"
-    },
-    {
-      "parameters": {
-        "content": "📚 **System Prompt**\nAI ถูกกำหนดให้ใช้ Tools เมื่อจำเป็น\n- Calculator: สำหรับคำนวณ\n- Wikipedia: สำหรับความรู้ทั่วไป\n- Weather API: สำหรับสภาพอากาศ",
-        "width": 320,
-        "height": 140,
-        "color": 5
-      },
-      "name": "Sticky 4 System",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [260, 400],
-      "id": "sticky-05"
-    },
-    {
+      "id": "chat-response-01",
+      "name": "Respond to Chat",
       "parameters": {
         "message": "={{ $json.output }}"
       },
-      "type": "@n8n/n8n-nodes-langchain.chat",
-      "typeVersion": 1,
       "position": [820, 240],
-      "id": "chat-response-01",
-      "name": "Respond to Chat",
-      "webhookId": "chat-response-webhook-01"
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky-01",
+      "name": "Sticky 0 Intro",
+      "parameters": {
+        "color": 6,
+        "content": "🛠️ **02 - การให้เครื่องมือกับ AI Agent (Tools)**\n\nAI ไม่ได้มีแค่ความรู้เดิมๆ แต่สามารถใช้ Tools ค้นหาข้อมูลหรือทำสิ่งที่ทำไม่ได้ เช่น:\n• คำนวณเลขที่ซับซ้อน (Calculator Tool)\n• ค้นหาข้อมูลใหม่ๆ จาก Wikipedia\n• ดึงข้อมูลจาก API ภายนอก (HTTP Request Tool)\n\n💡 นี่คือจุดที่ทำให้ AI Agent แตกต่างจาก Chatbot ธรรมดา!",
+        "height": 160,
+        "width": 480
+      },
+      "position": [260, 40],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky-02",
+      "name": "Sticky 1 Chat",
+      "parameters": {
+        "color": 2,
+        "content": "💬 **วิธีทดสอบ**\n\n1. \"(3245 * 12) + 897 = ?\" → Calculator\n2. \"Who founded Apple?\" → Wikipedia\n3. \"Weather in Bangkok?\" → Weather API",
+        "height": 180,
+        "width": 440
+      },
+      "position": [800, 40],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky-03",
+      "name": "Sticky 2 Native",
+      "parameters": {
+        "color": 4,
+        "content": "🧰 **Native Tools**\n• calculator - Math calculations\n• wikipedia - General knowledge",
+        "height": 140,
+        "width": 320
+      },
+      "position": [780, 660],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky-04",
+      "name": "Sticky 3 Custom",
+      "parameters": {
+        "color": 3,
+        "content": "⚙️ **Custom Tool**\nweather_api uses wttr.in API\nVariable: {{$fromAI('city')}}",
+        "height": 140,
+        "width": 380
+      },
+      "position": [1120, 660],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky-05",
+      "name": "Sticky 4 System",
+      "parameters": {
+        "color": 5,
+        "content": "📚 **System Prompt**\nAI ถูกกำหนดให้ใช้ Tools เมื่อจำเป็น\n- Calculator: สำหรับคำนวณ\n- Wikipedia: สำหรับความรู้ทั่วไป\n- Weather API: สำหรับสภาพอากาศ",
+        "height": 140,
+        "width": 320
+      },
+      "position": [260, 400],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
     }
   ],
   "connections": {
@@ -169,9 +178,9 @@
       "main": [
         [
           {
+            "index": 0,
             "node": "AI Agent",
-            "type": "main",
-            "index": 0
+            "type": "main"
           }
         ]
       ]
@@ -180,9 +189,9 @@
       "main": [
         [
           {
+            "index": 0,
             "node": "Respond to Chat",
-            "type": "main",
-            "index": 0
+            "type": "main"
           }
         ]
       ]
@@ -191,9 +200,9 @@
       "ai_languageModel": [
         [
           {
+            "index": 0,
             "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
+            "type": "ai_languageModel"
           }
         ]
       ]
@@ -202,9 +211,9 @@
       "ai_memory": [
         [
           {
+            "index": 0,
             "node": "AI Agent",
-            "type": "ai_memory",
-            "index": 0
+            "type": "ai_memory"
           }
         ]
       ]
@@ -213,9 +222,9 @@
       "ai_tool": [
         [
           {
+            "index": 0,
             "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
+            "type": "ai_tool"
           }
         ]
       ]
@@ -224,9 +233,9 @@
       "ai_tool": [
         [
           {
+            "index": 0,
             "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
+            "type": "ai_tool"
           }
         ]
       ]
@@ -235,9 +244,9 @@
       "ai_tool": [
         [
           {
+            "index": 0,
             "node": "AI Agent",
-            "type": "ai_tool",
-            "index": 0
+            "type": "ai_tool"
           }
         ]
       ]
@@ -248,10 +257,5 @@
     "saveManualExecutions": true,
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "staticData": null,
-  "tags": [],
-  "pinData": {},
-  "versionId": null,
-  "id": null,
-  "active": false
+  "tags": []
 }
