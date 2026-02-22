@@ -99,7 +99,7 @@
       },
       "position": [820, 240],
       "type": "@n8n/n8n-nodes-langchain.chat",
-      "typeVersion": 1
+      "typeVersion": 1.2
     },
     {
       "id": "sticky-01",
