@@ -1,0 +1,118 @@
+{
+  "name": "MCP Client Tutorial",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cb0bfb26-54a4-405e-bfb2-4b33b24354d8",
+      "name": "When chat message received",
+      "webhookId": "78b42548-92ef-45e3-b136-c54046d654ef"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant\n\nหากต้องต้องระบุเวลาในเครื่องมือต่างๆ ให้ใช้ time zone : asia/bangkok"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "3bfa415c-a9b6-43af-ab58-1a0152ff130f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        224
+      ],
+      "id": "acb40ea7-8081-418b-8a57-f46527ed2d71",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "g7Au9TO8WMZyNAKZ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://n8n.datafabric.app/mcp/mcp1",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        224
+      ],
+      "id": "cef830cf-4f56-4458-a387-29467aff1dab",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2712a294-be8f-424a-838f-b0ccb04a63fa",
+  "meta": {
+    "instanceId": "f60ac0af1fa0d5e1f55d6da8eec31f14dc8958f7bc06a0896aa49a99ab27778f"
+  },
+  "id": "LlqPB9zv9tRWvXci",
+  "tags": []
+}

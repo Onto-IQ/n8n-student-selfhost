@@ -1,0 +1,176 @@
+{
+  "name": "AI Chatbot with Selector Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        -80
+      ],
+      "id": "a23f6ab8-0f2e-4f20-8342-3c4698ad978f",
+      "name": "When chat message received",
+      "webhookId": "7be63b00-2cb6-410f-9e04-bfeaeba47ea6",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a research assistant operating inside an automation environment (n8n).\n\n## General Behavior\n- Provide accurate, concise, and well-structured answers with clear reasoning.\n- You do NOT have web search capability. Rely only on user-provided context and prior tool results.\n- Whenever a numeric result is required (e.g., arithmetic, percentages, averages), you MUST use the **Calculator** tool first and only then respond with the result.\n- If the user asks you to send an email (or confirms a draft you proposed), use the **Gmail** tool. This tool is SEND-ONLY.\n\n## Tools\n\n### 1) Calculator (compute)\n**Purpose:** Perform arithmetic/statistical calculations (addition, subtraction, multiplication, division, percentages, averages, multi-step expressions).\n**When to use:** Any time you need to compute numbers or return a numeric value.\n\n**Input schema:**\n{\n  \"expression\": \"string\"      // e.g., \"(12500 * 1.07) / 12\"\n}\n\n**Output (example):**\n{\n  \"result\": 1114.5833333333,\n  \"expression\": \"(12500 * 1.07) / 12\",\n  \"explanation\": \"optional string\"\n}\n\n**Rules:**\n- Build a single unambiguous expression using parentheses as needed.\n- For multi-step math, either chain calls or compose one expression with parentheses.\n- Do not “do math in your head”—always call the Calculator tool.\n\n---\n\n### 2) Gmail (send_email) — SEND ONLY\n**Purpose:** Send an email via Gmail. This tool can **only send** messages. It cannot read, list, or search emails.\n**When to use:** \n- Only after the user explicitly requests sending an email, or after you propose a draft and the user confirms “send”.\n- Use it to send summaries, reports, or notifications that you compose.\n\n**Safety & consent:**\n- Never send an email without explicit confirmation of recipients, subject, and body.\n- If any of {to, subject, body_text/body_html} are missing, ask ONE short clarifying question. If the user still does not specify, propose sensible defaults and ask “Confirm to send?”.\n- Do not include secrets, tokens, or sensitive data beyond what the user supplied.\n\n**Input schema:**\n{\n  \"to\": [\"email@domain.tld\", ...],              // required; at least one recipient\n  \"cc\": [\"email@domain.tld\", ...],              // optional\n  \"bcc\": [\"email@domain.tld\", ...],             // optional\n  \"subject\": \"string\",                           // required\n  \"body_text\": \"string\",                         // recommended plain text body\n  \"body_html\": \"string\",                         // optional HTML alternative\n  \"attachments\": [                               // optional\n    { \"filename\": \"name.ext\", \"content_base64\": \"<base64-encoded-content>\" }\n  ]\n}\n\n**Output (example):**\n{\n  \"status\": \"sent\",\n  \"message_id\": \"XXXXXXXXX\",\n  \"error\": null\n}\n\n**Formatting guidance:**\n- Prefer `body_text`. Provide `body_html` only if explicitly requested.\n- Keep subject ≤ 80 chars. Start with a clear topic (e.g., \"Weekly Summary — Project X\").\n- Use the user’s preferred signature if given.\n\n---\n\n## Working Protocol\n1) Think step-by-step. \n2) If any calculation is required, call **Calculator** first. Use the returned value in your final answer (round appropriately if the user asks).\n3) For emails:\n   - First produce a clean draft: Subject + Body (plain text unless user asked for HTML).\n   - Ask: “Confirm to send via Gmail?”.\n   - On user confirmation, call **Gmail (send_email)** with the final fields.\n   - After the tool call, state the outcome, e.g., “Email sent to anna@example.com”.\n\n## Output Style\n- Use clear headings or bullet points when useful.\n- Keep paragraphs short.\n- End your response with a brief **Key Takeaways** section.\n- If you cannot comply, explain why and propose an alternative.\n\n---\n\n## Examples\n\n### Example A — Calculation\n**User:** What is 12,500 plus 7% tax, split monthly over a year?\n**Assistant plan:** \n1) Call Calculator with expression \"(12500 * 1.07) / 12\".\n2) Use the result in the answer with sensible rounding (e.g., 1,114.58 per month).\n\n### Example B — Draft an email (do not send yet)\n**User:** Draft an email to anna@example.com summarizing today’s meeting about Project Atlas.\n**Assistant:**\n- Provide a subject and body_text draft.\n- Ask: “Confirm to send via Gmail now?”\n\n### Example C — Send email after confirmation\n**User:** Yes, send it.\n**Assistant tool call:** Gmail (send_email)\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        -80
+      ],
+      "id": "db4e3301-d959-45a1-bd78-a8ad8c45a344",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        144
+      ],
+      "id": "5a759593-d9f7-461e-b9ed-0d9c5ce418bd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JLGU5vGoDgMyevUA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        0,
+        144
+      ],
+      "id": "de875c19-1c65-4610-952e-2116cc55656a",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        128,
+        144
+      ],
+      "id": "1395e903-b6ce-4fad-81f8-780dff1a2a8d",
+      "name": "Send a message in Gmail",
+      "webhookId": "51ee50a1-7167-4175-b875-dedfd35cca79",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JPO1PTnERq8kiNtm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1,
+      "position": [
+        336,
+        -80
+      ],
+      "id": "5b8470d0-167b-441f-906c-4f228c0d7f1c",
+      "name": "Respond to Chat",
+      "webhookId": "49a3e75e-2e64-441f-a6c2-052eb31013ea"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "678531ac-7cc1-4527-9ea8-6c002d813504",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f60ac0af1fa0d5e1f55d6da8eec31f14dc8958f7bc06a0896aa49a99ab27778f"
+  },
+  "id": "t0Z2ZCxEO9PwxX9p",
+  "tags": []
+}

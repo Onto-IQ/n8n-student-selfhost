@@ -1,0 +1,246 @@
+{
+  "name": "Prepare Vector DB on Pinecone",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "47d2cf5c-002e-44b9-a447-b4224978dae5",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1JeE1lrvORV_BVHjsMR1FOSd-kRibJlef",
+            "mode": "list",
+            "cachedResultName": "Case Study - Pine Apple Telecom",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1JeE1lrvORV_BVHjsMR1FOSd-kRibJlef"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "96824119-a6b6-4b48-a7b3-4ef52492bd88",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "EvNvVUGEW5JvvbGb",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        448,
+        96
+      ],
+      "id": "9a07c955-2c26-435e-a17a-45ceee0af222",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "EvNvVUGEW5JvvbGb",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "pineappletelecom",
+          "mode": "list",
+          "cachedResultName": "pineappletelecom"
+        },
+        "options": {
+          "pineconeNamespace": "work_policies"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        96
+      ],
+      "id": "8797329d-1940-43dd-a29b-1a24ecd8f61d",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "ZxC9RcyCZ8qVJYwX",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        688,
+        320
+      ],
+      "id": "5baf44da-336a-446c-8893-1b4e2ee49ba1",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JLGU5vGoDgMyevUA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        320
+      ],
+      "id": "041c306b-0145-4a42-969a-9eaf2da0c63f",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1JeE1lrvORV_BVHjsMR1FOSd-kRibJlef",
+          "mode": "list",
+          "cachedResultName": "Case Study - Pine Apple Telecom",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1JeE1lrvORV_BVHjsMR1FOSd-kRibJlef"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        224,
+        192
+      ],
+      "id": "f0222e46-4b66-44cc-acf5-e2d902374c7a",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "EvNvVUGEW5JvvbGb",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "39b59eb2-086d-47cb-bdfb-0f2a06115abf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f60ac0af1fa0d5e1f55d6da8eec31f14dc8958f7bc06a0896aa49a99ab27778f"
+  },
+  "id": "SWma3e9wCx5TZF4I",
+  "tags": []
+}

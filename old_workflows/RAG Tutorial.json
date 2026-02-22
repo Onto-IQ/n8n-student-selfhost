@@ -1,0 +1,326 @@
+{
+  "name": "RAG Tutorial",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "line2",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        160
+      ],
+      "id": "7bdfa786-5da9-4cbd-aefb-da64447d6529",
+      "name": "Webhook",
+      "webhookId": "ac61000d-caf0-431a-92b4-ed8164243ccc"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f7d23fe-6a20-4376-ae44-0dba82ebdf7a",
+              "name": "message",
+              "value": "={{ $json.body.events[0].message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "1e7630d7-349d-4426-be34-d0d56627e0fb",
+              "name": "replyToken",
+              "value": "={{ $json.body.events[0].replyToken }}",
+              "type": "string"
+            },
+            {
+              "id": "d7ac0e17-a755-4765-b165-d0c2c4fbbff8",
+              "name": "userId",
+              "value": "={{ $json.body.events[0].source.userId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        160
+      ],
+      "id": "c93d19d3-da02-4c4b-8356-080335dafca2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "**ตอบเป็นภาษาไทยเท่านั้น**\n\n**บทบาท & โทนเสียง**\n\n- คุณคือบอท HR ผู้ช่วยตอบคำถามเรื่อง “การขาด-ลา เวลาทำงาน และวันหยุด” สำหรับพนักงานบริษัท Pine Apple Telecom\n- ตอบเป็นภาษาไทย สุภาพ กระชับ ตรงประเด็น พร้อมขั้นตอนปฏิบัติที่ชัดเจน\n- ยึดตามนโยบายบริษัทเป็นหลัก หากข้อมูลไม่พบในนโยบาย ให้ระบุว่า “ไม่มีในนโยบาย” และชี้ช่องทางติดต่อ HR\n\n**ขอบเขตข้อมูลอ้างอิง**\n\n- ใช้ข้อมูลจาก “นโยบายการทำงาน – Pine Apple Telecom” (มีผล 1 มกราคม 2568; ทบทวนล่าสุด 15 พฤศจิกายน 2568)\n- หัวข้อที่เกี่ยวข้อง: เวลาทำงาน/การลงเวลา, ประเภทการลา, สิทธิวันลา, หลักฐาน/การแจ้งล่วงหน้า, กระบวนการอนุมัติ, วันหยุดบริษัท/นักขัตฤกษ์, การสะสมวันลา, การมาสาย/ขาด, ข้อห้ามที่เกี่ยวข้อง (เช่น ชดเชย OT เป็นวันลาไม่ได้), ช่องทางติดต่อ HR/ร้องเรียน/ฉุกเฉิน\n\n**กติกาการให้คำตอบ (สำคัญ)**\n- นโยบายมากจากเครื่องมือชื่อ \"work_policies\"\n- ตอบด้วยโครงสร้าง 4 ส่วนเสมอ:\n  1. สรุปสั้น: คำตอบตรงคำถามใน 1–2 ย่อหน้า\n  2. สิทธิ/เงื่อนไขที่ใช้: ระบุประเภทลา สิทธิประจำปี หลักฐานที่ต้องใช้ การจ่ายค่าจ้าง การแจ้งล่วงหน้า\n  3. ขั้นตอนปฏิบัติ: วิธีทำในระบบ Pine Apple HR System ผู้อนุมัติ และกรณีฉุกเฉิน\n  4. อ้างอิงนโยบาย: ใส่หัวข้อ/หมวด/ข้อที่อ้างอิง (เช่น “หมวด 3.2 นโยบายการลา”)\n\n- ถ้าคำถามกำกวม ให้ถามกลับอย่างมีโครงสร้าง โดยขอเฉพาะข้อมูลที่จำเป็น เช่น {วันที่ลา}{ประเภทลา}{สาเหตุ}{มีใบรับรองแพทย์หรือไม่}\n- ไม่เดา/ไม่แก้ไขนโยบาย หากมีช่องว่างให้บอก “ต้องตรวจสอบกับ HR” และให้ข้อมูลติดต่อ\n- เวลาทั้งหมดตีความตามโซนเวลา Asia/Bangkok\n- ห้ามให้คำแนะนำขัดกับนโยบาย หรือกฎหมายแรงงานไทย\n- ถ้าผู้ใช้ถามเรื่อง OT แลกวันลา ให้ตอบว่า “ไม่สามารถทำได้” ตามนโยบาย\n- ระวังถ้อยคำ: “ขาดงาน” = ไม่มาทำงานโดยไม่มีการอนุมัติลา และ มาสายเกิน 15 นาที = ขาดครึ่งวัน (อาจมีผลทางวินัย)\n\n** ตัวอย่างการตอบ (FAQ) **\n\n- ถาม: “ลากิจพรุ่งนี้ได้ไหม จ่ายเงินไหม”\n  สรุปสั้น: ลากิจส่วนตัวมีสิทธิ 3 วัน/ปี ไม่จ่ายค่าจ้าง และต้องแจ้งล่วงหน้า 3 วันทำการ ดังนั้น “พรุ่งนี้” อาจไม่เข้าเงื่อนไข เว้นแต่หัวหน้าอนุมัติเป็นกรณีพิเศษ\n  สิทธิ/เงื่อนไข: ลากิจ 3 วัน/ปี ไม่จ่าย, แจ้ง ≥ 3 วันทำการ\n  ขั้นตอน: ยื่น Pine Apple HR System → ขออนุมัติหัวหน้า; ถ้าเป็นเหตุฉุกเฉิน โทรแจ้งและยื่นภายใน 3 วัน\n  อ้างอิง: หมวด 3.2 นโยบายการลา; หมวด 3.1 เวลาทำงาน\n\n- ถาม: “ป่วย 2 วัน ไม่มีใบรับรองแพทย์ได้ไหม”\n  สรุปสั้น: ได้ ภายใต้โควตา “ป่วยไม่มีใบแพทย์” 3 วัน/ปี\n  สิทธิ/เงื่อนไข: ลาป่วย 30 วัน/ปี (มีใบแพทย์), 3 วัน/ปี (ไม่มีใบแพทย์)\n  ขั้นตอน: ยื่นในระบบ เลือก “ลาป่วย – ไม่มีใบแพทย์”\n  อ้างอิง: หมวด 3.2 นโยบายการลา\n\n- ถาม: “มาสาย 20 นาทีถือว่าอย่างไร”\n  สรุปสั้น: ตามนโยบาย มาสายเกิน 15 นาที = ขาดงานครึ่งวัน\n  สิทธิ/เงื่อนไข: อาจกระทบด้านวินัย/ค่าจ้างครึ่งวัน\n  ขั้นตอน: แจ้งหัวหน้า พร้อมเหตุผล; พิจารณามาตรการตามหมวดลงโทษ\n  อ้างอิง: หมวด 3.1 การลงเวลา, หมวด 9.1 การลงโทษ\n\n- ถาม: “OT แลกวันลาได้ไหม”\n  สรุปสั้น: ไม่ได้ ตามนโยบาย OT จ่ายเป็นเงินสดเท่านั้น\n  อ้างอิง: หมวด 3.1 การทำงานล่วงเวลา\n\n** ช่องทาง escalations & ติดต่อ HR **\n\n- HR Manager: คุณสมใจ ใจดี | Email: hr@pineappletelecom.co.th\n   | โทร 02-123-4567 ต่อ 200\n\n  - ร้องเรียน/อุทธรณ์ตามลำดับชั้น (หัวหน้าตรง → ผอ.ฝ่าย → คณะกรรมการ → ผู้บริหาร) ภายในกรอบเวลาที่กำหนด\n\n- เหตุฉุกเฉิน: 02-123-4567 ต่อ 911\n\n** ข้อกำชับสุดท้าย **\n- ยึดคำตอบตามนโยบายเท่านั้น\n- ถ้าข้อมูลผู้ใช้ขาด ให้ถามเฉพาะข้อมูลจำเป็นต่อการตัดสินใจ\n- แสดงข้อจำกัด/เงื่อนไขชัดเจน และอ้างอิงหมวด/ข้อทุกครั้ง\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        160
+      ],
+      "id": "2167c9d3-8c03-4394-a4ef-6d18dc623edd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        352,
+        384
+      ],
+      "id": "9014a98e-3e97-4418-aaf9-d001afa08c71",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JLGU5vGoDgMyevUA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "topK": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        384
+      ],
+      "id": "b23602c1-9067-4c27-9e4e-2267a66899d5",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "pineappletelecom",
+          "mode": "list",
+          "cachedResultName": "pineappletelecom"
+        },
+        "options": {
+          "pineconeNamespace": "work_policies"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        592
+      ],
+      "id": "1a56ea1c-8d29-4f64-a828-5ead04841f19",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "ZxC9RcyCZ8qVJYwX",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        464,
+        800
+      ],
+      "id": "70bd3d83-f1a3-4c80-acd1-88e01186f0d8",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JLGU5vGoDgMyevUA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        672,
+        592
+      ],
+      "id": "e074af05-0e06-4bb8-ac7d-a80a92e699af",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JLGU5vGoDgMyevUA",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"replyToken\":\"{{ $('Edit Fields').item.json.replyToken }}\",\n    \"messages\":{{ $json.messages.toJsonString() }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        160
+      ],
+      "id": "413db689-9105-46b7-a61e-e5f9468cd801",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "GmYGNVPgNgrDwmyo",
+          "name": "Header Auth account"
+        },
+        "httpBearerAuth": {
+          "id": "MTvAW2tJ7k75sYwX",
+          "name": "LINE Bot Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: items[0].json.text (string) มาจาก AI agent\n// Output: items[0].json.messages (array of { type: \"text\", text: string })\n\nfunction sanitizeForLine(raw) {\n  // 1) Normalize Unicode (NFC) – ช่วยให้สม่ำเสมอเรื่องสระ/วรรณยุกต์\n  const normalized = raw.normalize('NFC');\n\n  // 2) Strip control chars ยกเว้น \\n \\t (กันอักขระซ่อน)\n  const noControls = normalized.replace(\n    // U+0000 - U+001F และ U+007F ยกเว้น \\n(0x0A), \\t(0x09)\n    /[\\u0000-\\u0008\\u000B-\\u000C\\u000E-\\u001F\\u007F]/g,\n    ''\n  );\n\n  // 3) Remove/flatten markup ที่ LINE ไม่รองรับ (Markdown/HTML พื้นฐาน)\n  //   - เอา ```code``` ออก\n  let text = noControls.replace(/```[\\s\\S]*?```/g, (m) => {\n    const inner = m.replace(/```/g, '').trim();\n    return inner ? `\\n${inner}\\n` : '';\n  });\n  //   - เอา inline `code` ออก (คงข้อความไว้)\n  text = text.replace(/`([^`]+)`/g, '$1');\n  //   - ตัดแท็ก HTML เบื้องต้น\n  text = text.replace(/<\\/?[^>]+>/g, '');\n\n  // 4) Normalize whitespace: ตัดช่องว่างหัวท้าย, บีบหลายบรรทัดที่ว่างเปล่า\n  text = text.trim().replace(/\\n{3,}/g, '\\n\\n');\n\n  // 5) ป้องกันข้อความ “รันยาวไร้ช่องไฟ” – คั่นระหว่างหัวข้อ/bullet\n  //    (ตัวอย่าง: แปลง \"- \" ให้เป็น bullet มาตรฐาน)\n  text = text.replace(/^\\s*-\\s+/gm, '• ');\n\n  return text;\n}\n\n// ตัดข้อความแบบ “Grapheme-aware” ด้วย Intl.Segmenter (กัน emoji แตก)\nfunction splitGraphemes(str) {\n  if (typeof Intl !== 'undefined' && Intl.Segmenter) {\n    const seg = new Intl.Segmenter('th', { granularity: 'grapheme' });\n    return Array.from(seg.segment(str), s => s.segment);\n  }\n  // fallback (อาจทำ emoji แตกได้ในบางกรณี)\n  return Array.from(str);\n}\n\n// กำหนดเพดานความยาวต่อข้อความ (อย่าใช้ตัวเลขเป๊ะหากไม่แน่ใจ policy ปัจจุบันของ LINE)\n// เลือก conservative เผื่อ margin ให้ safe\nconst MAX_PER_MESSAGE = 1800;\n\nfunction chunkForLine(text) {\n  const g = splitGraphemes(text);\n  const chunks = [];\n  let buf = [];\n  let len = 0;\n\n  for (const ch of g) {\n    // นับตามจำนวน grapheme (หยาบๆ)\n    if (len + ch.length > MAX_PER_MESSAGE) {\n      chunks.push(buf.join(''));\n      buf = [ch];\n      len = ch.length;\n    } else {\n      buf.push(ch);\n      len += ch.length;\n    }\n  }\n  if (buf.length) chunks.push(buf.join(''));\n\n  return chunks;\n}\n\n// --- main ---\nconst raw = ($input.first().json.output ?? '').toString();\nconst cleaned = sanitizeForLine(raw);\n\n// ถ้าต้องการ post-process เพิ่ม เช่น mapping คำเตือน/URL/แทน emoji reserved\n// ทำในขั้นตอนนี้ได้\n\nconst parts = chunkForLine(cleaned);\n\n// ประกอบเป็น payload แบบ LINE Messaging API (type=text)\nconst messages = parts.map(p => ({ type: 'text', text: p }));\n\nreturn [{ json: { messages } }];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        160
+      ],
+      "id": "dc325bb2-27fb-45f9-9d9b-26ef64ba5dc8",
+      "name": "Sanitize For Line"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Sanitize For Line",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sanitize For Line": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0ea90f29-5865-4582-8a6a-8138de14a46f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f60ac0af1fa0d5e1f55d6da8eec31f14dc8958f7bc06a0896aa49a99ab27778f"
+  },
+  "id": "H6dVDY4PH5oIGjKg",
+  "tags": []
+}

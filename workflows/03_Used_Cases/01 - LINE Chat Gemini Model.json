@@ -1,0 +1,274 @@
+{
+  "name": "01 - LINE Chat Gemini Model",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=นำข้อความข้างล่าง\n*** {{ $json.message.text }} ***\n\nตอบในโทนสุภาพน่าเชื่อถือ",
+        "options": {
+          "systemMessage": "🎭 คุณคือ 'เพื่อน AI จอย' - ผู้ช่วยอัจฉริยะที่เป็นเพื่อนคู่คิดสำหรับนักเรียน n8n!\n\n✨ Personality ของคุณ:\n- ใช้ภาษาไทยที่สุภาพแต่เป็นกันเอง\n- ตอบสั้น กระชับ ไม่เกิน 3-5 ประโยค\n- ใส่ emoji ได้ตามความเหมาะสม\n- ถ้าถามเรื่อง n8n ให้ตอบอย่างมือโปร\n- ถ้าถามทั่วไป ให้ตอบแบบเพื่อนเล่าให้ฟัง\n- จำบทสนทนาก่อนหน้าได้ (มีความจำ!)\n\n💡 Tips:\n- เรียกตัวเองว่า 'จอย'\n- ชอบช่วยเหลือและให้กำลังใจ\n- ถ้าไม่รู้จริงๆ ให้บอกว่าไม่รู้ อย่าเสแสร้ง"
+        }
+      },
+      "id": "330d037e-d508-4bbc-b58c-d9997f53341f",
+      "name": "AI Agent",
+      "position": [
+        1184,
+        48
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {
+          "maxOutputTokens": 2048,
+          "temperature": 0.6
+        }
+      },
+      "id": "b6bdc364-b879-4371-9366-17e92d1e3ae9",
+      "name": "Google Gemini Chat Model",
+      "position": [
+        880,
+        304
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "M3RiXXA61xAE0x2X",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Line Messaging Trigger').item.json.source.userId }}",
+        "contextWindowLength": 20
+      },
+      "id": "203b47ee-235e-4963-a571-1d4b168dfc99",
+      "name": "Simple Memory",
+      "position": [
+        1232,
+        288
+      ],
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c83f4391-4dac-4888-b169-968db748d93e",
+      "name": "Respond 200",
+      "position": [
+        1920,
+        48
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "replyToken": "={{ $('Line Messaging Trigger').item.json.replyToken }}",
+        "messages": {
+          "values": [
+            {
+              "text": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "id": "b15acfad-ee5d-4396-8df6-d6183b6ad7fc",
+      "name": "Line Messaging",
+      "position": [
+        1744,
+        48
+      ],
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
+      "typeVersion": 1,
+      "credentials": {
+        "lineMessagingApi": {
+          "id": "XGQjHqQNx2tU00gw",
+          "name": "Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "events": [
+          "message"
+        ]
+      },
+      "id": "f2bcfa04-ccb9-49e5-96b1-046dc17fe8bb",
+      "name": "Line Messaging Trigger",
+      "position": [
+        704,
+        48
+      ],
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessagingTrigger",
+      "typeVersion": 1,
+      "webhookId": "b6bb73b0-6242-4859-9fb6-cb8929ce9fa5",
+      "credentials": {
+        "lineMessagingApi": {
+          "id": "XGQjHqQNx2tU00gw",
+          "name": "Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "🚀 **START HERE**\n\n📱 LINE Chatbot with AI!\nรับข้อความจาก LINE → ประมวลผลด้วย AI → ตอบกลับทันที\n\n✨ จุดเด่น: จำบทสนทนาได้ (มีความจำ!)",
+        "height": 120,
+        "width": 320
+      },
+      "id": "sticky-note-01",
+      "name": "Note: Overview",
+      "position": [
+        592,
+        -112
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "🤖 **AI Agent 'จอย'**\n\nPersonality:\n• เป็นเพื่อนกันเอง\n• ตอบสั้น กระชับ\n• ใส่ emoji ได้\n• จำบทสนทนาก่อนหน้าได้!\n\n🎯 Model: Gemini 2.5 Flash",
+        "width": 280,
+        "color": 2
+      },
+      "id": "sticky-note-02",
+      "name": "Note: AI Agent",
+      "position": [
+        1152,
+        -144
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "🧠 **Memory System**\n\n• จำ 20 ข้อความล่าสุด\n• แยกตาม User ID\n• Context ไม่ขาดตอน!",
+        "height": 116,
+        "width": 200,
+        "color": 3
+      },
+      "id": "sticky-note-03",
+      "name": "Note: Memory",
+      "position": [
+        1344,
+        304
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "📤 **ส่งกลับ LINE**\n\nตอบกลับผู้ใช้ทันที\nผ่าน LINE Messaging API",
+        "height": 96,
+        "width": 200,
+        "color": 5
+      },
+      "id": "sticky-note-04",
+      "name": "Note: Reply",
+      "position": [
+        1680,
+        -80
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "💡 **How to Test**\n\n1. เชื่อมต่อ LINE Bot\n2. ส่งข้อความใน LINE\n3. AI จะตอบกลับทันที!\n\n🔥 ลองถาม: \"พี่จอย ช่วยอธิบาย n8n หน่อย\"",
+        "height": 136,
+        "width": 280,
+        "color": 6
+      },
+      "id": "sticky-note-05",
+      "name": "Note: Test",
+      "position": [
+        1632,
+        208
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Line Messaging",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "AI Agent",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "Line Messaging": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Respond 200",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Line Messaging Trigger": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "AI Agent",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "index": 0,
+            "node": "AI Agent",
+            "type": "ai_memory"
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "4a4e52ff-6e94-437f-a03d-56300262465a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cb1b027a5238410dc7b357f3ae9b7ae44201f4d2fd2a646370dabfb7c8c2f056"
+  },
+  "id": "a6lTgC47qBqYmqu6",
+  "tags": []
+}

@@ -1,0 +1,132 @@
+{
+  "name": "MCP Server Tutorial",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "mcp1"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c159f531-5c7f-4c3f-9082-fd23e63f04a3",
+      "name": "MCP Server Trigger",
+      "webhookId": "8742dbb0-e5ee-40ec-8485-04f3053df88c"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        208
+      ],
+      "id": "779790d4-9705-4127-9657-26d503344097",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        320,
+        224
+      ],
+      "id": "f6709e17-1bf0-42ac-b3dc-ae4180e3258b",
+      "name": "Send a message in Gmail",
+      "webhookId": "b4f4d031-a95c-4c2f-b084-d1213b56eee4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JPO1PTnERq8kiNtm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "phakkhaphong@gmail.com",
+          "mode": "list",
+          "cachedResultName": "phakkhaphong krittawat"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        112,
+        208
+      ],
+      "id": "8514ed54-b1fa-42a2-9c15-628cfa7c81d2",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "YVmjUqSjXwVSMpyX",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "15c56db1-5845-4b83-a93d-ebbdb3450a31",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f60ac0af1fa0d5e1f55d6da8eec31f14dc8958f7bc06a0896aa49a99ab27778f"
+  },
+  "id": "foTLsILhGzqczE5y",
+  "tags": []
+}
