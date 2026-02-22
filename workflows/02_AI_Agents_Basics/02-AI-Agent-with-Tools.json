@@ -79,7 +79,7 @@
       "id": "weather-tool-01",
       "name": "WeatherAPI",
       "parameters": {
-        "url": "https://wttr.in/={{$fromAI('city')}}?format=j1",
+        "url": "https://wttr.in/{{$fromAI('city')}}?format=j1",
         "sendQuery": true,
         "parametersQuery": {
           "values": [
