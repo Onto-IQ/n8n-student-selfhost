@@ -21,6 +21,8 @@
 | [**Google Gemini (AI Studio)**](./gemini-api.md) | 🤖 | สร้าง AI Agent, สรุปข้อความ, วิเคราะห์ข้อมูล | 🟢 ง่าย | มี Free Tier (ลิมิตจำนวนครั้ง/นาที) |
 | [**OpenAI (ChatGPT)**](./openai-api.md) | 🧠 | AI Agent ขั้นสูง, วิเคราะห์รูปภาพ, สร้างเสียง | 🔴 ยาก (ต้องใช้บัตร) | **ไม่มีฟรี** (ต้องเติมเงินขั้นต่ำ $5) |
 | [**OpenRouter**](./openrouter-api.md) | 🔄 | ศูนย์รวม AI หลายค่าย (Claude, Llama, ฯลฯ) | 🟡 ปานกลาง | มีโมเดลฟรีให้เลือกใช้บ้าง |
+| [**Pinecone (Vector DB)**](./pinecone.md) | 🌲 | RAG, AI Memory, เก็บความรู้ระยะยาว | 🟡 ปานกลาง | มี Free Tier (1 Index, 100K records) |
+| [**SerpApi (Google Search)**](./serpapi.md) | 🔍 | AI Agent ค้นหาข้อมูลล่าสุด, Real-time | 🟢 ง่าย | มี Free Tier (100 searches/เดือน) |
 
 ---
 
@@ -29,6 +31,7 @@
 1. **สำหรับผู้เริ่มต้น**: แนะนำให้เริ่มจาก [LINE OA](./line-oa.md) และ [Gemini API](./gemini-api.md) ก่อน เพราะสมัครง่ายและใช้งานได้ฟรี
 2. **สำหรับงานอัตโนมัติ (Automation)**: ขาดไม่ได้เลยคือ [Google OAuth](./google-oauth.md) เพราะจะช่วยให้เราอ่านอีเมลและบันทึกข้อมูลลง Google Sheets ได้
 3. **สำหรับ AI Agent ชั้นสูง**: หากต้องการความฉลาดขั้นสุด แนะนำให้ใช้ [OpenAI](./openai-api.md) หรือ [OpenRouter](./openrouter-api.md) (อาจมีค่าใช้จ่ายเล็กน้อย)
+4. **สำหรับ RAG & AI Memory**: ใช้ [Pinecone](./pinecone.md) เพื่อให้ AI มีความจำระยะยาว และใช้ [SerpApi](./serpapi.md) เพื่อให้ AI ค้นหาข้อมูลล่าสุดได้
 
 ## 🔧 วิธีใช้งาน Credentials ใน n8n ทั่วไป
 
