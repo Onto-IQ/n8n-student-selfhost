@@ -6,7 +6,7 @@
       "name": "When chat message received",
       "parameters": {
         "options": {
-          "responseMode": "responseNodes"
+          "responseMode": "lastNode"
         }
       },
       "position": [380, 240],
@@ -92,18 +92,6 @@
       "typeVersion": 1.1
     },
     {
-      "id": "chat-response-01",
-      "name": "Respond to Chat",
-      "parameters": {
-        "operation": "send",
-        "message": "={{ $json.output }}",
-        "options": {}
-      },
-      "position": [1328, 240],
-      "type": "@n8n/n8n-nodes-langchain.chat",
-      "typeVersion": 1.2
-    },
-    {
       "id": "sticky-01",
       "name": "Sticky 0 Intro",
       "parameters": {
@@ -176,17 +164,6 @@
           {
             "index": 0,
             "node": "AI Agent",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "AI Agent": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Respond to Chat",
             "type": "main"
           }
         ]
