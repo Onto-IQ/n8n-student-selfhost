@@ -4,7 +4,7 @@
     {
       "parameters": {
         "content": "🎭 **05B - Multi-Agent Refund & Claim (2026 Pattern)**\n\n**แนวคิดปี 2026:** ใช้ AI Agent + toolWorkflow แทนการสร้าง Sub-Agents ซ้อนซ้อน\n\n**สถาปัตยกรรมใหม่:**\n```\nForm → Main AI Agent (Orchestrator)\n              ↓ (เรียก Tools)\n    ├→ toolWorkflow: Intent Classifier\n    ├→ toolWorkflow: Policy Validator\n    ├→ toolWorkflow: Finance Calculator\n    └→ toolWorkflow: QA Reviewer\n              ↓\n    Output Parser → IF → Gmail\n              ↓ (ไม่ผ่าน)\n         วนกลับ Agent\n```\n\n**จุดเด่น:**\n✅ ลดจาก 20+ nodes เหลือ ~12 nodes\n✅ ใช้ toolWorkflow (n8n 2.8.x standard)\n✅ ไม่มี Code Node ซับซ้อน\n✅ Sub-Workflows แยกจัดการง่าย",
-        "height": 300,
+        "height": 460,
         "width": 560,
         "color": 6
       },
@@ -12,8 +12,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1808,
-        -416
+        -1936,
+        -272
       ],
       "id": "b21fb703-d355-46de-974d-e52ae1f829aa"
     },
@@ -73,15 +73,16 @@
     {
       "parameters": {
         "content": "📝 **Form Trigger**\n\nรับข้อมูลคำร้องจากลูกค้า\n\n**ฟิลด์:**\n• Order ID, Customer Email\n• Claim Reason - เหตุผล\n• Purchase Date - วันที่ซื้อ\n• Amount - จำนวนเงิน\n• Image URL - รูปภาพ (optional)\n\n💡 responseMode: lastNode รอผลสุดท้าย",
-        "width": 200,
+        "height": 256,
+        "width": 328,
         "color": 3
       },
       "name": "Note: Form",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1712,
-        160
+        -1840,
+        224
       ],
       "id": "b7cf501f-b884-4b8a-a968-700086312b57"
     },
@@ -106,15 +107,16 @@
     {
       "parameters": {
         "content": "🧠 **Main AI Agent (Orchestrator)**\n\n**หน้าที่:** ควบคุมการทำงานผ่าน Tools\n\n**วิธีทำงาน:**\nเรียกใช้ toolWorkflow ตามลำดับ\nและสรุปผลเป็น JSON\n\n**System Message กำหนด:**\n• Tools ที่ใช้ได้\n• ลำดับการทำงาน\n• รูปแบบผลลัพธ์\n\n💡 ไม่ต้องมี Code Node ซับซ้อน\nAI จัดการเรียก Tools เอง",
-        "height": 200,
+        "height": 344,
+        "width": 368,
         "color": 2
       },
       "name": "Note: Main Agent",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1216,
-        400
+        -1248,
+        -64
       ],
       "id": "166f2dad-9e48-4c9c-904d-71084b315d07"
     },
@@ -146,8 +148,8 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1,
       "position": [
-        -1104,
-        640
+        -1344,
+        496
       ],
       "id": "e71c5ee6-2e74-47ca-83f9-8da319631f67"
     },
@@ -202,8 +204,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        -896,
-        80
+        -1216,
+        496
       ],
       "id": "9fdf1fe3-8d67-4e3b-a552-214ef65a9e73"
     },
@@ -247,8 +249,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        -640,
-        48
+        -1104,
+        528
       ],
       "id": "4b1c8399-3726-4146-b879-cbc8c8341586"
     },
@@ -287,8 +289,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        -832,
-        336
+        -992,
+        496
       ],
       "id": "22f13cfa-5c43-4fbd-bf2c-b07cb97eae2c"
     },
@@ -327,8 +329,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        -896,
-        576
+        -880,
+        528
       ],
       "id": "e949a8a2-22c2-4e4e-9df4-5cc9e1bed187"
     },
@@ -355,8 +357,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1,
       "position": [
-        -784,
-        544
+        -864,
+        352
       ],
       "id": "e4e4433f-2180-4038-a6fc-03cf73d63851"
     },
@@ -364,15 +366,15 @@
       "parameters": {
         "content": "📋 **Output Parser (Structured)**\n\n**หน้าที่:** กำหนด Schema ให้ AI\nตอบเป็น JSON ที่มี structure\n\n**Schema ที่กำหนด:**\n• intent: REFUND/REPLACEMENT/SUPPORT\n• policy_passed: true/false\n• final_amount: number\n• approved: true/false\n• draft_email: string\n\n💡 ใช้ n8n 2.8.x outputParserStructured\nเพื่อผลลัพธ์ที่ควบคุมได้",
         "height": 324,
-        "width": 220,
+        "width": 284,
         "color": 3
       },
       "name": "Note: Parser",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -608,
-        400
+        -704,
+        336
       ],
       "id": "b6c8b726-d1b6-4eb1-badd-28bad01e8fd0"
     },
@@ -410,16 +412,16 @@
     },
     {
       "parameters": {
-        "content": "🚦 **Quality Gate (IF Node)**\n\n**ตรวจสอบ:** approved = true?\n\n• ผ่าน (true) → ส่ง Gmail\n• ไม่ผ่าน (false) → วนกลับไปแก้ไข\n\n💡 ง่ายกว่า Loop mechanism เดิม\nไม่ต้องมี State Manager ซับซ้อน",
-        "height": 140,
-        "width": 200,
+        "content": "🚦 **Quality Gate (IF Node)**\n\n**ตรวจสอบ:** approved = true?\n\n• ผ่าน (true) → ส่ง Gmail\n• ไม่ผ่าน (false) → ต้องแก้ไขข้อมูลแล้วส่งใหม่\n\n💡 ง่ายกว่า Loop mechanism เดิม\nไม่ต้องมี State Manager ซับซ้อน",
+        "height": 204,
+        "width": 264,
         "color": 4
       },
       "name": "Note: Gate",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -336,
+        -384,
         400
       ],
       "id": "f3980c6f-6169-417b-b870-f9d2cd30064f"
@@ -437,8 +439,8 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        -64,
-        240
+        -80,
+        208
       ],
       "id": "83609691-b999-44f4-a868-9338444882ba",
       "webhookId": "2405e8ba-549d-453d-8abe-2e91a8004478",
@@ -457,8 +459,8 @@
       "type": "n8n-nodes-base.line",
       "typeVersion": 1,
       "position": [
-        -64,
-        400
+        80,
+        208
       ],
       "id": "464c626a-a04e-4e2f-a24b-77c755d12ce4"
     },
@@ -466,7 +468,7 @@
       "parameters": {
         "content": "📧📢 **Final Actions**\n\nเมื่อ QA ผ่านแล้ว:\n• ส่ง Gmail หาลูกค้า\n• แจ้ง LINE ให้ทีมรู้\n\n✅ สิ้นสุด Workflow",
         "height": 120,
-        "width": 180,
+        "width": 260,
         "color": 3
       },
       "name": "Note: Final",
@@ -474,39 +476,39 @@
       "typeVersion": 1,
       "position": [
         -80,
-        576
+        384
       ],
       "id": "76f97f7c-5cac-40d5-b3e6-f91719fb985b"
     },
     {
       "parameters": {
-        "content": "🔄 **Revision Loop (False Branch)**\n\nเมื่อ QA ไม่ผ่าน:\nข้อมูลจะถูกส่งกลับไปที่\nMain AI Agent เพื่อแก้ไข\n\n(เชื่อมต่อย้อนกลับใน connections)",
-        "height": 120,
-        "width": 200,
+        "content": "🔄 **Revision Required (False Branch)**\n\nเมื่อ QA ไม่ผ่าน:\nต้องแก้ไขข้อมูลแล้ว\nส่งคำร้องใหม่\n\n(จบการทำงาน - ไม่มี loop)",
+        "height": 168,
+        "width": 280,
         "color": 4
       },
       "name": "Note: Revision",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -336,
-        576
+        -160,
+        -48
       ],
       "id": "f048026c-329f-4c04-a19e-cb93cdf0240e"
     },
     {
       "parameters": {
         "content": "📚 **ความรู้ปี 2026: toolWorkflow Pattern**\n\n**สถาปัตยกรรมใหม่ (n8n 2.8.x):**\n```\n[Form] → [AI Agent] → [Output Parser] → [IF] → [Gmail]\n              ↓ ↑\n        [toolWorkflow Tools]\n              ↓\n    [Sub-Workflows ย่อย]\n```\n\n**ทำไมดีกว่าเดิม:**\n| ของเก่า | ของใหม่ |\n|--------|--------|\n| Sub-Agents ซ้อนใน workflow เดียว | แยกเป็น Sub-Workflows |\n| State Manager + Code Node | Memory + Agent จัดการเอง |\n| Loop Gatekeeper ซับซ้อน | IF Node ธรรมดา |\n| 20+ nodes | ~12 nodes |\n\n**การสร้าง Sub-Workflow:**\n1. สร้าง Workflow ใหม่สำหรับแต่ละ Agent\n2. ใช้ Execute Workflow Trigger รับข้อมูล\n3. ทำงานเสร็จ Return ผลลัพธ์\n4. ใน Main Workflow ใช้ toolWorkflow เรียก\n\n💡 สะอาด จัดการง่าย ติดตั้งสะดวก",
-        "height": 528,
-        "width": 952,
+        "height": 480,
+        "width": 600,
         "color": 6
       },
       "name": "Note: Education",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -448,
-        -480
+        -816,
+        -256
       ],
       "id": "1fa31ec3-3246-4bce-b523-4a036d7abdd3"
     }
@@ -598,6 +600,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Note: Revision",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -641,7 +650,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "59d9abad-388a-496a-9dd9-749054a9d6de",
+  "versionId": "2f1e97fe-ee31-4061-aa16-faee82fe0e8d",
   "meta": {
     "instanceId": "cb1b027a5238410dc7b357f3ae9b7ae44201f4d2fd2a646370dabfb7c8c2f056"
   },
