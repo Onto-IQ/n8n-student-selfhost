@@ -1,0 +1,171 @@
+{
+  "name": "04 - MCP Client (ใช้ Tools จากภายนอก)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🔗 **02 - MCP Client: ใช้ Tools จากภายนอก**\n\n**แนวคิดหลัก:** AI Agent ของเราไม่ต้องสร้าง Tools เอง\nแต่เชื่อมต่อไปยัง MCP Server ภายนอกที่มี Tools อยู่แล้ว\n\n**ใน Workflow นี้:**\n• AI Agent ใช้ Chat Trigger\n• ต่อผ่าน MCP Client ไปยัง Server\n• Server มี Tools: Calculator, Gmail, Calendar ให้ใช้\n\n💡 เปรียบเสมือน: แทนที่จะซื้อรถคันใหม่ เราใช้บริการ Grab แทน",
+        "width": 480,
+        "height": 220,
+        "color": 6
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, -40]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [400, 240],
+      "webhookId": "mcp-client-demo"
+    },
+    {
+      "parameters": {
+        "content": "💬 **Chat Trigger**\n\nเริ่มต้นด้วยการคลิกปุ่ม Chat\nที่มุมซ้ายล่างของ n8n\n\nลองถาม:\n• จองห้องประชุมพรุ่งนี้ บ่าย 2 โมง\n• ส่งอีเมลหาทีมบอกว่าประชุมเสร็จแล้ว\n• คำนวณ 125 * 48 ให้หน่อย",
+        "width": 260,
+        "height": 180,
+        "color": 3
+      },
+      "name": "Note: Chat",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 160]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "คุณเป็นผู้ช่วยอัจฉริยะที่สามารถใช้เครื่องมือต่างๆ ได้\n\nคุณมีเครื่องมือให้ใช้:\n• Calculator - คำนวณเลข\n• Gmail - ส่งอีเมล\n• Calendar - จองประชุม\n\nเมื่อผู้ใช้ขอให้ทำอะไร:\n1. เลือกเครื่องมือที่เหมาะสม\n2. เรียกใช้ด้วยพารามิเตอร์ที่ถูกต้อง\n3. แจ้งผลลัพธ์ให้ชัดเจน"
+        }
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [680, 240]
+    },
+    {
+      "parameters": {
+        "content": "🤖 **AI Agent**\n\nสมองหลักที่รับคำสั่ง\nและตัดสินใจใช้ Tools\n\n**System Message กำหนด:**\n• บทบาทของ AI\n• Tools ที่มีให้ใช้\n• วิธีตอบสนอง",
+        "width": 220,
+        "height": 160,
+        "color": 2
+      },
+      "name": "Note: Agent",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 400]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [680, 480],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://n8n.datafabric.app/mcp/mcp1",
+        "options": {}
+      },
+      "name": "MCP Client",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [960, 480]
+    },
+    {
+      "parameters": {
+        "content": "🔌 **MCP Client**\n\n**หัวใจสำคัญของ Workflow นี้!**\n\nMCP Client เชื่อมต่อไปยัง MCP Server ภายนอก\nที่ URL: https://n8n.datafabric.app/mcp/mcp1\n\n**Server นี้มี Tools ให้ใช้:**\n• Calculator - คำนวณเลข\n• Send Gmail - ส่งอีเมล\n• Create Calendar - สร้างกิจกรรม\n\n💡 AI Agent ไม่ต้องรู้วิธีส่งอีเมลเอง\nแค่เรียกใช้ Tool จาก Server",
+        "width": 280,
+        "height": 220,
+        "color": 1
+      },
+      "name": "Note: MCP Client",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [920, 640]
+    },
+    {
+      "parameters": {
+        "content": "📚 **ความรู้ปี 2026: MCP (Model Context Protocol)**\n\n**MCP คืออะไร?**\nมาตรฐานใหม่จาก Anthropic (Claude) ที่ให้ AI Agents\nเชื่อมต่อกับ external data sources และ tools ได้สะดวก\n\n**สถาปัตยกรรม:**\n```\n[AI Agent] ←→ [MCP Client] ←→ [MCP Server] ←→ [Tools/Services]\n   ในฝั่งเรา      ตัวเชื่อมต่อ      อยู่ภายนอก      ฐานข้อมูล, API\n```\n\n**ข้อดี:**\n• ไม่ต้องสร้าง Tools เองทั้งหมด\n• ใช้ Tools จาก provider ต่างๆ ได้\n• มาตรฐานเปิด ไม่ผูกกับ vendor\n\n**ตัวอย่าง MCP Servers:**\n• GitHub MCP - จัดการ repository\n• Slack MCP - ส่งข้อความ\n• Google Workspace MCP - ใช้ Gmail, Calendar\n• Database MCP - คิวรี่ข้อมูล",
+        "width": 480,
+        "height": 280,
+        "color": 5
+      },
+      "name": "Note: Education",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1280, 200]
+    },
+    {
+      "parameters": {
+        "content": "⚠️ **การตั้งค่าสำคัญ**\n\n**ต้องมี:**\n1. OpenAI API Key (สำหรับ AI Agent)\n2. MCP Server ที่ทำงานอยู่\n   (ใน demo นี้ใช้: https://n8n.datafabric.app/mcp/mcp1)\n\n**หาก MCP Server ไม่ตอบสนอง:**\n• ตรวจสอบ URL ว่าถูกต้อง\n• ตรวจสอบว่า Server เปิดอยู่\n• ดู logs ใน n8n\n\n**ทดสอบ:**\nพิมพ์ใน Chat: \"ช่วยคำนวณ 1234 * 567\"\nAI จะเรียกใช้ Calculator Tool จาก MCP Server",
+        "width": 400,
+        "height": 180,
+        "color": 4
+      },
+      "name": "Note: Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1320, 560]
+    }
+  ],
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}

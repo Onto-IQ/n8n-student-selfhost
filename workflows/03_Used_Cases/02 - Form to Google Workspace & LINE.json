@@ -1,0 +1,525 @@
+{
+  "name": "02 - Form to Google Workspace & LINE",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📝 **02 - ฟอร์ม → Google Workspace + LINE**\n\nWorkflow นี้แสดงการเชื่อมต่อครบวงจร:\n1. **Form Trigger** - รับข้อมูลจากฟอร์ม\n2. **Google Sheets** - บันทึกข้อมูล\n3. **Google Calendar** - สร้างกิจกรรม\n4. **Google Docs** - สร้างเอกสาร\n5. **Google Drive** - จัดเก็บไฟล์\n6. **LINE** - แจ้งเตือน\n\n✨ เหมาะสำหรับ: ระบบรับเรื่อง, การจอง, ลงทะเบียน",
+        "width": 520,
+        "height": 200,
+        "color": 6
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, 40]
+    },
+    {
+      "parameters": {
+        "formTitle": "📋 แบบฟอร์มติดต่อ/รับเรื่อง",
+        "formDescription": "กรุณากรอกข้อมูลให้ครบถ้วน เราจะติดต่อกลับโดยเร็วที่สุด",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "ชื่อ-นามสกุล",
+              "fieldType": "text",
+              "requiredField": true,
+              "placeholder": "ระบุชื่อของคุณ"
+            },
+            {
+              "fieldLabel": "อีเมล",
+              "fieldType": "email",
+              "requiredField": true,
+              "placeholder": "example@email.com"
+            },
+            {
+              "fieldLabel": "เบอร์โทรศัพท์",
+              "fieldType": "text",
+              "requiredField": false,
+              "placeholder": "0xx-xxx-xxxx"
+            },
+            {
+              "fieldLabel": "หัวข้อ",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  { "option": "📞 ขอคำปรึกษา" },
+                  { "option": "🔧 แจ้งปัญหา" },
+                  { "option": "💼 สนใจบริการ" },
+                  { "option": "🤝 ร่วมงานกับเรา" },
+                  { "option": "❓ อื่นๆ" }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "ความเร่งด่วน",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  { "option": "🔴 เร่งด่วน (ภายใน 24 ชม.)" },
+                  { "option": "🟠 ปานกลาง (ภายใน 3 วัน)" },
+                  { "option": "🟢 ทั่วไป (ภายใน 7 วัน)" }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "วันที่ต้องการนัดหมาย",
+              "fieldType": "date",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "รายละเอียด",
+              "fieldType": "textarea",
+              "requiredField": true,
+              "placeholder": "อธิบายรายละเอียดที่ต้องการ..."
+            }
+          ]
+        },
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "n8n Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [400, 320],
+      "webhookId": "form-submit-workspace"
+    },
+    {
+      "parameters": {
+        "content": "🎯 **Form Trigger**\n\nรับข้อมูลจากฟอร์ม n8n\nฟิลด์ที่รับ:\n• ชื่อ, อีเมล, เบอร์โทร\n• หัวข้อ (dropdown)\n• ความเร่งด่วน\n• วันที่นัดหมาย\n• รายละเอียด",
+        "width": 260,
+        "height": 180,
+        "color": 1
+      },
+      "name": "Note: Form",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "const formData = $input.first().json;\nconst name = formData['ชื่อ-นามสกุล'] || 'ไม่ระบุ';\nconst email = formData['อีเมล'] || 'ไม่ระบุ';\nconst phone = formData['เบอร์โทรศัพท์'] || '-';\nconst topic = formData['หัวข้อ'] || 'อื่นๆ';\nconst urgency = formData['ความเร่งด่วน'] || 'ทั่วไป';\nconst appointmentDate = formData['วันที่ต้องการนัดหมาย'] || null;\nconst details = formData['รายละเอียด'] || '';\nlet priority = 'NORMAL';\nif (urgency.includes('เร่งด่วน')) priority = 'HIGH';\nelse if (urgency.includes('ปานกลาง')) priority = 'MEDIUM';\nconst timestamp = new Date().toISOString().replace(/[:.]/g, '-');\nconst docName = `Request_${name.replace(/\\s+/g, '_')}_${timestamp.split('T')[0]}`;\nconst lineMessage = `📋 มีฟอร์มใหม่!\\n\\n👤 ${name}\\n📧 ${email}\\n📞 ${phone}\\n🏷️ ${topic}\\n⚡ ${urgency}`;\nreturn [{ json: { name, email, phone, topic, urgency, priority, appointmentDate, details, docName, lineMessage, submittedAt: new Date().toISOString(), status: 'NEW' }}];"
+      },
+      "name": "Process Form Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 320]
+    },
+    {
+      "parameters": {
+        "content": "⚙️ **Process Data**\n\nแปลงข้อมูลฟอร์มให้เป็นโครงสร้างที่ใช้งานได้:\n• กำหนด Priority (High/Med/Normal)\n• สร้างชื่อเอกสารอัตโนมัติ\n• เตรียมข้อความ LINE",
+        "width": 220,
+        "height": 140,
+        "color": 3
+      },
+      "name": "Note: Process",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 480]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.submittedAt }}",
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Phone": "={{ $json.phone }}",
+            "Topic": "={{ $json.topic }}",
+            "Urgency": "={{ $json.urgency }}",
+            "Priority": "={{ $json.priority }}",
+            "Appointment": "={{ $json.appointmentDate || 'ไม่ระบุ' }}",
+            "Details": "={{ $json.details }}",
+            "Status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            { "id": "Timestamp", "displayName": "Timestamp", "type": "string" },
+            { "id": "Name", "displayName": "Name", "type": "string" },
+            { "id": "Email", "displayName": "Email", "type": "string" },
+            { "id": "Phone", "displayName": "Phone", "type": "string" },
+            { "id": "Topic", "displayName": "Topic", "type": "string" },
+            { "id": "Urgency", "displayName": "Urgency", "type": "string" },
+            { "id": "Priority", "displayName": "Priority", "type": "string" },
+            { "id": "Appointment", "displayName": "Appointment", "type": "string" },
+            { "id": "Details", "displayName": "Details", "type": "string" },
+            { "id": "Status", "displayName": "Status", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Add to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [960, 160],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_SHEETS_CREDENTIAL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "📊 **Google Sheets**\n\nบันทึกข้อมูลฟอร์มเข้าสู่สเปรดชีต\n\nคอลัมน์: Timestamp, Name, Email, Phone, Topic, Urgency, Priority, Appointment, Details, Status",
+        "width": 200,
+        "height": 160,
+        "color": 4
+      },
+      "name": "Note: Sheets",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [920, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "has-appointment",
+              "leftValue": "={{ $json.appointmentDate }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "notEquals" }
+            }
+          ]
+        }
+      },
+      "name": "Has Appointment?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [960, 320]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "start": "={{ $json.appointmentDate }}",
+        "end": "={{ $json.appointmentDate }}",
+        "additionalFields": {
+          "summary": "🗓️ นัดหมาย: {{ $json.topic }}",
+          "description": "👤 {{ $json.name }}\\n📧 {{ $json.email }}\\n📞 {{ $json.phone }}\\n\\n📝 {{ $json.details }}",
+          "attendees": ["={{ $json.email }}"]
+        }
+      },
+      "name": "Create Calendar Event",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1,
+      "position": [1280, 240],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "YOUR_CALENDAR_CREDENTIAL",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "📅 **Google Calendar**\n\nสร้างกิจกรรมอัตโนมัติเมื่อมีการระบุวันที่นัด\n\n• ส่งคำเชิญไปยังอีเมลผู้ส่ง\n• เพิ่มรายละเอียดใน description",
+        "width": 200,
+        "height": 120,
+        "color": 5
+      },
+      "name": "Note: Calendar",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1240, 80]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "title": "={{ $json.docName }}",
+        "content": "📋 **รายงานการติดต่อ/รับเรื่อง**\\n\\n---\\n\\n## ข้อมูลผู้ส่ง\\n- **ชื่อ:** {{ $json.name }}\\n- **อีเมล:** {{ $json.email }}\\n- **เบอร์โทร:** {{ $json.phone || '-' }}\\n- **วันที่ส่ง:** {{ $json.submittedAt }}\\n\\n## รายละเอียด\\n- **หัวข้อ:** {{ $json.topic }}\\n- **ความเร่งด่วน:** {{ $json.urgency }}\\n- **ระดับ:** {{ $json.priority }}\\n- **วันที่นัดหมาย:** {{ $json.appointmentDate || 'ไม่ระบุ' }}\\n\\n## คำอธิบาย\\n{{ $json.details }}\\n\\n---\\n\\nสถานะ: {{ $json.status }}\\n\\n*เอกสารสร้างอัตโนมัติจาก n8n*"
+      },
+      "name": "Create Google Doc",
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [1280, 400],
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "YOUR_DOCS_CREDENTIAL",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "📄 **Google Docs**\n\nสร้างเอกสารบันทึกโดยอัตโนมัติจากข้อมูลฟอร์ม\n\nประกอบด้วย:\n• ข้อมูลผู้ส่ง\n• รายละเอียดเรื่อง\n• คำอธิบายเต็ม",
+        "width": 200,
+        "height": 140,
+        "color": 6
+      },
+      "name": "Note: Docs",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1240, 540]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "folder": {
+          "__rl": true,
+          "value": "YOUR_DRIVE_FOLDER_ID",
+          "mode": "list"
+        },
+        "name": "={{ $json.docName }}.txt",
+        "content": "=บันทึกจากฟอร์มติดต่อ\n\nชื่อ: {{ $json.name }}\nอีเมล: {{ $json.email }}\nหัวข้อ: {{ $json.topic }}\nความเร่งด่วน: {{ $json.urgency }}\n\nรายละเอียด:\n{{ $json.details }}\n\nส่งเมื่อ: {{ $json.submittedAt }}"
+      },
+      "name": "Save to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1560, 320],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YOUR_DRIVE_CREDENTIAL",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "☁️ **Google Drive**\n\nบันทึกไฟล์สำรองเป็น .txt file ในโฟลเดอร์ที่กำหนด",
+        "width": 180,
+        "height": 100,
+        "color": 7
+      },
+      "name": "Note: Drive",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1520, 480]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "high-priority-check",
+              "leftValue": "={{ $json.priority }}",
+              "rightValue": "HIGH",
+              "operator": { "type": "string", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "name": "High Priority?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1560, 160]
+    },
+    {
+      "parameters": {
+        "replyToken": "={{ $('Line Messaging Trigger').item.json.replyToken }}",
+        "messages": {
+          "values": [
+            {
+              "type": "text",
+              "text": "={{ $json.lineMessage }}"
+            }
+          ]
+        }
+      },
+      "name": "LINE Push Message",
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
+      "typeVersion": 1,
+      "position": [1840, 120],
+      "credentials": {
+        "lineMessagingApi": {
+          "id": "YOUR_LINE_CREDENTIAL",
+          "name": "Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "💬 **LINE Notification**\n\nส่งข้อความแจ้งเตือนผ่าน LINE อัตโนมัติ\n\nสำหรับงานเร่งด่วน (HIGH) หรือทุกฟอร์มที่ส่งเข้ามา",
+        "width": 200,
+        "height": 120,
+        "color": 2
+      },
+      "name": "Note: LINE",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1800, 0]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "Form Completed",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [1840, 320]
+    },
+    {
+      "parameters": {
+        "content": "✅ **Response**\n\nส่งข้อความตอบกลับให้ผู้กรอกฟอร์มว่ารับข้อมูลเรียบร้อย",
+        "width": 180,
+        "height": 100,
+        "color": 3
+      },
+      "name": "Note: Response",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1800, 440]
+    },
+    {
+      "parameters": {
+        "content": "💡 **คำแนะนำการใช้งาน**\n\n1. **ตั้งค่า Credentials** สำหรับ Google และ LINE ก่อนใช้งาน\n2. **สร้าง Google Sheet** และแชร์ให้ n8n เข้าถึง\n3. **กำหนด Folder ID** ใน Google Drive node\n4. **ทดสอบฟอร์ม** โดยกด Execute Workflow\n\n🔗 ดูเพิ่มเติม: https://n8n.io/workflows/?q=google",
+        "width": 400,
+        "height": 140,
+        "color": 4
+      },
+      "name": "Note: Tips",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1640, 600]
+    }
+  ],
+  "connections": {
+    "n8n Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Process Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Form Data": {
+      "main": [
+        [
+          {
+            "node": "Add to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Has Appointment?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Google Doc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "High Priority?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Appointment?": {
+      "main": [
+        [
+          {
+            "node": "Create Calendar Event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Save to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Calendar Event": {
+      "main": [
+        [
+          {
+            "node": "Save to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Google Doc": {
+      "main": [
+        [
+          {
+            "node": "Form Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Priority?": {
+      "main": [
+        [
+          {
+            "node": "LINE Push Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LINE Push Message": {
+      "main": [
+        [
+          {
+            "node": "Form Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Save to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}

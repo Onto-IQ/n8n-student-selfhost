@@ -1,0 +1,449 @@
+{
+  "name": "04 - RAG with Pinecone (Load + Query)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🎯 **04 - RAG with Pinecone: โหลดข้อมูล + ถามตอบ**\n\nWorkflow นี้รวม 2 ฟังก์ชันหลัก:\n\n**📚 ส่วนที่ 1: Load Data (เตรียมข้อมูล)**\n• ดึงเอกสารจาก Google Drive\n• แปลงเป็น Vector ด้วย OpenAI\n• บันทึกลง Pinecone\n\n**💬 ส่วนที่ 2: Query (ถามตอบ)**\n• รับคำถามจาก Chat\n• ค้นหาข้อมูลจาก Pinecone\n• AI ตอบคำถามจากเอกสาร\n\n⚙️ Pinecone: n8n-rag-course / n8n-demo-index\n📐 Dimension: 1536 (text-embedding-3-small)",
+        "height": 256,
+        "width": 520,
+        "color": 6
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -240
+      ],
+      "id": "a919dac4-55e1-494f-9f4c-dd22b2010b96"
+    },
+    {
+      "parameters": {},
+      "name": "Load Data Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        80
+      ],
+      "id": "fa8b4c4f-a440-4b92-a460-16fcd97390f3"
+    },
+    {
+      "parameters": {
+        "content": "📚 **ส่วนที่ 1: Load Data**\n\nเตรียมข้อมูลสำหรับ RAG:\n1. กด Execute Workflow\n2. ดึงไฟล์จาก Google Drive\n3. แปลงเป็น Vector\n4. บันทึกลง Pinecone\n\n💡 ทำครั้งเดียว ใช้ได้หลายครั้ง",
+        "height": 260,
+        "width": 260,
+        "color": 4
+      },
+      "name": "Note: Load Data",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        80
+      ],
+      "id": "16bfb339-a7ff-428f-91b7-f3d67351920b"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "YOUR_DRIVE_FOLDER_ID",
+            "mode": "list"
+          }
+        },
+        "options": {}
+      },
+      "name": "Search Files",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        80
+      ],
+      "id": "aabbacaa-d369-4f03-9882-cdaf4ccdc1af",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "rYNf6b3wbB6xCv7J",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        112,
+        80
+      ],
+      "id": "4cc0f6fd-1d11-441a-bb22-38bddffe9947",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "rYNf6b3wbB6xCv7J",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-demo-index",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "name": "Pinecone Insert",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        80
+      ],
+      "id": "6225c075-f480-4d72-9a11-6b66a4c7d83a",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Tz2sLHgYGbG1jT4N",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "OpenAI Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        368
+      ],
+      "id": "7cdbf60f-458f-4329-bade-ad652a3e1c30",
+      "credentials": {
+        "openAiApi": {
+          "id": "5kanIJKH5rgtA0cb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "name": "Document Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        368
+      ],
+      "id": "96d7fe4b-eeb2-446f-8e49-80c23f1ab07b"
+    },
+    {
+      "parameters": {
+        "content": "📄 **โหลดเอกสาร → Vector**\n\n• รองรับ: PDF, DOC, TXT\n• Chunk อัตโนมัติ\n• Embedding: text-embedding-3-small (1536 dim)\n• Index: n8n-demo-index",
+        "height": 140,
+        "width": 200,
+        "color": 5
+      },
+      "name": "Note: Processing",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        656,
+        176
+      ],
+      "id": "a0c9a378-38da-4b1d-9722-44857bb5638d"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        528
+      ],
+      "webhookId": "rag-pinecone-chat",
+      "id": "d73263e9-2b66-48aa-b0a1-1857e13d7ec5"
+    },
+    {
+      "parameters": {
+        "content": "💬 **ส่วนที่ 2: Query (ถามตอบ)**\n\nเริ่มต้นด้วยการคลิก 'Chat'\n\nแล้วถามคำถาม เช่น:\n• นโยบายการลาของบริษัทเป็นยังไง?\n• ขั้นตอนการเบิกค่าใช้จ่าย?\n• ใครติดต่อเรื่อง IT?\n\nAI จะค้นหาคำตอบจากเอกสารใน Pinecone",
+        "height": 200,
+        "width": 260,
+        "color": 3
+      },
+      "name": "Note: Query",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        512
+      ],
+      "id": "6655e8dc-09c8-42e3-b525-150597ecb71e"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "คุณเป็นผู้ช่วย AI ที่ตอบคำถามจากเอกสารที่เก็บไว้ในระบบ\n\n**คำแนะนำ:**\n• ตอบจากข้อมูลที่ค้นพบในเอกสารเป็นหลัก\n• ถ้าไม่พบข้อมูล ให้บอกว่าไม่มีในเอกสาร\n• ตอบเป็นภาษาไทย กระชับ ชัดเจน\n• อ้างอิงแหล่งที่มาถ้าเป็นไปได้"
+        }
+      },
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        528
+      ],
+      "id": "ef1381c1-26bd-44d5-941d-66ee86ed2211"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "ค้นหาข้อมูลจากเอกสารใน Pinecone",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-demo-index",
+          "mode": "list"
+        },
+        "topK": 5,
+        "options": {}
+      },
+      "name": "Pinecone Query",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        752
+      ],
+      "id": "f22d5702-cf34-4c74-a1c2-66b388bc3f53",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Tz2sLHgYGbG1jT4N",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        736
+      ],
+      "id": "6edf03b2-ee2f-492a-b072-64782e3684e3",
+      "credentials": {
+        "openAiApi": {
+          "id": "5kanIJKH5rgtA0cb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "OpenAI Embeddings Query",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        912
+      ],
+      "id": "9881b808-174a-409e-989d-720d1d31831d",
+      "credentials": {
+        "openAiApi": {
+          "id": "5kanIJKH5rgtA0cb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "🤖 **AI RAG Agent**\n\n• รับคำถามจากผู้ใช้\n• ค้นหาเอกสารจาก Pinecone\n• สร้างคำตอบจาก GPT-4o-mini\n\n**Embeddings ต้องเหมือนกับตอน Load!**\n(ใช้ text-embedding-3-small)",
+        "height": 240,
+        "width": 284,
+        "color": 2
+      },
+      "name": "Note: AI Agent",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        544
+      ],
+      "id": "104da9e9-a2e1-4405-8966-9aceb15e2753"
+    },
+    {
+      "parameters": {
+        "content": "⚠️ **สิ่งสำคัญ: Embeddings ต้องตรงกัน!**\n\n**ตอน Load:** text-embedding-3-small (1536 dim)\n**ตอน Query:** text-embedding-3-small (1536 dim)\n\nถ้าไม่ตรงกัน → ค้นหาไม่เจอ!\n\n**Pinecone Config:**\n• Project: n8n-rag-course\n• Index: n8n-demo-index\n• Dimension: 1536",
+        "height": 336,
+        "width": 280
+      },
+      "name": "Note: Warning",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        944,
+        64
+      ],
+      "id": "f55a7360-c593-4365-aa0b-d70ec680a470"
+    },
+    {
+      "parameters": {
+        "content": "💡 **คำแนะนำการใช้งาน**\n\n**ขั้นตอนที่ 1: Load Data (ทำครั้งแรก)**\n1. อัปโหลดเอกสารไปที่ Google Drive Folder\n2. แก้ไข YOUR_DRIVE_FOLDER_ID ใน node Search Files\n3. กด Execute Workflow\n4. รอจนเสร็จ (ข้อมูลถูกบันทึกลง Pinecone)\n\n**ขั้นตอนที่ 2: Query (ถามตอบ)**\n1. กดปุ่ม Chat ที่มุมซ้ายล่าง\n2. พิมพ์คำถามเกี่ยวกับเอกสาร\n3. AI จะตอบจากข้อมูลที่โหลดไว้\n\n**ตั้งค่า Credentials:**\n• Google Drive (สำหรับ Load Data)\n• Pinecone (ทั้ง Load และ Query)\n• OpenAI (ทั้ง Embeddings และ Chat)",
+        "height": 220,
+        "width": 480,
+        "color": 6
+      },
+      "name": "Note: Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -240
+      ],
+      "id": "60bffcc2-23b0-4208-920a-748cb05b967b"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Load Data Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Files": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Insert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Insert",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Document Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Insert",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Query": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Embeddings Query": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Query",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e34f2fd1-15d5-47f9-8f52-d68f2517fc5c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cb1b027a5238410dc7b357f3ae9b7ae44201f4d2fd2a646370dabfb7c8c2f056"
+  },
+  "id": "AIHCQGj1JPNCQnSG",
+  "tags": []
+}

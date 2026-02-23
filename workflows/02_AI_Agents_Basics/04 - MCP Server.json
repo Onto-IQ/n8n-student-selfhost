@@ -1,0 +1,172 @@
+{
+  "name": "04 - MCP Server (ให้ AI อื่นใช้ Tools ของเรา)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🌐 **03 - MCP Server: ให้ AI อื่นใช้ Tools ของเรา**\n\n**แนวคิดหลัก:** กลับด้านจาก MCP Client\n• เราสร้าง Tools ใน n8n\n• เปิดเป็น MCP Server\n• AI ภายนอกเชื่อมต่อมาใช้\n\n**ใน Workflow นี้:**\n• MCP Trigger รอ AI ภายนอกเชื่อมต่อ\n• Tools: Calculator, Gmail, Calendar\n• AI อื่นเรียกใช้ผ่าน MCP Protocol\n\n💡 เปรียบเสมือน: เราเป็นโรงงานผลิตอาหาร ส่งให้ร้านอื่นขาย",
+        "width": 480,
+        "height": 220,
+        "color": 6
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, -40]
+    },
+    {
+      "parameters": {
+        "path": "mcp-server-demo"
+      },
+      "name": "MCP Server Trigger",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [400, 240],
+      "webhookId": "mcp-server-demo"
+    },
+    {
+      "parameters": {
+        "content": "🔔 **MCP Server Trigger**\n\nรอ AI Agent ภายนอก\nเชื่อมต่อเข้ามาใช้งาน\n\n**Path:** mcp-server-demo\n**Webhook ID:** สร้างอัตโนมัติ\n\nเมื่อ AI ภายนอกเชื่อมต่อ:\n• Trigger จะเปิดใช้งาน\n• Tools ของเราพร้อมให้ใช้\n• AI ภายนอกเรียกผ่าน API",
+        "width": 260,
+        "height": 180,
+        "color": 1
+      },
+      "name": "Note: Trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 160]
+    },
+    {
+      "parameters": {},
+      "name": "Calculator Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [680, 160]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $fromAI('To', '', 'string') }}",
+        "subject": "={{ $fromAI('Subject', '', 'string') }}",
+        "message": "={{ $fromAI('Message', '', 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "name": "Gmail Tool",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [680, 320],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "start": "={{ $fromAI('Start', '', 'string') }}",
+        "end": "={{ $fromAI('End', '', 'string') }}",
+        "useDefaultReminders": true,
+        "additionalFields": {
+          "summary": "={{ $fromAI('Summary', '', 'string') }}"
+        }
+      },
+      "name": "Calendar Tool",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [680, 480],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "YOUR_CALENDAR_CREDENTIAL",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "🛠️ **Tools ที่เปิดให้ใช้**\n\n**3 Tools ที่ AI ภายนอกเรียกใช้ได้:**\n\n1️⃣ **Calculator**\n   • คำนวณเลขพื้นฐาน\n   • ไม่ต้องตั้งค่า Credentials\n\n2️⃣ **Gmail**\n   • ส่งอีเมลผ่าน Gmail\n   • ต้องตั้งค่า Gmail OAuth\n\n3️⃣ **Calendar**\n   • สร้างกิจกรรมใน Google Calendar\n   • ต้องตั้งค่า Calendar OAuth\n\n💡 AI ภายนอกจะเห็น Tools เหล่านี้\nและเรียกใช้ผ่าน $fromAI()",
+        "width": 260,
+        "height": 240,
+        "color": 2
+      },
+      "name": "Note: Tools",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 640]
+    },
+    {
+      "parameters": {
+        "content": "📚 **ความรู้ปี 2026: MCP Server คืออะไร?**\n\n**คำนึงถึง Architecture นี้:**\n```\n[AI Agent ภายนอก] ←→ [MCP Client] ←→ [MCP Server Trigger] ←→ [n8n Tools]\n    (Claude, Cursor)    (ในฝั่งเขา)      (ในฝั่งเรา)         (Calculator, Gmail)\n```\n\n**MCP Server ทำหน้าที่:**\n1. รับ Request จาก AI ภายนอก\n2. แปลงเป็นการเรียกใช้ n8n Tools\n3. ส่งผลลัพธ์กลับไป\n\n**ใช้งานจริง:**\n• Claude Desktop ต่อกับ n8n เพื่อส่งอีเมล\n• Cursor IDE ต่อกับ n8n เพื่อคิวรี่ฐานข้อมูล\n• Custom AI Agent ต่อกับ n8n Workflow ของเรา\n\n**เปรียบเทียบ:**\n| ฝั่ง | บทบาท |\n|-----|------|\n| MCP Client | ไปใช้ Tools คนอื่น |\n| MCP Server | ให้คนอื่นใช้ Tools เรา |",
+        "width": 480,
+        "height": 280,
+        "color": 5
+      },
+      "name": "Note: Education",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1040, 200]
+    },
+    {
+      "parameters": {
+        "content": "⚠️ **การตั้งค่าสำคัญ**\n\n**ขั้นตอนเปิดใช้งาน:**\n1. ตั้งค่า Credentials สำหรับ Gmail และ Calendar\n2. เปิดใช้งาน Workflow (Active)\n3. MCP Server จะพร้อมรับการเชื่อมต่อ\n\n**การเชื่อมต่อจากภายนอก:**\n• ใช้ n8n Webhook URL + Path: mcp-server-demo\n• หรือใช้ n8n MCP Server URL ที่กำหนด\n\n**ตัวอย่างการใช้งาน:**\nใน Claude Desktop config:\n```json\n{\n  \"mcpServers\": {\n    \"n8n-tools\": {\n      \"url\": \"https://your-n8n.webhook/mcp-server-demo\"\n    }\n  }\n}\n```\n\n**ทดสอบ:**\n1. เปิดใช้งาน Workflow\n2. AI ภายนอกจะเห็น Tools ที่เราเปิดไว้\n3. ลองสั่งให้ AI ส่งอีเมลผ่าน Tools ของเรา",
+        "width": 480,
+        "height": 240,
+        "color": 4
+      },
+      "name": "Note: Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1040, 560]
+    }
+  ],
+  "connections": {
+    "Calculator Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}

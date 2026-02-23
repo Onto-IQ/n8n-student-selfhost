@@ -1,0 +1,582 @@
+{
+  "name": "03 - Candidate Screening from Gmail",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📧 **03 - คัดกรองใบสมัครจาก Gmail**\n\nWorkflow สำหรับ HR รับและคัดกรองใบสมัครอัตโนมัติ:\n1. **Gmail Trigger** - รับอีเมลพร้อม Resume จากผู้สมัคร\n2. **ดึง Job Description** - จาก Google Drive\n3. **AI Agent** - วิเคราะห์และให้คะแนนใบสมัคร\n4. **Google Sheets** - บันทึกผลการคัดกรอง\n\n✨ รองรับไฟล์: PDF, TXT, DOCX",
+        "width": 520,
+        "height": 200,
+        "color": 6
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [240, 40]
+    },
+    {
+      "parameters": {
+        "filters": {
+          "subjectContains": "สมัครงาน,Resume,CV,ใบสมัคร",
+          "hasAttachment": true
+        },
+        "options": {}
+      },
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [400, 320],
+      "webhookId": "candidate-screening-gmail",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "📧 **Gmail Trigger**\n\nรับอีเมลใหม่ที่มี:\n• คำในหัวข้อ: สมัครงาน, Resume, CV, ใบสมัคร\n• มีไฟล์แนบ (Attachment)\n\n💡 ผู้สมัครส่งอีเมลพร้อม Resume มาที่ HR",
+        "width": 260,
+        "height": 160,
+        "color": 1
+      },
+      "name": "Note: Gmail",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $input.first().json;\nconst attachments = email.attachmentDetails || [];\nconst from = email.from || {};\nconst subject = email.subject || '';\nconst body = email.text || email.html || '';\n\n// หาไฟล์ Resume (pdf, doc, docx, txt)\nconst resumeFiles = attachments.filter(att => {\n  const ext = att.filename?.toLowerCase() || '';\n  return ext.endsWith('.pdf') || ext.endsWith('.doc') || ext.endsWith('.docx') || ext.endsWith('.txt');\n});\n\n// สร้างข้อมูลผู้สมัคร\nconst candidate = {\n  email: from.value || from,\n  name: from.name || subject.split('-')[0]?.trim() || 'ไม่ระบุ',\n  subject: subject,\n  message: body.substring(0, 500),\n  attachments: resumeFiles,\n  hasResume: resumeFiles.length > 0,\n  receivedAt: new Date().toISOString()\n};\n\nconsole.log('Candidate:', candidate);\nreturn [{ json: candidate }];"
+      },
+      "name": "Extract Candidate Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 320]
+    },
+    {
+      "parameters": {
+        "content": "⚙️ **Extract Data**\n\nแยกข้อมูลจากอีเมล:\n• อีเมลผู้สมัคร\n• ชื่อ (จาก subject หรือ from)\n• ไฟล์ Resume (pdf, doc, txt)\n• ข้อความในอีเมล",
+        "width": 200,
+        "height": 140,
+        "color": 3
+      },
+      "name": "Note: Extract",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 480]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false, "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "has-resume",
+              "leftValue": "={{ $json.hasResume }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "name": "Has Resume?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [960, 320]
+    },
+    {
+      "parameters": {
+        "content": "❓ **ตรวจสอบ Resume**\n\nมีไฟล์ Resume แนบมาหรือไม่?\nถ้าไม่มี → ส่งอีเมลตอบกลับขอ Resume",
+        "width": 180,
+        "height": 100,
+        "color": 4
+      },
+      "name": "Note: Check",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [920, 480]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "YOUR_JOB_DESC_FILE_ID",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "name": "Download Job Description",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [1280, 160],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YOUR_DRIVE_CREDENTIAL",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "name": "Extract Job Description",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [1520, 160]
+    },
+    {
+      "parameters": {
+        "content": "📄 **Job Description**\n\nดึงไฟล์ Job Description\nจาก Google Drive\nเพื่อใช้เปรียบเทียบกับ Resume",
+        "width": 200,
+        "height": 120,
+        "color": 5
+      },
+      "name": "Note: JobDesc",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1440, 40]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Loop Attachments",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1280, 320]
+    },
+    {
+      "parameters": {
+        "content": "🔄 **Loop**\n\nประมวลผลทีละไฟล์\nถ้ามีหลายไฟล์แนบมา",
+        "width": 160,
+        "height": 80,
+        "color": 6
+      },
+      "name": "Note: Loop",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1240, 440]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": { "caseSensitive": false, "typeValidation": "strict", "version": 2 },
+                "conditions": [
+                  {
+                    "id": "pdf-check",
+                    "leftValue": "={{ $json.attachments[0].filename?.toLowerCase() }}",
+                    "rightValue": ".pdf",
+                    "operator": { "type": "string", "operation": "contains" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": false, "typeValidation": "strict", "version": 2 },
+                "conditions": [
+                  {
+                    "id": "doc-check",
+                    "leftValue": "={{ $json.attachments[0].filename?.toLowerCase() }}",
+                    "rightValue": ".doc",
+                    "operator": { "type": "string", "operation": "contains" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "doc"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": false, "typeValidation": "strict", "version": 2 },
+                "conditions": [
+                  {
+                    "id": "txt-check",
+                    "leftValue": "={{ $json.attachments[0].filename?.toLowerCase() }}",
+                    "rightValue": ".txt",
+                    "operator": { "type": "string", "operation": "contains" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "txt"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "File Type Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [1520, 320]
+    },
+    {
+      "parameters": {
+        "content": "📁 **File Type**\n\nแยกตามประเภทไฟล์:\n• PDF → Extract PDF\n• DOC/DOCX → Extract DOC\n• TXT → Extract TXT",
+        "width": 180,
+        "height": 120,
+        "color": 2
+      },
+      "name": "Note: Switch",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1480, 480]
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "name": "Extract PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [1800, 240]
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "name": "Extract DOC/TXT",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [1800, 400]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an HR recruiter evaluating resumes against job descriptions.\n\nInput:\n- Resume:\n************************\n{{ $json.data }}\n************************\n\n- Job Description:\n************************\n{{ $('Extract Job Description').item.json.data }}\n************************\n\nYour task: Analyze the resume, compare with job description, and return a JSON object with:\n- Firstname: Candidate's first name\n- Lastname: Candidate's last name\n- Age: Candidate's age\n- Gender: Male or Female\n- Education: Highest education level\n- Matching Score: Percentage (0-100) matching job requirements\n- Hire: Either \"Hire\" or \"Not Hire\"\n- Recommendation: Short comment on candidate suitability",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "name": "AI Agent Screening",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [2080, 320]
+    },
+    {
+      "parameters": {
+        "content": "🤖 **AI Screening**\n\nAI วิเคราะห์ Resume:\n• เปรียบเทียบกับ Job Description\n• ให้คะแนน Matching Score\n• ตัดสิน Hire/Not Hire\n• แนะนำสั้นๆ",
+        "width": 200,
+        "height": 140,
+        "color": 3
+      },
+      "name": "Note: AI",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2040, 480]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [2080, 560],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"Firstname\": \"สมชาย\",\n  \"Lastname\": \"ใจดี\",\n  \"Gender\": \"Male\",\n  \"Age\": 28,\n  \"Education\": \"Bachelor's Degree\",\n  \"Matching Score\": 85,\n  \"Hire\": \"Hire\",\n  \"Recommendation\": \"มีทักษะตรงกับตำแหน่ง แนะนำให้สัมภาษณ์\"\n}"
+      },
+      "name": "Structured Output",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [2320, 560]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Received At": "={{ $json.receivedAt }}",
+            "Email": "={{ $json.email }}",
+            "Firstname": "={{ $json.output.Firstname }}",
+            "Lastname": "={{ $json.output.Lastname }}",
+            "Gender": "={{ $json.output.Gender }}",
+            "Age": "={{ $json.output.Age }}",
+            "Education": "={{ $json.output.Education }}",
+            "Matching Score": "={{ $json.output['Matching Score'] }}",
+            "Hire": "={{ $json.output.Hire }}",
+            "Recommendation": "={{ $json.output.Recommendation }}",
+            "Subject": "={{ $json.subject }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            { "id": "Received At", "displayName": "Received At", "type": "string" },
+            { "id": "Email", "displayName": "Email", "type": "string" },
+            { "id": "Firstname", "displayName": "Firstname", "type": "string" },
+            { "id": "Lastname", "displayName": "Lastname", "type": "string" },
+            { "id": "Gender", "displayName": "Gender", "type": "string" },
+            { "id": "Age", "displayName": "Age", "type": "string" },
+            { "id": "Education", "displayName": "Education", "type": "string" },
+            { "id": "Matching Score", "displayName": "Matching Score", "type": "string" },
+            { "id": "Hire", "displayName": "Hire", "type": "string" },
+            { "id": "Recommendation", "displayName": "Recommendation", "type": "string" },
+            { "id": "Subject", "displayName": "Subject", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [2360, 320],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_SHEETS_CREDENTIAL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "📊 **Google Sheets**\n\nบันทึกผลการคัดกรอง:\n• ข้อมูลผู้สมัคร\n• Matching Score\n• ผลตัดสิน Hire/Not Hire\n• คำแนะนำจาก AI",
+        "width": 200,
+        "height": 140,
+        "color": 4
+      },
+      "name": "Note: Sheets",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2320, 160]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Re: {{ $json.subject }} - ได้รับใบสมัครแล้ว",
+        "emailType": "text",
+        "message": "เรียน {{ $json.output.Firstname }} {{ $json.output.Lastname }},\n\nขอบคุณสำหรับการสมัครงานกับเรา\n\nข้อมูลของคุณ:\n• คะแนนความเหมาะสม: {{ $json.output['Matching Score'] }}/100\n• ผลการพิจารณาเบื้องต้น: {{ $json.output.Hire }}\n\n{{ $json.output.Recommendation }}\n\nทีม HR จะติดต่อกลับภายใน 7 วันทำการ\n\nขอแสดงความนับถือ,\nทีม HR",
+        "options": {}
+      },
+      "name": "Send Confirmation Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2600, 320],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "📧 **Confirmation**\n\nส่งอีเมลตอบกลับผู้สมัคร:\n• ยืนยันได้รับใบสมัคร\n• แจ้งผลเบื้องต้น\n• แจ้งระยะเวลาติดต่อกลับ",
+        "width": 200,
+        "height": 120,
+        "color": 5
+      },
+      "name": "Note: Reply",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2560, 480]
+    },
+    {
+      "parameters": {
+        "content": "💡 **การตั้งค่า**\n\n1. แก้ไข YOUR_JOB_DESC_FILE_ID ใน Download Job Description\n2. แก้ไข YOUR_SHEET_ID ใน Save to Google Sheets\n3. ตั้งค่า Credentials สำหรับ Gmail, Drive, Sheets, OpenAI\n4. ตั้งค่า Gmail Trigger ให้ตรงกับอีเมล HR\n\n📋 คอลัมน์ Google Sheets ที่ต้องมี:\nReceived At, Email, Firstname, Lastname, Gender, Age, Education, Matching Score, Hire, Recommendation, Subject",
+        "width": 400,
+        "height": 180,
+        "color": 6
+      },
+      "name": "Note: Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [2440, 680]
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Candidate Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Candidate Data": {
+      "main": [
+        [
+          {
+            "node": "Has Resume?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Resume?": {
+      "main": [
+        [
+          {
+            "node": "Download Job Description",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Job Description": {
+      "main": [
+        [
+          {
+            "node": "Extract Job Description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Attachments": {
+      "main": [
+        [
+          {
+            "node": "File Type Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Type Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract DOC/TXT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract DOC/TXT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Screening",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract DOC/TXT": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Screening",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Screening": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Screening",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent Screening",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}
