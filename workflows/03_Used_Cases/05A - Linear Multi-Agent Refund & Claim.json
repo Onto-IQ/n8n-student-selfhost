@@ -1,0 +1,457 @@
+{
+  "name": "05A - Linear Multi-Agent Refund & Claim (Sequential)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🔀 **05A - Linear Multi-Agent: Refund & Claim (Sequential Approach)**\n\n**แนวคิดหลัก:** การทำงานแบบเรียงลำดับขั้นตอน (Step-by-Step)\nแต่ละ Agent ทำงานต่อจาก Agent ก่อนหน้าโดยไม่มีการวนกลับ\n\n**ขั้นตอน:**\n1. รับข้อมูลคำร้อง → 2. วิเคราะห์ Intent → 3. ตรวจสอบนโยบาย → 4. ร่างคำตอบ → 5. ส่งอีเมล\n\n⚠️ **ข้อจำกัด:** หากข้อมูลผิดพลาดในกลางทาง ระบบไม่สามารถย้อนกลับไปแก้ไขได้\n\n💡 เหมาะสำหรับ: Case ที่ไม่ซับซ้อน และมีลำดับการทำงานที่แน่นอน",
+        "width": 520,
+        "height": 260,
+        "color": 6
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, -80]
+    },
+    {
+      "parameters": {
+        "formTitle": "คำร้องขอคืนเงิน / เคลมสินค้า",
+        "formDescription": "กรุณากรอกข้อมูลคำร้องของคุณ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Order ID",
+              "fieldType": "text",
+              "placeholder": "เช่น ORD-12345",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Customer Email",
+              "fieldType": "email",
+              "placeholder": "email@example.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Claim Reason",
+              "fieldType": "textarea",
+              "placeholder": "อธิบายเหตุผลที่ต้องการคืนเงินหรือเคลม",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Image URL",
+              "fieldType": "text",
+              "placeholder": "ลิงก์รูปภาพสินค้า (ถ้ามี)",
+              "requiredField": false
+            }
+          ]
+        },
+        "responseMode": "lastNode"
+      },
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [400, 240],
+      "webhookId": "refund-claim-linear"
+    },
+    {
+      "parameters": {
+        "content": "📝 **Form Trigger**\n\nรับข้อมูลคำร้องจากลูกค้า\n\n**ฟิลด์ที่รับ:**\n• Order ID - เลขที่คำสั่งซื้อ\n• Customer Email - อีเมลลูกค้า\n• Claim Reason - เหตุผลคำร้อง\n• Image URL - รูปภาพสินค้า (ถ้ามี)\n\n💡 ใช้ responseMode: lastNode เพื่อรอผลลัพธ์สุดท้าย",
+        "width": 240,
+        "height": 180,
+        "color": 3
+      },
+      "name": "Note: Form",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [160, 160]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= Order ID: {{ $json['Order ID'] }}\nCustomer Email: {{ $json['Customer Email'] }}\nClaim Reason: {{ $json['Claim Reason'] }}\nImage URL: {{ $json['Image URL'] }}\n\nวิเคราะห์ว่าคำร้องนี้เป็นประเภทใด",
+        "options": {
+          "systemMessage": "คุณเป็นผู้ช่วยวิเคราะห์คำร้องลูกค้า\n\nหน้าที่: วิเคราะห์ข้อความและจัดประเภทคำร้อง\n\nประเภทที่มี:\n• REFUND - ขอคืนเงิน\n• REPLACEMENT - ขอเปลี่ยนสินค้า\n• TECHNICAL_SUPPORT - ขอความช่วยเหลือด้านเทคนิค\n\nตอบกลับในรูปแบบ JSON:\n{\n  \"category\": \"REFUND|REPLACEMENT|TECHNICAL_SUPPORT\",\n  \"confidence\": 0.0-1.0,\n  \"summary\": \"สรุปคำร้อง\"\n}"
+        }
+      },
+      "name": "Intent Classifier",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [680, 240]
+    },
+    {
+      "parameters": {
+        "content": "🎯 **Intent Classifier Agent**\n\n**หน้าที่:** วิเคราะห์และจัดประเภทคำร้อง\n\n**ประเภทที่จำแนก:**\n• REFUND - ขอคืนเงิน\n• REPLACEMENT - ขอเปลี่ยนสินค้า\n• TECHNICAL_SUPPORT - ช่วยเหลือเทคนิค\n\n**Output:** JSON ที่มี category, confidence, summary\n\n💡 ใช้ System Message กำหนดรูปแบบการตอบกลับ",
+        "width": 220,
+        "height": 200,
+        "color": 2
+      },
+      "name": "Note: Intent",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 400]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model 1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [680, 480],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "=",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.category }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "exists"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "name": "Filter Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [980, 240]
+    },
+    {
+      "parameters": {
+        "content": "🔍 **Filter Check**\n\n**หน้าที่:** ตรวจสอบว่า Intent Classifier\nให้ผลลัพธ์ถูกต้องหรือไม่\n\n**เงื่อนไข:**\n• ถ้ามี category → ผ่าน (true branch)\n• ถ้าไม่มี category → ส่งไป Manual Review (false branch)\n\n⚠️ การป้องกัน Error ในลำดับถัดไป",
+        "width": 200,
+        "height": 160,
+        "color": 4
+      },
+      "name": "Note: Filter",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [960, 400]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= Category: {{ $json.category }}\nClaim Reason: {{ $json.summary }}\nOrder ID: {{ $json['Order ID'] }}\n\nตรวจสอบว่าคำร้องนี้ผ่านตามนโยบายบริษัทหรือไม่",
+        "options": {
+          "systemMessage": "คุณเป็นผู้ตรวจสอบนโยบายบริษัท\n\nหน้าที่: ตรวจสอบคำร้องตามนโยบายที่ให้มา\n\n**เกณฑ์การตรวจสอบ:**\n• สินค้าซื้อภายใน 7 วัน → รับคืน\n• สินค้าชำรุดจากโรงงาน → รับเคลม\n• ลูกค้ามีหลักฐานการซื้อ → ผ่าน\n\n**ตอบกลับ:**\n{\n  \"policy_passed\": true|false,\n  \"reason\": \"เหตุผล\",\n  \"max_refund_amount\": 0\n}"
+        }
+      },
+      "name": "Policy Validator",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [1280, 240]
+    },
+    {
+      "parameters": {
+        "content": "📋 **Policy Validator Agent**\n\n**หน้าที่:** ตรวจสอบคำร้องตามนโยบายบริษัท\n\n**เชื่อมต่อกับ:** Vector Store (Knowledge Base)\nที่เก็บนโยบายการคืนเงิน\n\n**ตรวจสอบ:**\n• ระยะเวลาซื้อสินค้า\n• สภาพสินค้า\n• หลักฐานการซื้อ\n\n⚠️ ถ้าไม่ผ่าน → ตอบปฏิเสธทันที",
+        "width": 220,
+        "height": 180,
+        "color": 1
+      },
+      "name": "Note: Policy",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1260, 400]
+    },
+    {
+      "parameters": {},
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [1500, 240]
+    },
+    {
+      "parameters": {
+        "name": "refund_policy",
+        "toolDescription": "ค้นหานโยบายการคืนเงินและเคลมสินค้าของบริษัท"
+      },
+      "name": "In-Memory Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.3,
+      "position": [1500, 400]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model 2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [1280, 560],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.1,
+      "position": [1500, 560],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= Policy Result: {{ $json.policy_passed }}\nReason: {{ $json.reason }}\nMax Refund: {{ $json.max_refund_amount }}\nCustomer Email: {{ $json['Customer Email'] }}\nOrder ID: {{ $json['Order ID'] }}\n\nร่างอีเมลตอบกลับลูกค้า",
+        "options": {
+          "systemMessage": "คุณเป็นผู้ช่วยเขียนอีเมลตอบกลับลูกค้า\n\nหน้าที่: ร่างอีเมลมืออาชีพตามผลการตรวจสอบ\n\n**รูปแบบอีเมล:**\n• หัวข้อ: ชัดเจนและสุภาพ\n• เนื้อหา: ระบุเลขคำสั่งซื้อและผลการพิจารณา\n• รายละเอียด: ถ้าอนุมัติ ระบุยอดเงินคืน\n• ท้ายจดหมาย: ขอบคุณและข้อมูลติดต่อ\n\n**ภาษา:** ภาษาไทยที่สุภาพและเป็นกันเอง"
+        }
+      },
+      "name": "Response Generator",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [1700, 240]
+    },
+    {
+      "parameters": {
+        "content": "✍️ **Response Generator Agent**\n\n**หน้าที่:** ร่างอีเมลตอบกลับลูกค้า\n\n**เงื่อนไข:**\n• ถ้าผ่านนโยบาย → แจ้งอนุมัติและยอดคืน\n• ถ้าไม่ผ่าน → แจ้งปฏิเสธพร้อมเหตุผล\n\n**ต้องระบุ:**\n• เลขที่คำสั่งซื้อ\n• รายละเอียดการคืนเงิน\n• ขั้นตอนถัดไป",
+        "width": 220,
+        "height": 160,
+        "color": 5
+      },
+      "name": "Note: Response",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1680, 400]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model 3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [1700, 560],
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Customer Email'] }}",
+        "subject": "=ผลการพิจารณาคำร้องขอคืนเงิน - Order {{ $json['Order ID'] }}",
+        "message": "={{ $json.generated_email_body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "name": "Send Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1960, 240],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_GMAIL_CREDENTIAL",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "📧 **Send Gmail**\n\nส่งอีเมลตอบกลับลูกค้า\n\n**ใช้ข้อมูลจาก:**\n• Customer Email - ผู้รับ\n• Order ID - หัวข้ออีเมล\n• Generated Email Body - เนื้อหา\n\n⚠️ **สิ้นสุด Workflow**\n\n💡 ใน Linear Approach จบที่นี่\nไม่มีการตรวจสอบคุณภาพก่อนส่ง",
+        "width": 200,
+        "height": 160,
+        "color": 3
+      },
+      "name": "Note: Gmail",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1940, 400]
+    },
+    {
+      "parameters": {
+        "content": "❌ **Manual Review (False Branch)**\n\nเมื่อ Intent Classifier ไม่สามารถ\nจัดประเภทคำร้องได้ชัดเจน\n\n**ต้องการการแทรกแซง:**\n• ส่งแจ้งเตือนไปยังทีม Support\n• หรือบันทึกลง Google Sheets\n\n⚠️ ข้อมูลไม่ผ่าน Filter\nต้องตรวจสอบด้วยมือ",
+        "width": 220,
+        "height": 140,
+        "color": 4
+      },
+      "name": "Note: Manual Review",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [980, 560]
+    },
+    {
+      "parameters": {
+        "content": "📊 **เปรียบเทียบ Linear vs Orchestration**\n\n| คุณสมบัติ | Linear (A) | Orchestration (B) |\n|-----------|------------|-------------------|\n| ทิศทาง | One-way | Loop-back |\n| Self-Correction | ❌ ไม่มี | ✅ มี |\n| QA Review | ❌ ไม่มี | ✅ มี |\n| Iteration Control | ❌ ไม่มี | ✅ มี |\n| Complexity | ง่าย | ซับซ้อน |\n\n💡 ดู Workflow 05B เพื่อเปรียบเทียบ",
+        "width": 480,
+        "height": 200,
+        "color": 6
+      },
+      "name": "Note: Comparison",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1280, 720]
+    }
+  ],
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model 1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Intent Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Classifier": {
+      "main": [
+        [
+          {
+            "node": "Filter Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Check": {
+      "main": [
+        [
+          {
+            "node": "Policy Validator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Note: Manual Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model 2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Policy Validator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Policy Validator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "In-Memory Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "In-Memory Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Validator": {
+      "main": [
+        [
+          {
+            "node": "Response Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model 3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Response Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Response Generator": {
+      "main": [
+        [
+          {
+            "node": "Send Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}
