@@ -1,95 +1,231 @@
-# คู่มือติดตั้ง n8n (Self-Host) สำหรับนักเรียน (ใช้ Cloudflare Tunnels)
+# 🎓 n8n Student Self-Host - คู่มือสำหรับนักเรียน
 
-ระบบนี้ออกแบบมาสำหรับการเรียนรู้ในชั้นเรียน ช่วยให้นักเรียนสามารถรัน [n8n](https://n8n.io/) บนเครื่อง PC ของตัวเอง (Local) และยังสามารถรับ Webhook จาก API ภายนอก (เช่น LINE, Facebook, Stripe) ผ่านระบบเครือข่ายของมหาวิทยาลัยหรือ Firewall ได้อย่างปลอดภัย โดยใช้ Cloudflare Tunnels
+โปรเจกต์นี้รวมทั้ง **ระบบติดตั้ง n8n แบบ Self-Host** และ **ชุด Workflow สำหรับการเรียนการสอน** ตั้งแต่พื้นฐานจนถึงระดับสูง
 
-## 📋 สิ่งที่ต้องเตรียม (Prerequisites)
+## 📂 โครงสร้างโปรเจกต์
 
-1. [Docker Desktop](https://www.docker.com/products/docker-desktop/) ติดตั้งบนเครื่องคอมพิวเตอร์และกำลังทำงานอยู่
-2. โดเมนเนมส่วนตัว (สามารถจดราคาประหยัดได้ที่ [Namecheap](https://www.namecheap.com/))
-3. บัญชี [Cloudflare](https://dash.cloudflare.com/) (ฟรี)
-
----
-
-## 🛠️ ขั้นตอนที่ 1: การเตรียม Domain และเชื่อมต่อ Cloudflare
-
-1. **จดโดเมน**: ทำการจดทะเบียน Domain name ที่ต้องการผ่าน Namecheap หรือผู้ให้บริการอื่นๆ
-2. **เพิ่ม Site ใน Cloudflare**:
-   * สมัครหรือล็อกอินเข้า Cloudflare
-   * กด `Add a Site` แล้วใส่ชื่อโดเมนของคุณ
-   * เลือกแผนการใช้งานเป็นแบบ `Free`
-3. **เปลี่ยน Nameservers**:
-   * ไปที่ระบบจัดการโดเมนของ Namecheap (หรือที่ที่คุณจดโดเมนไว้)
-   * เปลี่ยน Nameservers ให้เป็นค่าที่ Cloudflare กำหนดมาให้ (มักจะเป็น `xxx.ns.cloudflare.com`)
-   * รอให้ระบบอัปเดต (อาจใช้เวลา 5 นาที - 24 ชั่วโมง ขึ้นอยู่กับผู้ให้บริการ)
-
----
-
-## 🚀 ขั้นตอนที่ 2: สร้าง Zero Trust Tunnel (Cloudflare)
-
-1. ในหน้า Dashboard ของโดเมนคุณที่ Cloudflare ไปที่เมนู **Zero Trust** (อยู่แถบซ้ายมือ)
-2. ไปที่ **Networks** -> **Tunnels** แล้วกด `Create a tunnel`
-3. เลือก **Cloudflared**
-4. ตั้งชื่อ Tunnel ของคุณ (เช่น `n8n-my-pc`) และกด Save
-5. ในหน้า **Install and run a connector** ให้ดูในกล่องคำสั่ง Docker 
-   * หาคำว่า `--token` แล้วคัดลอก **ข้อความยาวๆ ที่อยู่หลัง --token** เก็บไว้ (นี่คือ `CLOUDFLARE_TUNNEL_TOKEN`)
-6. ในหน้า **Route traffic**:
-   * **Public hostname**: ใส่ Subdomain (เช่น `n8n`) และเลือก Domain ของคุณ (เช่น `n8n.your-domain.com`)
-   * **Service**: เลือก Type เป็น `HTTP` และกำหนด URL เป็น `n8n:5678` (ชี้ไปที่ชื่อ container ของ n8n)
-   * กด Save tunnel
+```
+n8n-student-selfhost/
+├── 📁 workflows/              # ชุด Workflow สำหรับการเรียน
+│   ├── 01_Basics/            # พื้นฐาน n8n (6 workflows)
+│   ├── 02_AI_Agents_Basics/  # AI Agents (5 workflows)
+│   └── 03_Used_Cases/        # Use Cases จริง (7 workflows)
+│
+├── 📁 Credentials/           # คู่มือการตั้งค่า Credentials
+│   ├── google-oauth.md
+│   ├── line-api.md
+│   └── openai-api.md
+│
+├── 📁 Case Studies/          # ตัวอย่าง Case จากธุรกิจจริง
+├── docker-compose.yml        # ไฟล์สำหรับรัน n8n
+├── .env.example             # ตัวอย่างการตั้งค่า
+└── README.md                # ไฟล์นี้
+```
 
 ---
 
-## 💻 ขั้นตอนที่ 3: ตั้งค่าและรัน n8n บนเครื่องของตนเอง
+## 🚀 Quick Start - เริ่มต้นใช้งาน
 
-1. **เตรียมไฟล์ Configuration**:
-   คัดลอกไฟล์ `.env.example` แล้วเปลี่ยนชื่อเป็น `.env`
-   
+### สำหรับผู้ที่ยังไม่มี n8n
+
+ติดตั้ง n8n บนเครื่องตัวเองพร้อม Cloudflare Tunnel (สำหรับรับ Webhook):
+
+1. **Clone โปรเจกต์**
    ```bash
-   # หากใช้งานบน Windows สามารถก๊อปปี้ผ่าน File Explorer แล้วแก้ชื่อได้เลย
+   git clone https://github.com/Onto-IQ/n8n-student-selfhost.git
+   cd n8n-student-selfhost
+   ```
+
+2. **ตั้งค่า Environment**
+   ```bash
    cp .env.example .env
+   # แก้ไขไฟล์ .env ตามคู่มือด้านล่าง
    ```
 
-2. **แก้ไขไฟล์ `.env`**:
-   เปิดไฟล์ `.env` ขึ้นมาด้วย Text Editor (เช่น Notepad, VSCode) และแก้ข้อมูลให้ตรงกับของคุณ:
-
-   ```env
-   # เปลี่ยนเป็นรหัสผ่านสำหรับ Database
-   POSTGRES_PASSWORD=your_secure_password
-   
-   # ชื่อโดเมนที่คุณตั้งในขั้นตอนที่ 2.6 (ไม่ต้องใส่ https://)
-   N8N_HOST=n8n.your-domain.com
-   
-   # Webhook URL เต็ม (ต้องมี https://)
-   WEBHOOK_URL=https://n8n.your-domain.com/
-   
-   # Token ที่ก๊อปปี้มาในขั้นตอนที่ 2.5
-   CLOUDFLARE_TUNNEL_TOKEN=eyJhIjoi.......
-   ```
-
-3. **รัน Docker Compose**:
-   เปิด Terminal (หรือ Command Prompt) ในโฟลเดอร์นี้ แล้วพิมพ์คำสั่ง:
-   
+3. **รัน n8n**
    ```bash
    docker compose up -d
    ```
-   
-   *(รอให้ระบบดาวน์โหลด Image และเปิดระบบสักครู่...)*
+
+4. **เข้าใช้งาน**
+   - Local: http://localhost:5678
+   - Online: https://n8n.your-domain.com (ถ้าตั้งค่า Cloudflare Tunnel)
 
 ---
 
-## 🎉 ขั้นตอนที่ 4: เริ่มต้นใช้งาน n8n
+## 📚 เนื้อหาการเรียน (18 Workflows)
 
-1. เปิด Web Browser พิมพ์ `http://localhost:5678` หรือ URL โดเมนของคุณ (เช่น `https://n8n.your-domain.com`)
-2. ในการเข้าใช้งานครั้งแรก ระบบจะให้คุณตั้งค่า Owner Account ของ n8n
-3. เมื่อเข้าระบบได้แล้ว คุณสามารถสร้าง Workflow และใช้ Webhook URL ส่งออกไปให้ระบบภายนอกเชื่อมต่อเข้ามาได้เลย!
+### 🌱 Phase 1: พื้นฐาน (01_Basics)
+สำหรับผู้ไม่เคยใช้ n8n - [ดูรายละเอียด](workflows/01_Basics/README.md)
+
+| ลำดับ | หัวข้อ | สิ่งที่เรียนรู้ |
+|-------|--------|----------------|
+| 01 | JSON Basics | Key-Value, Data Types |
+| 02 | Flow Control | IF, Switch Nodes |
+| 03 | Loop | Loop, Item Lists |
+| 04 | Data Transformation | Edit Fields, Code Node |
+| 05 | External APIs | HTTP Request |
+| 06 | Webhooks | Webhook Trigger |
+
+**⏱️ เวลา:** 1-2 วัน
 
 ---
 
-## 🛑 การหยุดการทำงาน
+### 🚀 Phase 2: AI Agents (02_AI_Agents_Basics)
+เริ่มสร้าง AI Agents - [ดูรายละเอียด](workflows/02_AI_Agents_Basics/README.md)
 
-เมื่อเลิกใช้งานและต้องการปิด n8n ให้พิมพ์คำสั่งใน Terminal:
+| ลำดับ | หัวข้อ | สิ่งที่เรียนรู้ |
+|-------|--------|----------------|
+| 01 | Basic Chat Agent | AI Agent + Memory |
+| 02 | Agent with Tools | Function Calling |
+| 03 | Simple RAG | AI อ่านเอกสาร |
+| 04 | MCP Client | เชื่อม External Tools |
+| 04 | MCP Server | เปิด n8n เป็น Server |
+
+**⏱️ เวลา:** 2-3 วัน
+
+---
+
+### 🎯 Phase 3: Use Cases จริง (03_Used_Cases)
+ตัวอย่างจากโลกธุรกิจ - [ดูรายละเอียด](workflows/03_Used_Cases/README.md)
+
+| ระดับ | ไฟล์ | ใช้งาน |
+|-------|------|--------|
+| 🟢 พื้นฐาน | LINE Chat Gemini | Chat Bot |
+| 🟢 พื้นฐาน | Form → Google Workspace | ระบบรับเรื่อง |
+| 🟡 กลาง | Candidate Screening | HR Automation |
+| 🟡 กลาง | RAG with Pinecone | Vector DB |
+| 🔴 สูง | Multi-Agent Linear | Sequential Pattern |
+| 🔴 สูง | Multi-Agent Orchestration | 2026 Pattern |
+| 🔴 สูง | Sub-Workflows | Modular Design |
+
+**⏱️ เวลา:** 3-5 วัน
+
+---
+
+## �️ คู่มือการติดตั้ง (Detailed Setup)
+
+### 📋 Prerequisites
+
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. โดเมนเนมส่วนตัว ([Namecheap](https://www.namecheap.com/) แนะนำ)
+3. บัญชี [Cloudflare](https://dash.cloudflare.com/) (ฟรี)
+
+### ขั้นตอนที่ 1: เตรียม Domain และ Cloudflare
+
+1. **จดโดเมน** ที่ Namecheap หรือผู้ให้บริการอื่น
+2. **เพิ่ม Site ใน Cloudflare**:
+   - เข้า Cloudflare → Add a Site → ใส่โดเมน
+   - เลือก Free Plan
+3. **เปลี่ยน Nameservers** ที่ Namecheap เป็นค่าที่ Cloudflare ให้มา
+   - รอ 5 นาที - 24 ชั่วโมง
+
+### ขั้นตอนที่ 2: สร้าง Cloudflare Tunnel
+
+1. Cloudflare Dashboard → **Zero Trust** → **Networks** → **Tunnels**
+2. **Create a tunnel** → เลือก **Cloudflared**
+3. ตั้งชื่อ Tunnel (เช่น `n8n-my-pc`)
+4. คัดลอก **Token** จากคำสั่ง Docker (หลัง `--token`)
+5. **Route traffic**:
+   - Public hostname: `n8n.your-domain.com`
+   - Service: HTTP → `n8n:5678`
+
+### ขั้นตอนที่ 3: ตั้งค่า .env และรัน
+
+```bash
+# 1. คัดลอกไฟล์ตั้งค่า
+cp .env.example .env
+
+# 2. แก้ไข .env ด้วย Text Editor
+# POSTGRES_PASSWORD=your_password
+# N8N_HOST=n8n.your-domain.com
+# WEBHOOK_URL=https://n8n.your-domain.com/
+# CLOUDFLARE_TUNNEL_TOKEN=eyJh...
+
+# 3. รัน n8n
+docker compose up -d
+```
+
+### ขั้นตอนที่ 4: เข้าใช้งาน
+
+- Local: http://localhost:5678
+- Online: https://n8n.your-domain.com
+- ตั้งค่า Owner Account ครั้งแรก
+
+---
+
+## 🛑 การจัดการ n8n
+
+### หยุดการทำงาน
 ```bash
 docker compose down
 ```
 
-> **หมายเหตุ:** โฟลเดอร์ `data` จะถูกสร้างขึ้นมาอัตโนมัติเพื่อเก็บไฟล์ฐานข้อมูลของ n8n และ PostgreSQL ไม่ควรลบโฟลเดอร์นี้หากไม่ต้องการให้ข้อมูลการสร้าง Flow ของคุณหายไป
+### ดู Logs
+```bash
+docker compose logs -f n8n
+```
+
+### อัปเดต n8n เป็นเวอร์ชันล่าสุด
+```bash
+docker compose pull
+docker compose up -d
+```
+
+### สำรองข้อมูล
+โฟลเดอร์ `data/` เก็บฐานข้อมูลทั้งหมด ควรสำรองก่อนลบ Container:
+```bash
+# สำรอง
+cp -r data data-backup-$(date +%Y%m%d)
+```
+
+> **⚠️ คำเตือน:** อย่าลบโฟลเดอร์ `data/` ถ้าต้องการเก็บ Workflow ที่สร้างไว้
+
+---
+
+## 🆘 แก้ไขปัญหาเบื้องต้น
+
+### n8n ไม่เปิด
+```bash
+# ตรวจสอบสถานะ
+docker compose ps
+
+# ดู error
+docker compose logs n8n
+```
+
+### Webhook ไม่ทำงาน
+- ตรวจสอบ `WEBHOOK_URL` ใน `.env`
+- ตรวจสอบ Cloudflare Tunnel ทำงานอยู่หรือไม่
+- ทดสอบ: `curl https://n8n.your-domain.com/webhook-test`
+
+### ลืมรหัสผ่าน n8n
+```bash
+# Reset owner account
+docker compose exec n8n n8n user-management:reset
+```
+
+---
+
+## 📖 เอกสารอื่นๆ
+
+- [📁 คู่มือ Credentials](Credentials/) - วิธีขอ API Key ต่างๆ
+- [📁 ตัวอย่าง Case Studies](Case%20Studies/) - จากธุรกิจจริง
+- [🌐 n8n Documentation](https://docs.n8n.io/)
+- [💬 n8n Community](https://community.n8n.io/)
+
+---
+
+## 📝 License
+
+MIT License - ใช้เพื่อการศึกษาได้ฟรี
+
+---
+
+<div align="center">
+
+**สร้างด้วย ❤️ สำหรับนักเรียน n8n**
+
+[เริ่มเรียน Phase 1 →](workflows/01_Basics/README.md)
+
+</div>
