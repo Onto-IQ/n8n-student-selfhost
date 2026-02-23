@@ -1,0 +1,138 @@
+{
+  "name": "05B-Sub: QA Reviewer",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "✅ **QA Reviewer Sub-Workflow**\n\n**หน้าที่:** ตรวจสอบคุณภาพอีเมลตอบกลับลูกค้า\n\n**Input:** draftEmail, finalAmount\n**Output:** approved (boolean), feedback, requires_correction\n\n💡 ใช้ AI ตรวจสอบความสุภาพ ความถูกต้อง ก่อนส่งจริง"
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, -100],
+      "id": "note-overview"
+    },
+    {
+      "parameters": {
+        "event": "onReceived"
+      },
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [400, 240],
+      "id": "trigger"
+    },
+    {
+      "parameters": {
+        "content": "⚡ **Execute Workflow Trigger**\n\nรับข้อมูลจาก Main Workflow\n\n**รับค่า:**\n• draftEmail - เนื้อหาอีเมลฉบับร่าง\n• finalAmount - ยอดเงินคืนที่แจ้ง"
+      },
+      "name": "Note: Trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [160, 160],
+      "id": "note-trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Draft Email:\n{{ $json.draftEmail }}\n\nFinal Amount: {{ $json.finalAmount }}\n\nReview this email before sending to customer.",
+        "options": {
+          "systemMessage": "คุณเป็น QA Reviewer สำหรับอีเมลลูกค้า\n\n**หน้าที่:** ตรวจสอบคุณภาพก่อนส่ง\n\n**เกณฑ์การตรวจสอบ:**\n• ภาษาสุภาพ เป็นมิตร (ผ่าน=ใช่/ไม่ผ่าน=ไม่ใช่)\n• ข้อมูลครบถ้วน (เลขคำสั่งซื้อ, ยอดเงิน, ขั้นตอน)\n• ไม่มีข้อมูลผิดพลาด\n• ความยาวเหมาะสม (ไม่สั้น/ยาวเกินไป)\n\n**การตัดสินใจ:**\n• ถ้าผ่านทุกข้อ → approved: true\n• ถ้าไม่ผ่านอย่างน้อย 1 ข้อ → approved: false\n\n**ตอบกลับ JSON:**\n{\n  \"approved\": true|false,\n  \"feedback\": \"ข้อเสนอแนะหรือสาเหตุที่ไม่ผ่าน\",\n  \"requires_correction\": true|false\n}\n\nถ้าไม่ผ่าน ต้องระบุชัดเจนว่าต้องแก้ไขอะไร"
+        }
+      },
+      "name": "Review Quality",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [680, 240],
+      "id": "reviewer"
+    },
+    {
+      "parameters": {
+        "content": "🤖 **AI QA Reviewer**\n\nใช้ AI ตรวจสอบคุณภาพอีเมล\n\n**ตรวจสอบ:**\n• สำนวนสุภาพ\n• ข้อมูลครบถ้วน\n• ความถูกต้อง\n• ความเหมาะสม\n\n**Output:**\n• approved: ผ่าน/ไม่ผ่าน\n• feedback: คำแนะนำ"
+      },
+      "name": "Note: Reviewer",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 400],
+      "id": "note-reviewer"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [680, 560],
+      "id": "openai",
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"approved\": {\n      \"type\": \"boolean\"\n    },\n    \"feedback\": {\n      \"type\": \"string\"\n    },\n    \"requires_correction\": {\n      \"type\": \"boolean\"\n    }\n  },\n  \"required\": [\"approved\", \"feedback\", \"requires_correction\"]\n}"
+      },
+      "name": "Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1,
+      "position": [980, 240],
+      "id": "parser"
+    },
+    {
+      "parameters": {
+        "content": "📋 **Output Parser**\n\nบังคับ AI ตอบเป็น JSON\n\nSchema:\n• approved: boolean (ผ่าน QA?)\n• feedback: string (คำแนะนำ)\n• requires_correction: boolean (ต้องแก้ไข?)"
+      },
+      "name": "Note: Parser",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [960, 400],
+      "id": "note-parser"
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Review Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Review Quality",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Quality": {
+      "main": [
+        [
+          {
+            "node": "Output Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}

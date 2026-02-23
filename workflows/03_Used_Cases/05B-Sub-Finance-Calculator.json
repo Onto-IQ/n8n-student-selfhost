@@ -1,0 +1,167 @@
+{
+  "name": "05B-Sub: Finance Calculator",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "💰 **Finance Calculator Sub-Workflow**\n\n**หน้าที่:** คำนวณยอดเงินคืนสุดท้าย\n\n**Input:** amount, policyPassed\n**Output:** original_amount, fees, tax_adjustment, final_amount\n\n💡 ใช้ Calculator Tool คำนวณตามเงื่อนไขนโยบาย"
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, -100],
+      "id": "note-overview"
+    },
+    {
+      "parameters": {
+        "event": "onReceived"
+      },
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [400, 240],
+      "id": "trigger"
+    },
+    {
+      "parameters": {
+        "content": "⚡ **Execute Workflow Trigger**\n\nรับข้อมูลจาก Main Workflow\n\n**รับค่า:**\n• amount - จำนวนเงินขอคืน\n• policyPassed - ผ่านนโยบายหรือไม่"
+      },
+      "name": "Note: Trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [160, 160],
+      "id": "note-trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Original Amount: {{ $json.amount }}\nPolicy Passed: {{ $json.policyPassed }}\n\nCalculate final refund amount.",
+        "options": {
+          "systemMessage": "คุณเป็น Financial Calculator สำหรับระบบคืนเงิน\n\n**หน้าที่:** คำนวณยอดเงินคืนสุดท้าย\n\n**กฎการคำนวณ:**\n• ค่าธรรมเนียมการคืน: 5% ของยอดเต็ม\n• ภาษี: คืนตามสัดส่วน (7% VAT)\n• ถ้าไม่ผ่านนโยบาย: final_amount = 0\n\n**ตัวอย่างการคำนวณ:**\nถ้าขอคืน 1,000 บาท:\n- ค่าธรรมเนียม: 50 บาท (5%)\n- VAT ที่คืน: 70 บาท (7% ของ 1,000)\n- Final: 1,000 - 50 + 70 = 1,020 บาท\n\n**ตอบกลับ JSON:**\n{\n  \"original_amount\": number,\n  \"fees\": number,\n  \"tax_adjustment\": number,\n  \"final_amount\": number\n}"
+        }
+      },
+      "name": "Calculate Finance",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [680, 240],
+      "id": "calculator"
+    },
+    {
+      "parameters": {
+        "content": "🤖 **AI Finance Calculator**\n\nใช้ AI + Calculator Tool\nคำนวณยอดคืนเงิน\n\n**คำนวณ:**\n• ค่าธรรมเนียม 5%\n• ภาษีมูลค่าเพิ่ม 7%\n• ยอดสุทธิ\n\n**Output:** JSON ครบถ้วน"
+      },
+      "name": "Note: Calculator",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 400],
+      "id": "note-calculator"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [680, 560],
+      "id": "openai",
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Calculator Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [980, 240],
+      "id": "calc-tool"
+    },
+    {
+      "parameters": {
+        "content": "🧮 **Calculator Tool**\n\nให้ AI ใช้เครื่องคิดเลข\nคำนวณตัวเลขได้แม่นยำ"
+      },
+      "name": "Note: Calc Tool",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [960, 400],
+      "id": "note-calc"
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"original_amount\": {\n      \"type\": \"number\"\n    },\n    \"fees\": {\n      \"type\": \"number\"\n    },\n    \"tax_adjustment\": {\n      \"type\": \"number\"\n    },\n    \"final_amount\": {\n      \"type\": \"number\"\n    }\n  },\n  \"required\": [\"original_amount\", \"fees\", \"tax_adjustment\", \"final_amount\"]\n}"
+      },
+      "name": "Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1,
+      "position": [1280, 240],
+      "id": "parser"
+    },
+    {
+      "parameters": {
+        "content": "📋 **Output Parser**\n\nบังคับ AI ตอบเป็น JSON\n\nSchema:\n• original_amount: ยอดเดิม\n• fees: ค่าธรรมเนียม\n• tax_adjustment: ภาษี\n• final_amount: ยอดสุทธิ"
+      },
+      "name": "Note: Parser",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [1260, 400],
+      "id": "note-parser"
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Calculate Finance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Calculate Finance",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calculate Finance",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Finance": {
+      "main": [
+        [
+          {
+            "node": "Output Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}

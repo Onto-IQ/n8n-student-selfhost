@@ -1,27 +1,30 @@
 {
-  "name": "05B - Orchestration Multi-Agent Refund & Claim (Manager-Led)",
+  "name": "05B - Multi-Agent Refund & Claim (2026 Pattern)",
   "nodes": [
     {
       "parameters": {
-        "content": "🎭 **05B - Orchestration Multi-Agent: Refund & Claim (Manager-Led Approach)**\n\n**แนวคิดหลัก:** มี Orchestrator (ผู้จัดการ) คอยควบคุมการทำงาน\nและสามารถ Loop กลับไปแก้ไขข้อผิดพลาดได้\n\n**สถาปัตยกรรม:**\n```\nForm → State Manager → Loop Gate → Orchestrator → Switch → Sub-Agents\n                           ↑___________________________________↓\n```\n\n**จุดเด่น:**\n✅ Self-Correction - แก้ไขข้อผิดพลาดได้\n✅ QA Reviewer - ตรวจสอบคุณภาพก่อนส่ง\n✅ Loop Control - ป้องกัน Infinite Loop\n✅ Human-in-the-loop - แทรกคนได้ตอนเช็ค",
+        "content": "🎭 **05B - Multi-Agent Refund & Claim (2026 Pattern)**\n\n**แนวคิดปี 2026:** ใช้ AI Agent + toolWorkflow แทนการสร้าง Sub-Agents ซ้อนซ้อน\n\n**สถาปัตยกรรมใหม่:**\n```\nForm → Main AI Agent (Orchestrator)\n              ↓ (เรียก Tools)\n    ├→ toolWorkflow: Intent Classifier\n    ├→ toolWorkflow: Policy Validator\n    ├→ toolWorkflow: Finance Calculator\n    └→ toolWorkflow: QA Reviewer\n              ↓\n    Output Parser → IF → Gmail\n              ↓ (ไม่ผ่าน)\n         วนกลับ Agent\n```\n\n**จุดเด่น:**\n✅ ลดจาก 20+ nodes เหลือ ~12 nodes\n✅ ใช้ toolWorkflow (n8n 2.8.x standard)\n✅ ไม่มี Code Node ซับซ้อน\n✅ Sub-Workflows แยกจัดการง่าย",
+        "height": 300,
         "width": 560,
-        "height": 280,
         "color": 6
       },
       "name": "Note: Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [200, -100]
+      "position": [
+        -1808,
+        -416
+      ],
+      "id": "b21fb703-d355-46de-974d-e52ae1f829aa"
     },
     {
       "parameters": {
-        "formTitle": "คำร้องขอคืนเงิน / เคลมสินค้า (Orchestration)",
-        "formDescription": "กรอกข้อมูลคำร้อง - ระบบจะตรวจสอบแบบละเอียดด้วย AI Orchestrator",
+        "formTitle": "คำร้องขอคืนเงิน / เคลมสินค้า (2026 Pattern)",
+        "formDescription": "กรอกข้อมูลคำร้อง - ระบบ AI จะตรวจสอบผ่าน Multi-Agent Tools",
         "formFields": {
           "values": [
             {
               "fieldLabel": "Order ID",
-              "fieldType": "text",
               "placeholder": "เช่น ORD-12345",
               "requiredField": true
             },
@@ -50,52 +53,328 @@
             },
             {
               "fieldLabel": "Image URL",
-              "fieldType": "text",
-              "placeholder": "ลิงก์รูปภาพสินค้า (ถ้ามี)",
-              "requiredField": false
+              "placeholder": "ลิงก์รูปภาพสินค้า (ถ้ามี)"
             }
           ]
         },
-        "responseMode": "lastNode"
+        "responseMode": "lastNode",
+        "options": {}
       },
       "name": "Form Trigger",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.5,
-      "position": [400, 240],
-      "webhookId": "refund-claim-orchestrator"
+      "position": [
+        -1472,
+        240
+      ],
+      "webhookId": "88990f9e-b4bc-4fc4-9775-c5e76b12aaf8",
+      "id": "fea2d6d9-63aa-4ab5-b59a-3efd1c948a27"
     },
     {
       "parameters": {
-        "content": "📝 **Form Trigger**\n\nรับข้อมูลคำร้องแบบละเอียด\n\n**ฟิลด์พิเศษสำหรับ Orchestration:**\n• Order ID, Email, Reason\n• Purchase Date - คำนวณระยะเวลา\n• Amount - จำนวนเงิน\n• Image URL - ตรวจสอบสภาพสินค้า\n\n💡 ข้อมูลครบ → Orchestrator ตัดสินใจได้ดีขึ้น",
-        "width": 220,
-        "height": 180,
+        "content": "📝 **Form Trigger**\n\nรับข้อมูลคำร้องจากลูกค้า\n\n**ฟิลด์:**\n• Order ID, Customer Email\n• Claim Reason - เหตุผล\n• Purchase Date - วันที่ซื้อ\n• Amount - จำนวนเงิน\n• Image URL - รูปภาพ (optional)\n\n💡 responseMode: lastNode รอผลสุดท้าย",
+        "width": 200,
         "color": 3
       },
       "name": "Note: Form",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [160, 160]
+      "position": [
+        -1712,
+        160
+      ],
+      "id": "b7cf501f-b884-4b8a-a968-700086312b57"
     },
     {
       "parameters": {
-        "jsCode": "// State Manager - จัดการสถานะและนับรอบการทำงาน\nconst currentState = $input.first().json;\n\n// ดึงค่า iteration ปัจจุบัน (ถ้าไม่มีให้เริ่มที่ 0)\nconst iteration = currentState.iteration || 0;\n\n// ดึงประวัติการทำงาน (ถ้าไม่มีให้เริ่มเป็น array ว่าง)\nconst history = currentState.conversation_history || [];\n\n// ตรวจสอบว่ามีคำสั่งจาก Sub-Agent หรือไม่\nconst lastAction = currentState.last_action || 'START';\nconst requiresCorrection = currentState.requires_correction || false;\n\n// เพิ่ม iteration\nconst newIteration = iteration + 1;\n\n// บันทึกลงประวัติ\nhistory.push({\n  iteration: newIteration,\n  timestamp: new Date().toISOString(),\n  action: lastAction,\n  data: {\n    orderId: currentState['Order ID'],\n    amount: currentState.Amount,\n    reason: currentState['Claim Reason']\n  }\n});\n\n// ส่งต่อข้อมูลที่อัพเดตแล้ว\nreturn [{\n  json: {\n    ...currentState,\n    iteration: newIteration,\n    conversation_history: history,\n    case_id: `CASE-${Date.now()}`,\n    status: 'PROCESSING'\n  }\n}];"
+        "promptType": "define",
+        "text": "=Order ID: {{ $json['Order ID'] }}\nCustomer: {{ $json['Customer Email'] }}\nAmount: {{ $json.Amount }}\nPurchase Date: {{ $json['Purchase Date'] }}\nReason: {{ $json['Claim Reason'] }}\n\nดำเนินการคำร้องนี้โดยใช้ Tools ที่มีให้",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "คุณคือ Orchestrator จัดการเคสคืนเงิน\n\n**หน้าที่:** ใช้ Tools เพื่อดำเนินการคำร้อง\n\n**Tools ที่มี:**\n• classify_intent - วิเคราะห์ประเภทคำร้อง (Refund/Replacement/Support)\n• validate_policy - ตรวจสอบนโยบายบริษัท\n• calculate_finance - คำนวณยอดคืนเงินสุดท้าย\n• qa_review - ตรวจสอบคุณภาพก่อนส่ง\n\n**ขั้นตอน:**\n1. เรียก classify_intent เพื่อรู้ประเภท\n2. เรียก validate_policy เพื่อตรวจสอบ\n3. เรียก calculate_finance เพื่อคำนวณ\n4. สรุปผลเป็น JSON\n\n**ห้าม:** ไม่ต้องเรียก qa_review (จะตรวจในขั้นตอนถัดไป)"
+        }
       },
-      "name": "State Manager",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 240]
+      "name": "Main AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1184,
+        240
+      ],
+      "id": "4a3540b5-1ac4-4df9-89bb-8d89c2ff8aa0"
     },
     {
       "parameters": {
-        "content": "🗃️ **State Manager (หัวใจสำคัญ!)**\n\n**หน้าที่:** จัดการสถานะทั้งหมดของ Case\n\n**เก็บข้อมูล:**\n• iteration_count - นับรอบการทำงาน\n• conversation_history - ประวัติการตัดสินใจ\n• case_id - เลขที่ Case อ้างอิง\n• status - สถานะปัจจุบัน\n\n**Infinite Loop Prevention:**\nเมื่อครบ 5 รอบ → ส่งไป Escalate\n\n💡 Node นี้ถูกเรียกทุกครั้งที่ Sub-Agent เสร็จงาน",
-        "width": 240,
+        "content": "🧠 **Main AI Agent (Orchestrator)**\n\n**หน้าที่:** ควบคุมการทำงานผ่าน Tools\n\n**วิธีทำงาน:**\nเรียกใช้ toolWorkflow ตามลำดับ\nและสรุปผลเป็น JSON\n\n**System Message กำหนด:**\n• Tools ที่ใช้ได้\n• ลำดับการทำงาน\n• รูปแบบผลลัพธ์\n\n💡 ไม่ต้องมี Code Node ซับซ้อน\nAI จัดการเรียก Tools เอง",
         "height": 200,
-        "color": 1
+        "color": 2
       },
-      "name": "Note: State",
+      "name": "Note: Main Agent",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [660, 400]
+      "position": [
+        -1216,
+        400
+      ],
+      "id": "166f2dad-9e48-4c9c-904d-71084b315d07"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1488,
+        512
+      ],
+      "id": "0fe18eea-f644-4b1f-a779-784d7f9e70a8",
+      "credentials": {
+        "openAiApi": {
+          "id": "5kanIJKH5rgtA0cb",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 3
+      },
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        640
+      ],
+      "id": "e71c5ee6-2e74-47ca-83f9-8da319631f67"
+    },
+    {
+      "parameters": {
+        "content": "💾 **Window Buffer Memory**\n\nให้ Agent จำได้ว่า\nกำลังทำอะไรอยู่\n\n**ตั้งค่า:** contextWindowLength: 3\n\n💡 ใช้น้อยพอให้รู้ context\nแต่ไม่เปลือง Token",
+        "height": 120,
+        "width": 180,
+        "color": 5
+      },
+      "name": "Note: Memory",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        784
+      ],
+      "id": "b6469cb1-d63b-464a-a9fc-f19d633e4b58"
+    },
+    {
+      "parameters": {
+        "description": "Classify the intent of the refund claim: REFUND, REPLACEMENT, or SUPPORT",
+        "workflowId": {
+          "__rl": true,
+          "value": "9i6wknKJpFCNj80v",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/9i6wknKJpFCNj80v",
+          "cachedResultName": "05B-Sub: Intent Classifier"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mapping": [
+            {
+              "name": "orderId",
+              "value": "={{ $json['Order ID'] }}",
+              "type": "string"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $json['Claim Reason'] }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "name": "Tool: Intent Classifier",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -896,
+        80
+      ],
+      "id": "9fdf1fe3-8d67-4e3b-a552-214ef65a9e73"
+    },
+    {
+      "parameters": {
+        "description": "Validate claim against company policy using RAG",
+        "workflowId": {
+          "__rl": true,
+          "value": "yz4jzZ41QlQEEP9D",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/yz4jzZ41QlQEEP9D",
+          "cachedResultName": "05B-Sub: Policy Validator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mapping": [
+            {
+              "name": "orderId",
+              "value": "={{ $json['Order ID'] }}",
+              "type": "string"
+            },
+            {
+              "name": "purchaseDate",
+              "value": "={{ $json['Purchase Date'] }}",
+              "type": "string"
+            },
+            {
+              "name": "reason",
+              "value": "={{ $json['Claim Reason'] }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "name": "Tool: Policy Validator",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -640,
+        48
+      ],
+      "id": "4b1c8399-3726-4146-b879-cbc8c8341586"
+    },
+    {
+      "parameters": {
+        "description": "Calculate final refund amount with fees and tax adjustments",
+        "workflowId": {
+          "__rl": true,
+          "value": "EbUy4KAmXm6MYlp1",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/EbUy4KAmXm6MYlp1",
+          "cachedResultName": "05B-Sub: Finance Calculator"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mapping": [
+            {
+              "name": "amount",
+              "value": "={{ $json.Amount }}",
+              "type": "number"
+            },
+            {
+              "name": "policyPassed",
+              "value": "={{ $json.policy_passed }}",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "name": "Tool: Finance Calc",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -832,
+        336
+      ],
+      "id": "22f13cfa-5c43-4fbd-bf2c-b07cb97eae2c"
+    },
+    {
+      "parameters": {
+        "description": "Review email quality before sending. Returns approved: true/false",
+        "workflowId": {
+          "__rl": true,
+          "value": "S27OLSthmc5JFqQI",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/S27OLSthmc5JFqQI",
+          "cachedResultName": "05B-Sub: QA Reviewer"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mapping": [
+            {
+              "name": "draftEmail",
+              "value": "={{ $json.draft_email }}",
+              "type": "string"
+            },
+            {
+              "name": "finalAmount",
+              "value": "={{ $json.final_amount }}",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "name": "Tool: QA Reviewer",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -896,
+        576
+      ],
+      "id": "e949a8a2-22c2-4e4e-9df4-5cc9e1bed187"
+    },
+    {
+      "parameters": {
+        "content": "🔧 **Sub-Workflow Tools (toolWorkflow)**\n\n**แนวคิดปี 2026:**\nแยก Sub-Agents เป็น Workflow ย่อย\nแล้วเรียกผ่าน toolWorkflow\n\n**4 Tools:**\n• Intent Classifier - วิเคราะห์ประเภท\n• Policy Validator - ตรวจสอบนโยบาย (RAG)\n• Finance Calculator - คำนวณยอดคืน\n• QA Reviewer - ตรวจสอบคุณภาพ\n\n**ข้อดี:**\n✅ Sub-Workflow แยกไฟล์ จัดการง่าย\n✅ Reuse ได้หลาย workflow\n✅ ไม่รก Main Workflow\n✅ ติดตั้งผ่าน n8n UI ได้",
+        "height": 220,
+        "width": 280
+      },
+      "name": "Note: Tools",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        736
+      ],
+      "id": "b7fa8e64-c45e-407d-93a1-90e1a7e7f464"
+    },
+    {
+      "parameters": {
+        "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"intent\": {\n      \"type\": \"string\",\n      \"enum\": [\"REFUND\", \"REPLACEMENT\", \"SUPPORT\"]\n    },\n    \"policy_passed\": {\n      \"type\": \"boolean\"\n    },\n    \"final_amount\": {\n      \"type\": \"number\"\n    },\n    \"approved\": {\n      \"type\": \"boolean\"\n    },\n    \"draft_email\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"intent\", \"policy_passed\", \"final_amount\"]\n}"
+      },
+      "name": "Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        544
+      ],
+      "id": "e4e4433f-2180-4038-a6fc-03cf73d63851"
+    },
+    {
+      "parameters": {
+        "content": "📋 **Output Parser (Structured)**\n\n**หน้าที่:** กำหนด Schema ให้ AI\nตอบเป็น JSON ที่มี structure\n\n**Schema ที่กำหนด:**\n• intent: REFUND/REPLACEMENT/SUPPORT\n• policy_passed: true/false\n• final_amount: number\n• approved: true/false\n• draft_email: string\n\n💡 ใช้ n8n 2.8.x outputParserStructured\nเพื่อผลลัพธ์ที่ควบคุมได้",
+        "height": 324,
+        "width": 220,
+        "color": 3
+      },
+      "name": "Note: Parser",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        400
+      ],
+      "id": "b6c8b726-d1b6-4eb1-badd-28bad01e8fd0"
     },
     {
       "parameters": {
@@ -108,375 +387,48 @@
           "conditions": [
             {
               "id": "1",
-              "leftValue": "={{ $json.iteration }}",
-              "rightValue": "=5",
+              "leftValue": "={{ $json.approved }}",
+              "rightValue": "=true",
               "operator": {
-                "type": "number",
-                "operation": "lt"
+                "type": "boolean",
+                "operation": "equals"
               }
             }
           ],
           "combinator": "and"
-        }
+        },
+        "options": {}
       },
-      "name": "Loop Gatekeeper",
+      "name": "Approved?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [980, 240]
+      "position": [
+        -320,
+        240
+      ],
+      "id": "b1bb2552-db35-49e8-8cbd-cdcd4c02972c"
     },
     {
       "parameters": {
-        "content": "🚦 **Loop Gatekeeper**\n\n**หน้าที่:** ป้องกัน AI วนลูปไม่รู้จบ\n\n**ตรวจสอบ:** iteration < 5\n• ผ่าน → ไป Orchestrator (true branch)\n• ไม่ผ่าน → ส่ง Human Escalate (false branch)\n\n⚠️ **สำคัญมาก!**\nป้องกันการเสียค่า API\nจากการวนลูปไม่สิ้นสุด\n\n💡 ถ้าเกิน 5 รอบ = ปัญหาซับซ้อนเกินไป",
-        "width": 200,
-        "height": 180,
-        "color": 4
-      },
-      "name": "Note: Gatekeeper",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [960, 400]
-    },
-    {
-      "parameters": {
-        "content": "⏹️ **Human Escalation (False Branch)**\n\nเมื่อเกิน 5 รอบหรือต้องการแทรกแซง\n\n**การดำเนินการ:**\n• ส่งแจ้งเตือน Slack หาทีม\n• บันทึกลง Google Sheets\n• หยุดการทำงานอัตโนมัติ\n\n⚠️ Case ที่ซับซ้อนเกินไปสำหรับ AI",
-        "width": 200,
+        "content": "🚦 **Quality Gate (IF Node)**\n\n**ตรวจสอบ:** approved = true?\n\n• ผ่าน (true) → ส่ง Gmail\n• ไม่ผ่าน (false) → วนกลับไปแก้ไข\n\n💡 ง่ายกว่า Loop mechanism เดิม\nไม่ต้องมี State Manager ซับซ้อน",
         "height": 140,
+        "width": 200,
         "color": 4
       },
-      "name": "Note: Escalate",
+      "name": "Note: Gate",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [960, 560]
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "= Case ID: {{ $json.case_id }}\nIteration: {{ $json.iteration }}\nHistory: {{ JSON.stringify($json.conversation_history) }}\n\nCurrent Data:\nOrder: {{ $json['Order ID'] }}\nAmount: {{ $json.Amount }}\nReason: {{ $json['Claim Reason'] }}\nPurchase Date: {{ $json['Purchase Date'] }}\n\nAnalyze state and select next action.",
-        "options": {
-          "systemMessage": "คุณคือ Orchestrator (ผู้จัดการเคสเคลม)\n\n**หน้าที่:** วิเคราะห์สถานะปัจจุบันและเลือกใช้ Tool ที่เหมาะสม\n\n**Tools ที่มี:**\n• Intent Classifier - วิเคราะห์ประเภทคำร้อง\n• Policy Validator - ตรวจสอบนโยบาย (ใช้ RAG)\n• Financial Calculator - คำนวณยอดคืน/ภาษี\n• QA Reviewer - ตรวจสอบความถูกต้องก่อนส่ง\n\n**การตัดสินใจ:**\n1. ถ้าเริ่มต้น → เรียก Intent Classifier\n2. ถ้ารู้ Intent แต่ไม่รู้นโยบาย → เรียก Policy Validator\n3. ถ้าผ่านนโยบาย → เรียก Financial Calculator\n4. ถ้าคำนวณเสร็จ → เรียก QA Reviewer\n5. ถ้า QA ไม่ผ่าน → สั่งแก้ไขและวนกลับ\n6. ถ้า QA ผ่าน → สั่ง FINALIZE\n\n**ตอบกลับ:** ชื่อ Tool ที่ต้องการเรียกหรือ FINALIZE"
-        }
-      },
-      "name": "Orchestrator Agent",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [1280, 240]
-    },
-    {
-      "parameters": {
-        "content": "🧠 **Orchestrator Agent (The Brain)**\n\n**หน้าที่:** สมองกลางที่ควบคุมทั้งระบบ\n\n**พลังพิเศษ:**\n• รู้ว่าตอนนี้อยู่รอบที่เท่าไหร่\n• เห็นประวัติการตัดสินใจทั้งหมด\n• ตัดสินใจใช้ Tool ถัดไป\n• สั่งให้วนกลับแก้ไขได้\n\n**System Message กำหนด:**\nลำดับการทำงานและเงื่อนไขการตัดสินใจ\n\n💡 นี่คือจุดต่างจาก Linear Approach",
-        "width": 240,
-        "height": 220,
-        "color": 2
-      },
-      "name": "Note: Orchestrator",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [1260, 420]
-    },
-    {
-      "parameters": {
-        "model": "gpt-4o-mini",
-        "options": {}
-      },
-      "name": "OpenAI Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [1280, 600],
-      "credentials": {
-        "openAiApi": {
-          "id": "YOUR_OPENAI_CREDENTIAL",
-          "name": "OpenAI account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "contextWindowLength": 5
-      },
-      "name": "Window Buffer Memory",
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1,
-      "position": [1280, 720]
-    },
-    {
-      "parameters": {
-        "content": "💾 **Window Buffer Memory**\n\n**หน้าที่:** ให้ Orchestrator จำได้ว่า\nคุยอะไรกันในรอบก่อนหน้า\n\n**การตั้งค่า:**\n• contextWindowLength: 5\n  จำได้ 5 รอบย้อนหลัง\n\n⚠️ **ระวัง Token Usage!**\nยิ่งจำเยอะ = ใช้ Token มาก = ค่าใช้จ่ายสูง\n\n💡 ใช้แค่พอให้รู้ว่าต้องแก้ไขอะไร",
-        "width": 220,
-        "height": 160,
-        "color": 5
-      },
-      "name": "Note: Memory",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [1260, 840]
-    },
-    {
-      "parameters": {
-        "rules": {
-          "rules": [
-            {
-              "value": "INTENT",
-              "output": 0,
-              "conditions": [
-                {
-                  "id": "1",
-                  "leftValue": "={{ $json.selected_tool }}",
-                  "operator": {
-                    "type": "string",
-                    "operation": "equals"
-                  },
-                  "rightValue": "=Intent Classifier"
-                }
-              ]
-            },
-            {
-              "value": "POLICY",
-              "output": 1,
-              "conditions": [
-                {
-                  "id": "1",
-                  "leftValue": "={{ $json.selected_tool }}",
-                  "operator": {
-                    "type": "string",
-                    "operation": "equals"
-                  },
-                  "rightValue": "=Policy Validator"
-                }
-              ]
-            },
-            {
-              "value": "FINANCE",
-              "output": 2,
-              "conditions": [
-                {
-                  "id": "1",
-                  "leftValue": "={{ $json.selected_tool }}",
-                  "operator": {
-                    "type": "string",
-                    "operation": "equals"
-                  },
-                  "rightValue": "=Financial Calculator"
-                }
-              ]
-            },
-            {
-              "value": "QA",
-              "output": 3,
-              "conditions": [
-                {
-                  "id": "1",
-                  "leftValue": "={{ $json.selected_tool }}",
-                  "operator": {
-                    "type": "string",
-                    "operation": "equals"
-                  },
-                  "rightValue": "=QA Reviewer"
-                }
-              ]
-            },
-            {
-              "value": "FINALIZE",
-              "output": 4,
-              "conditions": [
-                {
-                  "id": "1",
-                  "leftValue": "={{ $json.selected_tool }}",
-                  "operator": {
-                    "type": "string",
-                    "operation": "equals"
-                  },
-                  "rightValue": "=FINALIZE"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "name": "Action Router",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 2,
-      "position": [1580, 240]
-    },
-    {
-      "parameters": {
-        "content": "🔀 **Action Router (Switch Node)**\n\n**หน้าที่:** แยกเส้นทางตามคำสั่ง Orchestrator\n\n**เส้นทาง (5 ทาง):**\n• 0: INTENT → Intent Classifier\n• 1: POLICY → Policy Validator\n• 2: FINANCE → Financial Calculator\n• 3: QA → QA Reviewer\n• 4: FINALIZE → จบการทำงาน\n\n💡 Orchestrator ตัดสินใจว่าจะไปทางไหน",
-        "width": 220,
-        "height": 180,
-        "color": 3
-      },
-      "name": "Note: Router",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [1560, 400]
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "= Order ID: {{ $json['Order ID'] }}\nClaim Reason: {{ $json['Claim Reason'] }}\n\nClassify the intent.",
-        "options": {
-          "systemMessage": "คุณเป็น Intent Classifier\n\nวิเคราะห์คำร้องและตอบกลับ JSON:\n{\n  \"intent\": \"REFUND|REPLACEMENT|SUPPORT\",\n  \"confidence\": 0.0-1.0,\n  \"summary\": \"สรุปคำร้อง\"\n}"
-        }
-      },
-      "name": "Sub-Agent: Intent",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [1880, 80]
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "= Intent: {{ $json.intent }}\nOrder: {{ $json['Order ID'] }}\nPurchase Date: {{ $json['Purchase Date'] }}\nReason: {{ $json['Claim Reason'] }}\n\nCheck policy compliance using vector store.",
-        "options": {
-          "systemMessage": "คุณเป็น Policy Validator\n\nตรวจสอบนโยบายและตอบกลับ JSON:\n{\n  \"policy_passed\": true|false,\n  \"reason\": \"เหตุผล\",\n  \"requires_correction\": false\n}"
-        }
-      },
-      "name": "Sub-Agent: Policy",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [1880, 240]
-    },
-    {
-      "parameters": {},
-      "name": "Vector Store Tool",
-      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
-      "typeVersion": 1.1,
-      "position": [2100, 240]
-    },
-    {
-      "parameters": {
-        "name": "refund_policy",
-        "toolDescription": "ค้นหานโยบายการคืนเงิน"
-      },
-      "name": "In-Memory Vector Store",
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
-      "typeVersion": 1.3,
-      "position": [2100, 400]
-    },
-    {
-      "parameters": {},
-      "name": "Embeddings OpenAI",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.1,
-      "position": [2100, 560],
-      "credentials": {
-        "openAiApi": {
-          "id": "YOUR_OPENAI_CREDENTIAL",
-          "name": "OpenAI account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "= Amount: {{ $json.Amount }}\nPolicy Result: {{ $json.policy_passed }}\n\nCalculate final refund amount with fees/tax.",
-        "options": {
-          "systemMessage": "คุณเป็น Financial Calculator\n\nคำนวณยอดคืนเงินและตอบกลับ JSON:\n{\n  \"original_amount\": 0,\n  \"fees\": 0,\n  \"tax_adjustment\": 0,\n  \"final_amount\": 0\n}"
-        }
-      },
-      "name": "Sub-Agent: Finance",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [1880, 400]
-    },
-    {
-      "parameters": {},
-      "name": "Calculator",
-      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
-      "typeVersion": 1,
-      "position": [2100, 720]
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "= Draft Email Content\nFinal Amount: {{ $json.final_amount }}\n\nReview quality before sending.",
-        "options": {
-          "systemMessage": "คุณเป็น QA Reviewer\n\nตรวจสอบคุณภาพและตอบกลับ JSON:\n{\n  \"approved\": true|false,\n  \"feedback\": \"ข้อเสนอแนะ\",\n  \"requires_correction\": false\n}\n\nถ้าไม่ผ่าน → ระบุว่าต้องแก้ไขอะไร"
-        }
-      },
-      "name": "Sub-Agent: QA",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [1880, 560]
-    },
-    {
-      "parameters": {
-        "content": "👷 **Sub-Agents (The Workers)**\n\n**4 Agents ที่ทำงานเฉพาะทาง:**\n\n1️⃣ **Intent Classifier**\n   วิเคราะห์ประเภทคำร้อง\n\n2️⃣ **Policy Validator**\n   ตรวจสอบนโยบาย (ใช้ RAG)\n\n3️⃣ **Financial Calculator**\n   คำนวณยอดคืน (ใช้ Calculator Tool)\n\n4️⃣ **QA Reviewer**\n   ตรวจสอบคุณภาพก่อนส่ง\n\n💡 แต่ละ Agent ทำงานเสร็จ\nส่งผลลัพธ์กลับไป State Manager",
-        "width": 260,
-        "height": 260,
-        "color": 2
-      },
-      "name": "Note: SubAgents",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [1860, 720]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Loop Back to State Manager\nconst input = $input.first().json;\n\n// ตรวจสอบว่า QA ผ่านหรือไม่\nconst qaApproved = input.approved || false;\nconst requiresCorrection = input.requires_correction || false;\n\n// อัพเดต last_action สำหรับรอบถัดไป\nlet nextAction = 'UNKNOWN';\nif (input.intent) nextAction = 'INTENT_DONE';\nelse if (input.policy_passed !== undefined) nextAction = 'POLICY_DONE';\nelse if (input.final_amount !== undefined) nextAction = 'FINANCE_DONE';\nelse if (input.approved !== undefined) nextAction = 'QA_DONE';\n\nreturn [{\n  json: {\n    ...input,\n    last_action: nextAction,\n    requires_correction: requiresCorrection && !qaApproved,\n    // ถ้า QA ไม่ผ่าน Orchestrator จะสั่งให้วนกลับ\n    loop_back: !qaApproved && requiresCorrection\n  }\n}];"
-      },
-      "name": "Loop Back Handler",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [1880, 840]
-    },
-    {
-      "parameters": {
-        "content": "🔄 **Loop Back Handler**\n\n**หน้าที่:** จัดการการวนกลับไปแก้ไข\n\n**ตรวจสอบผล QA:**\n• approved = true → ไป FINALIZE\n• approved = false → วนกลับ State Manager\n\n**อัพเดต:**\n• last_action → บอกว่ารอบนี้ทำอะไร\n• requires_correction → flag สำหรับแก้ไข\n\n💡 จุดนี้ต่างจาก Linear Approach\nที่ไม่มีการวนกลับได้",
-        "width": 220,
-        "height": 180,
-        "color": 1
-      },
-      "name": "Note: LoopBack",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [1860, 980]
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "= Case ID: {{ $json.case_id }}\nCustomer: {{ $json['Customer Email'] }}\nOrder: {{ $json['Order ID'] }}\nFinal Amount: {{ $json.final_amount }}\n\nGenerate final professional email.",
-        "options": {
-          "systemMessage": "คุณเป็นผู้เขียนอีเมลมืออาชีพ\n\nร่างอีเมลสุดท้ายที่จะส่งให้ลูกค้า\n\n**ต้องมี:**\n• หัวข้อชัดเจน\n• ยืนยันเลขคำสั่งซื้อ\n• ระบุยอดเงินคืน\n• ขั้นตอนถัดไป\n• ข้อมูลติดต่อ\n\n**ภาษา:** ไทยสุภาพ"
-        }
-      },
-      "name": "Draft Final Email",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1,
-      "position": [2320, 240]
-    },
-    {
-      "parameters": {
-        "content": "✍️ **Draft Final Email**\n\n**หน้าที่:** ร่างอีเมลสุดท้าย\n\n**จะทำงานเมื่อ:**\nQA Reviewer อนุมัติแล้วเท่านั้น\n\n**ต้องมี:**\n• ยอดเงินคืนสุดท้าย\n• เลขคำสั่งซื้อ\n• ขั้นตอนถัดไป\n• ข้อมูลติดต่อ\n\n💡 ผ่าน QA แล้วจึงส่งได้",
-        "width": 200,
-        "height": 160,
-        "color": 5
-      },
-      "name": "Note: Draft",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [2300, 400]
-    },
-    {
-      "parameters": {
-        "model": "gpt-4o-mini",
-        "options": {}
-      },
-      "name": "OpenAI Chat Model 2",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2,
-      "position": [2320, 560],
-      "credentials": {
-        "openAiApi": {
-          "id": "YOUR_OPENAI_CREDENTIAL",
-          "name": "OpenAI account"
-        }
-      }
+      "position": [
+        -336,
+        400
+      ],
+      "id": "f3980c6f-6169-417b-b870-f9d2cd30064f"
     },
     {
       "parameters": {
         "sendTo": "={{ $json['Customer Email'] }}",
         "subject": "=ผลการพิจารณาคำร้องขอคืนเงิน - Order {{ $json['Order ID'] }}",
-        "message": "={{ $json.generated_email_body }}",
+        "message": "={{ $json.draft_email }}",
         "options": {
           "appendAttribution": false
         }
@@ -484,91 +436,88 @@
       "name": "Send Gmail",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [2580, 240],
+      "position": [
+        -64,
+        240
+      ],
+      "id": "83609691-b999-44f4-a868-9338444882ba",
+      "webhookId": "2405e8ba-549d-453d-8abe-2e91a8004478",
       "credentials": {
         "gmailOAuth2": {
-          "id": "YOUR_GMAIL_CREDENTIAL",
+          "id": "VimcX1jmgFZspP8Z",
           "name": "Gmail account"
         }
       }
     },
     {
       "parameters": {
-        "channel": "=#support-notifications",
-        "text": "=✅ Case {{ $json.case_id }} ดำเนินการเสร็จสิ้น\n• Order: {{ $json['Order ID'] }}\n• Customer: {{ $json['Customer Email'] }}\n• Final Amount: {{ $json.final_amount }}\n• Iterations: {{ $json.iteration }}",
-        "options": {}
+        "resource": "message"
       },
-      "name": "Slack Notification",
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.1,
-      "position": [2580, 400],
-      "credentials": {
-        "slackApi": {
-          "id": "YOUR_SLACK_CREDENTIAL",
-          "name": "Slack account"
-        }
-      }
+      "name": "LINE Notification",
+      "type": "n8n-nodes-base.line",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        400
+      ],
+      "id": "464c626a-a04e-4e2f-a24b-77c755d12ce4"
     },
     {
       "parameters": {
-        "content": "📧📢 **Final Actions**\n\n**เมื่อ QA ผ่านแล้ว:**\n\n1️⃣ **Send Gmail**\n   ส่งอีเมลตอบกลับลูกค้า\n\n2️⃣ **Slack Notification**\n   แจ้งทีมว่า Case เสร็จแล้ว\n   พร้อมสรุปข้อมูล\n\n✅ **สิ้นสุด Workflow**\n\n💡 มี QA Reviewer ตรวจก่อนส่ง\nต่างจาก Linear ที่ส่งทันที",
-        "width": 200,
-        "height": 180,
+        "content": "📧📢 **Final Actions**\n\nเมื่อ QA ผ่านแล้ว:\n• ส่ง Gmail หาลูกค้า\n• แจ้ง LINE ให้ทีมรู้\n\n✅ สิ้นสุด Workflow",
+        "height": 120,
+        "width": 180,
         "color": 3
       },
       "name": "Note: Final",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [2560, 560]
+      "position": [
+        -80,
+        576
+      ],
+      "id": "76f97f7c-5cac-40d5-b3e6-f91719fb985b"
     },
     {
       "parameters": {
-        "content": "📚 **ความรู้ปี 2026: Multi-Agent Orchestration**\n\n**สถาปัตยกรรมที่ถูกต้อง:**\n```\n[Form] → [State] → [Gatekeeper] → [Orchestrator]\n                              ↓\n                        [Switch/Router]\n                              ↓\n        ┌──────────┬──────────┼──────────┬──────────┐\n        ↓          ↓          ↓          ↓          ↓\n    [Intent]   [Policy]   [Finance]    [QA]    [Finalize]\n        │          │          │          │          │\n        └──────────┴──────────┴──────────┴──────────┘\n                              ↓\n                        [Update State] → [Loop Back]\n```\n\n**จุดสำคัญ:**\n• State Manager = หัวใจของการควบคุม\n• Loop Gatekeeper = ป้องกัน Infinite Loop\n• Orchestrator = สมองกลางตัดสินใจ\n• QA Reviewer = ประกันคุณภาพ\n\n**ข้อดีเหนือ Linear:**\n✅ Self-Correction\n✅ Quality Control\n✅ Granular Control\n✅ Modularity",
-        "width": 520,
-        "height": 300,
-        "color": 6
+        "content": "🔄 **Revision Loop (False Branch)**\n\nเมื่อ QA ไม่ผ่าน:\nข้อมูลจะถูกส่งกลับไปที่\nMain AI Agent เพื่อแก้ไข\n\n(เชื่อมต่อย้อนกลับใน connections)",
+        "height": 120,
+        "width": 200,
+        "color": 4
       },
-      "name": "Note: Architecture",
+      "name": "Note: Revision",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [2200, 720]
+      "position": [
+        -336,
+        576
+      ],
+      "id": "f048026c-329f-4c04-a19e-cb93cdf0240e"
+    },
+    {
+      "parameters": {
+        "content": "📚 **ความรู้ปี 2026: toolWorkflow Pattern**\n\n**สถาปัตยกรรมใหม่ (n8n 2.8.x):**\n```\n[Form] → [AI Agent] → [Output Parser] → [IF] → [Gmail]\n              ↓ ↑\n        [toolWorkflow Tools]\n              ↓\n    [Sub-Workflows ย่อย]\n```\n\n**ทำไมดีกว่าเดิม:**\n| ของเก่า | ของใหม่ |\n|--------|--------|\n| Sub-Agents ซ้อนใน workflow เดียว | แยกเป็น Sub-Workflows |\n| State Manager + Code Node | Memory + Agent จัดการเอง |\n| Loop Gatekeeper ซับซ้อน | IF Node ธรรมดา |\n| 20+ nodes | ~12 nodes |\n\n**การสร้าง Sub-Workflow:**\n1. สร้าง Workflow ใหม่สำหรับแต่ละ Agent\n2. ใช้ Execute Workflow Trigger รับข้อมูล\n3. ทำงานเสร็จ Return ผลลัพธ์\n4. ใน Main Workflow ใช้ toolWorkflow เรียก\n\n💡 สะอาด จัดการง่าย ติดตั้งสะดวก",
+        "height": 528,
+        "width": 952,
+        "color": 6
+      },
+      "name": "Note: Education",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -480
+      ],
+      "id": "1fa31ec3-3246-4bce-b523-4a036d7abdd3"
     }
   ],
+  "pinData": {},
   "connections": {
     "Form Trigger": {
       "main": [
         [
           {
-            "node": "State Manager",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "State Manager": {
-      "main": [
-        [
-          {
-            "node": "Loop Gatekeeper",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Loop Gatekeeper": {
-      "main": [
-        [
-          {
-            "node": "Orchestrator Agent",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Note: Escalate",
+            "node": "Main AI Agent",
             "type": "main",
             "index": 0
           }
@@ -579,7 +528,7 @@
       "ai_languageModel": [
         [
           {
-            "node": "Orchestrator Agent",
+            "node": "Main AI Agent",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -590,163 +539,58 @@
       "ai_memory": [
         [
           {
-            "node": "Orchestrator Agent",
+            "node": "Main AI Agent",
             "type": "ai_memory",
             "index": 0
           }
         ]
       ]
     },
-    "Orchestrator Agent": {
-      "main": [
-        [
-          {
-            "node": "Action Router",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Action Router": {
-      "main": [
-        [
-          {
-            "node": "Sub-Agent: Intent",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Sub-Agent: Policy",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Sub-Agent: Finance",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Sub-Agent: QA",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Draft Final Email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Sub-Agent: Intent": {
-      "main": [
-        [
-          {
-            "node": "Loop Back Handler",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Sub-Agent: Policy": {
-      "main": [
-        [
-          {
-            "node": "Loop Back Handler",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Vector Store Tool": {
+    "Tool: Intent Classifier": {
       "ai_tool": [
         [
           {
-            "node": "Sub-Agent: Policy",
+            "node": "Main AI Agent",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "In-Memory Vector Store": {
-      "ai_vectorStore": [
-        [
-          {
-            "node": "Vector Store Tool",
-            "type": "ai_vectorStore",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI": {
-      "ai_embedding": [
-        [
-          {
-            "node": "In-Memory Vector Store",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Sub-Agent: Finance": {
-      "main": [
-        [
-          {
-            "node": "Loop Back Handler",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Calculator": {
+    "Tool: Policy Validator": {
       "ai_tool": [
         [
           {
-            "node": "Sub-Agent: Finance",
+            "node": "Main AI Agent",
             "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "Sub-Agent: QA": {
-      "main": [
+    "Tool: Finance Calc": {
+      "ai_tool": [
         [
           {
-            "node": "Loop Back Handler",
-            "type": "main",
+            "node": "Main AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "Loop Back Handler": {
-      "main": [
+    "Tool: QA Reviewer": {
+      "ai_tool": [
         [
           {
-            "node": "State Manager",
-            "type": "main",
+            "node": "Main AI Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
       ]
     },
-    "Draft Final Email": {
+    "Approved?": {
       "main": [
         [
           {
@@ -757,22 +601,33 @@
         ]
       ]
     },
-    "OpenAI Chat Model 2": {
-      "ai_languageModel": [
+    "Send Gmail": {
+      "main": [
         [
           {
-            "node": "Draft Final Email",
-            "type": "ai_languageModel",
+            "node": "LINE Notification",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Send Gmail": {
+    "Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Main AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Main AI Agent": {
       "main": [
         [
           {
-            "node": "Slack Notification",
+            "node": "Approved?",
             "type": "main",
             "index": 0
           }
@@ -780,14 +635,16 @@
       ]
     }
   },
+  "active": false,
   "settings": {
     "executionOrder": "v1",
-    "saveDataErrorExecution": "all",
-    "saveDataSuccessExecution": "all",
-    "saveManualExecutions": true,
-    "saveExecutionProgress": true
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "staticData": null,
-  "tags": [],
-  "active": false
+  "versionId": "59d9abad-388a-496a-9dd9-749054a9d6de",
+  "meta": {
+    "instanceId": "cb1b027a5238410dc7b357f3ae9b7ae44201f4d2fd2a646370dabfb7c8c2f056"
+  },
+  "id": "uNDeZqk51w3Tr76a",
+  "tags": []
 }

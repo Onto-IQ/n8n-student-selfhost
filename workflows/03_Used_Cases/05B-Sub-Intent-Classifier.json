@@ -1,0 +1,138 @@
+{
+  "name": "05B-Sub: Intent Classifier",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "🔍 **Intent Classifier Sub-Workflow**\n\n**หน้าที่:** วิเคราะห์ประเภทคำร้องจากลูกค้า\n\n**Input:** orderId, reason\n**Output:** intent (REFUND|REPLACEMENT|SUPPORT), confidence, summary\n\n💡 ใช้ AI Agent วิเคราะห์ข้อความและส่งผลกลับ"
+      },
+      "name": "Note: Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, -100],
+      "id": "note-overview"
+    },
+    {
+      "parameters": {
+        "event": "onReceived"
+      },
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [400, 240],
+      "id": "trigger"
+    },
+    {
+      "parameters": {
+        "content": "⚡ **Execute Workflow Trigger**\n\nรับข้อมูลจาก Main Workflow ผ่าน toolWorkflow\n\n**รับค่า:**\n• orderId - เลขคำสั่งซื้อ\n• reason - เหตุผลที่แจ้ง"
+      },
+      "name": "Note: Trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [160, 160],
+      "id": "note-trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Order ID: {{ $json.orderId }}\nReason: {{ $json.reason }}\n\nClassify this claim into one category.",
+        "options": {
+          "systemMessage": "คุณเป็น Intent Classifier สำหรับระบบเคลม\n\n**หน้าที่:** วิเคราะห์ประเภทคำร้องจากลูกค้า\n\n**หมวดหมู่:**\n• REFUND - ขอคืนเงิน (ไม่พอใจสินค้า, เปลี่ยนใจ, สินค้าไม่ตรงปก)\n• REPLACEMENT - ขอเปลี่ยนสินค้า (สินค้าเสียหาย, ได้รับผิดรุ่น)\n• SUPPORT - ต้องการความช่วยเหลือ (สอบถาม, แจ้งปัญหา)\n\n**ตอบกลับ JSON:**\n{\n  \"intent\": \"REFUND|REPLACEMENT|SUPPORT\",\n  \"confidence\": 0.0-1.0,\n  \"summary\": \"สรุปคำร้อง 1 ประโยค\"\n}"
+        }
+      },
+      "name": "Classify Intent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [680, 240],
+      "id": "classifier"
+    },
+    {
+      "parameters": {
+        "content": "🤖 **AI Classifier**\n\nใช้ AI วิเคราะห์ข้อความ\nและจำแนกประเภทคำร้อง\n\n**Output ที่ต้องการ:**\n• intent: REFUND/REPLACEMENT/SUPPORT\n• confidence: 0.0-1.0\n• summary: สรุป 1 ประโยค"
+      },
+      "name": "Note: Classifier",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [660, 400],
+      "id": "note-classifier"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {}
+      },
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [680, 480],
+      "id": "openai",
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"intent\": {\n      \"type\": \"string\",\n      \"enum\": [\"REFUND\", \"REPLACEMENT\", \"SUPPORT\"]\n    },\n    \"confidence\": {\n      \"type\": \"number\",\n      \"minimum\": 0,\n      \"maximum\": 1\n    },\n    \"summary\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"intent\", \"confidence\", \"summary\"]\n}"
+      },
+      "name": "Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1,
+      "position": [980, 240],
+      "id": "parser"
+    },
+    {
+      "parameters": {
+        "content": "📋 **Output Parser**\n\nบังคับ AI ตอบเป็น JSON ที่มี structure\n\nSchema:\n• intent (enum)\n• confidence (number 0-1)\n• summary (string)"
+      },
+      "name": "Note: Parser",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [960, 400],
+      "id": "note-parser"
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Classify Intent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify Intent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Intent": {
+      "main": [
+        [
+          {
+            "node": "Output Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "active": false
+}
