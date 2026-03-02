@@ -172,14 +172,28 @@ docker compose pull
 docker compose up -d
 ```
 
-### สำรองข้อมูล
-โฟลเดอร์ `data/` เก็บฐานข้อมูลทั้งหมด ควรสำรองก่อนลบ Container:
+### สำรองข้อมูล (Backup)
+โฟลเดอร์ `data/` เก็บข้อมูลทั้งหมดของ n8n ควรสำรองก่อนลบ Container:
+
+| โฟลเดอร์ | เก็บอะไร |
+|----------|----------|
+| `data/postgres/` | ฐานข้อมูล (workflows, credentials ที่เข้ารหัสแล้ว, execution) |
+| `data/n8n/` | Config และ **Encryption Key** ที่ n8n ใช้ถอดรหัส credentials ใน DB |
+
 ```bash
-# สำรอง
+# สำรองทั้งคู่ (ต้องมีทั้งสองถึงจะ restore ได้ครบ)
 cp -r data data-backup-$(date +%Y%m%d)
 ```
 
-> **⚠️ คำเตือน:** อย่าลบโฟลเดอร์ `data/` ถ้าต้องการเก็บ Workflow ที่สร้างไว้
+> **⚠️ คำเตือน:** อย่าลบโฟลเดอร์ `data/` ถ้าต้องการเก็บ Workflow และ Credentials ที่สร้างไว้
+
+### กู้คืนข้อมูล (Restore)
+เพื่อให้ใช้ได้ทันทีหลัง restore:
+1. นำโฟลเดอร์ที่ backup กลับมาเป็น `data/` (หรือ copy เนื้อหาใน `data-backup-xxx/postgres` และ `data-backup-xxx/n8n` ไปที่ `data/postgres` และ `data/n8n`)
+2. ใช้ค่า `.env` เดิม (อย่างน้อย `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`) ให้ตรงกับตอน backup
+3. รัน `docker compose up -d` — workflows และ credentials จะใช้ได้ตามเดิม
+
+ถ้าไม่มี `data/n8n` (หรือ Encryption Key ไม่ตรงกับตอน backup) credentials ใน DB จะถอดรหัสไม่ได้
 
 ---
 
