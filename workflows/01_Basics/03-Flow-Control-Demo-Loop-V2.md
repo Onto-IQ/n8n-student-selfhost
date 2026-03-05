@@ -1,5 +1,5 @@
 {
-  "name": "03 - Flow Control Demo (Loop) V2",
+  "name": "03 - Flow Control Demo (Loop)",
   "nodes": [
     {
       "parameters": {
