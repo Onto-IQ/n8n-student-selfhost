@@ -1,0 +1,233 @@
+{
+  "name": "03 - Flow Control Demo (Loop) V2",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "📚 **แนวทางการสอน Loop (การวนซ้ำ)**\n\nWorkflow นี้สาธิตการใช้งาน:\n• Item Lists (Split Out) - แยกข้อมูล Array เป็นรายบุคคล\n• Loop Node - วนทำงานทีละรายการจนครบ\n• Set Node - ประมวลผลแต่ละรายการ",
+        "height": 220,
+        "width": 384,
+        "color": 6
+      },
+      "name": "Sticky 0 Intro",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        -272
+      ],
+      "id": "9a640f53-a497-48dc-83e0-485ce811ffaa"
+    },
+    {
+      "parameters": {},
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -16
+      ],
+      "id": "d08b6918-62f1-4148-8abf-6dacc96ee4ab"
+    },
+    {
+      "parameters": {
+        "content": "🎯 **ขั้นตอนที่ 1: สร้าง Array นักเรียน**\n\nสมมติว่าดึงข้อมูลมาจาก Database ได้ 3 คน:\n[ { name: \"Alice\" }, { name: \"Bob\" }, { name: \"Charlie\" } ]\n\nข้อมูลมาเป็น 1 ก้อน (1 Item) ที่ข้างในมี Array",
+        "width": 320,
+        "color": 2
+      },
+      "name": "Sticky 1 Array Data",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -208
+      ],
+      "id": "a56ba56a-b20d-453c-abac-aa163b3d9938"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "students",
+              "value": "={{ [ { \"name\": \"Alice\", \"score\": 85 }, { \"name\": \"Bob\", \"score\": 40 }, { \"name\": \"Charlie\", \"score\": 92 } ] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Mock Array",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        48,
+        -16
+      ],
+      "id": "722ce0ed-1879-4014-a9dc-03527277240c"
+    },
+    {
+      "parameters": {
+        "content": "✂️ **ขั้นตอนที่ 2: แยก Array (Split Out)**\n\nใช้ Item Lists โหมด Split Out\nแยก Array 1 ก้อน ให้กลายเป็น 3 Items (3 แถว)\nเพื่อเตรียมส่งให้ Loop ทำงานทีละคน",
+        "height": 140,
+        "width": 300,
+        "color": 3
+      },
+      "name": "Sticky 2 Split Out",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -192
+      ],
+      "id": "c5e3f427-53c5-4f83-b017-a981e783d2a2"
+    },
+    {
+      "parameters": {
+        "content": "🔄 **ขั้นตอนที่ 3: เริ่ม Loop**\n\nLoop Node จะส่งผ่านข้อมูลไปทีละ 1 Item (Batch Size = 1)\nไปตามเส้นทาง loop\n\nเมื่อหมดแล้วจะวิ่งไปเส้นทาง done",
+        "width": 320,
+        "color": 4
+      },
+      "name": "Sticky 3 Loop Start",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -368
+      ],
+      "id": "e9aa7578-a570-49c1-8ce9-c46842fb6e57"
+    },
+    {
+      "parameters": {
+        "content": "⚙️ **ขั้นตอนที่ 4: ประมวลผลทีละคน**\n\nทำอะไรบางอย่างกับนักเรียนคนนั้นๆ เช่น:\n• เช็คคะแนน\n• เพิ่มสถานะ\n• หรือส่ง Email\n\n(ในตัวอย่างนี้แค่เติมข้อความทักทาย)",
+        "width": 320,
+        "color": 5
+      },
+      "name": "Sticky 4 Process",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -208
+      ],
+      "id": "8358a180-e10e-4915-aaf7-3e5e815cc1d7"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "={{ $json.score >= 50 ? \"Pass!\" : \"Fail!\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Process Student",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        624,
+        64
+      ],
+      "id": "a97a329d-b4b7-4509-bc13-16a756e64424"
+    },
+    {
+      "parameters": {
+        "content": "🏁 **วนกลับไปรับคนต่อไป**\n\n‼️ สำคัญมาก: ต้องลากเส้นกลับไปที่ Loop Node เสมอ\nเพื่อให้ระบบรู้ว่าทำงานเสร็จ 1 รอบแล้ว\nพร้อมรับ Item ต่อไป",
+        "height": 140,
+        "width": 320
+      },
+      "name": "Sticky 5 Loop Back",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        736,
+        224
+      ],
+      "id": "2ed03670-74c7-4b01-9966-dfab15d3e179"
+    },
+    {
+      "parameters": {
+        "content": "🎉 **สิ้นสุดการทำงาน**\n\nเมื่อ Loop ครบทุกคนแล้ว ข้อมูลจะออกมาทางช่อง done\n(สามารถนำไปใช้สรุปผลต่อได้)",
+        "height": 124,
+        "width": 280,
+        "color": 6
+      },
+      "name": "Sticky 6 Done",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        368,
+        240
+      ],
+      "id": "dabee1ce-94db-40ed-bbb6-b4b3a8b759e0"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "students",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        304,
+        16
+      ],
+      "id": "d20b9ca8-9a92-4ec7-ae87-9a14f10cbbf9",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [
+        [
+          {
+            "node": "Mock Array",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mock Array": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Student": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Process Student",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3d9d101e-19a4-4814-be87-96e71b4ecbd5",
+  "meta": {
+    "instanceId": "8cd8d3a6f255e1fba8d4808df82531ed2e45b3b640d4bee5a946f7a5a6976cb2"
+  },
+  "id": "n1i8MBcMa1w5xB2V",
+  "tags": []
+}
