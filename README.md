@@ -28,7 +28,7 @@ n8n-student-selfhost/
 
 ### สำหรับผู้ที่ยังไม่มี n8n
 
-ติดตั้ง n8n บนเครื่องตัวเองพร้อม Cloudflare Tunnel (สำหรับรับ Webhook):
+ติดตั้ง n8n บนเครื่องตัวเองพร้อม Cloudflare Tunnel (ให้ได้ **HTTPS** — จำเป็นสำหรับ Webhook และ Chat กับบริการภายนอก):
 
 1. **Clone โปรเจกต์**
    ```bash
@@ -103,13 +103,13 @@ n8n-student-selfhost/
 
 ---
 
-## �️ คู่มือการติดตั้ง (Detailed Setup)
+## 🔧 คู่มือการติดตั้ง (Detailed Setup)
 
 ### 📋 Prerequisites
 
 1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 2. โดเมนเนมส่วนตัว ([Namecheap](https://www.namecheap.com/) แนะนำ)
-3. บัญชี [Cloudflare](https://dash.cloudflare.com/) (ฟรี)
+3. บัญชี [Cloudflare](https://dash.cloudflare.com/) (ฟรี) — ใช้สร้าง Tunnel เพื่อให้ได้ **HTTPS** (จำเป็นสำหรับ Webhook และ Chat ดูรายละเอียดใน [🔒 ทำไมต้องใช้ HTTPS](#-ทำไมต้องใช้-https-ssl))
 
 ### ขั้นตอนที่ 1: เตรียม Domain และ Cloudflare
 
@@ -197,6 +197,32 @@ cp -r data data-backup-$(date +%Y%m%d)
 
 ---
 
+## 🔒 ทำไมต้องใช้ HTTPS (SSL)
+
+**การไม่มี HTTPS จะทำให้ Webhook และ Chat ใช้งานไม่ได้หรือทำงานไม่ครบ** และมีความเสี่ยงด้านความปลอดภัยดังนี้
+
+### ผลต่อการใช้งาน n8n โดยตรง
+
+| ฟีเจอร์ | ผลเมื่อใช้แค่ HTTP |
+|--------|---------------------|
+| **Webhook** | ใช้กับ Production **ไม่ได้** — บริการภายนอก (LINE, Telegram, Shopify, GitHub ฯลฯ) กำหนดให้ Webhook URL ต้องเป็น **HTTPS เท่านั้น** จึงจะยอมส่งเหตุการณ์มาได้ |
+| **Chat (Chat Trigger / AI Agent)** | ถ้าเข้า n8n ผ่านโดเมนสาธารณะแบบ HTTP ฟีเจอร์ที่พึ่งพา Secure Context ของเบราว์เซอร์ (เช่น บางส่วนของ real-time, Notifications) อาจใช้ไม่ได้ หรือเบราว์เซอร์ขึ้นว่า "Not Secure" |
+
+- n8n ใช้ตัวแปร `WEBHOOK_URL` ต้องเป็น URL เต็มที่ **ขึ้นต้นด้วย `https://`** เพื่อให้ Production Webhook ทำงาน ([n8n docs](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.webhook), [n8n community](https://community.n8n.io/t/how-to-make-my-webhooks-become-https/20410)).
+- แนะนำให้ใช้ Reverse Proxy หรือ Tunnel (เช่น Cloudflare Tunnel) เพื่อให้ได้ HTTPS จริง
+
+### ผลกระทบด้านความปลอดภัยและความน่าเชื่อถือ (จากแหล่งสาธารณะ)
+
+- **ข้อมูลไม่เข้ารหัส (Plaintext)** — ข้อมูลทุกอย่างส่งผ่าน HTTP ถูกส่งแบบไม่เข้ารหัส ทำให้เสี่ยงถูกดักอ่านหรือแก้ไข (Man-in-the-Middle) ([MDN TLS](https://developer.mozilla.org/en-US/docs/Web/Security/Practical_implementation_guides/TLS), [MDN MITM](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/MITM)).
+- **เบราว์เซอร์และ SEO** — เบราว์เซอร์จะแสดงสถานะ "Not Secure" สำหรับหน้า HTTP และเครื่องมือค้นหาอาจจัดอันดับต่ำลง ([The Web Almanac 2024 - Security](https://almanac.httparchive.org/en/2024/security)).
+- **Web APIs ที่ต้องใช้ Secure Context** — APIs ที่เกี่ยวกับความปลอดภัยหรือความเป็นส่วนตัว (เช่น Service Workers, Notifications, Geolocation, Web Crypto, Payment Request) ทำงานได้เฉพาะใน Secure Context (โดยทั่วไปคือ HTTPS หรือ localhost) ([MDN Secure Contexts](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts), [Features restricted to secure contexts](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts/features_restricted_to_secure_contexts)).
+- **ความเสี่ยงทางธุรกิจและกฎหมาย** — การรั่วไหลข้อมูลจากช่องทางไม่เข้ารหัสอาจนำไปสู่การสูญเสียความเชื่อถือของลูกค้า ค่าปรับตามกฎหมาย (เช่น GDPR) และความเสียหายต่อแบรนด์ ([การวิเคราะห์ความเสี่ยงจากการไม่ใช้ SSL](https://www.oreateai.com/blog/analysis-of-security-risks-and-business-threats-from-not-deploying-ssl-certificates-on-corporate-websites/b7822e9298c6776394216d55c67bf15d)).
+- **แนวทาง Webhook จากผู้ให้บริการ** — คู่มือแนวทางปฏิบัติของ GitHub และ Shopify แนะนำให้ส่ง Webhook ผ่าน HTTPS และตรวจสอบลายเซ็น ([GitHub Webhooks Best Practices](https://docs.github.com/en/webhooks/using-webhooks/best-practices-for-using-webhooks), [Shopify HTTPS Webhooks](https://shopify.dev/docs/apps/build/webhooks/subscribe/https)).
+
+**สรุป:** สำหรับการใช้งานจริง (โดยเฉพาะ Webhook และ Chat ผ่านโดเมนสาธารณะ) ควรใช้ HTTPS เสมอ โปรเจกต์นี้ใช้ Cloudflare Tunnel เพื่อให้ได้ HTTPS โดยไม่ต้องจัดการ certificate เอง
+
+---
+
 ## 🆘 แก้ไขปัญหาเบื้องต้น
 
 ### n8n ไม่เปิด
@@ -209,7 +235,8 @@ docker compose logs n8n
 ```
 
 ### Webhook ไม่ทำงาน
-- ตรวจสอบ `WEBHOOK_URL` ใน `.env`
+- **ต้องใช้ HTTPS** — Production Webhook ต้องมี URL เป็น `https://` เท่านั้น บริการเช่น LINE, Telegram, Shopify จะไม่ยอมส่งเหตุการณ์มาที่ HTTP
+- ตรวจสอบ `WEBHOOK_URL` ใน `.env` ว่าเป็น `https://...` และโดเมนตรงกับที่ Tunnel ชี้
 - ตรวจสอบ Cloudflare Tunnel ทำงานอยู่หรือไม่
 - ทดสอบ: `curl https://n8n.your-domain.com/webhook-test`
 
