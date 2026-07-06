@@ -11,7 +11,10 @@
       "name": "Sticky 0 Intro",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [260, 40]
+      "position": [
+        260,
+        40
+      ]
     },
     {
       "parameters": {
@@ -23,7 +26,10 @@
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1.1,
-      "position": [380, 240]
+      "position": [
+        380,
+        240
+      ]
     },
     {
       "parameters": {
@@ -35,7 +41,10 @@
       "name": "Sticky 1 Listen",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [340, 40]
+      "position": [
+        340,
+        40
+      ]
     },
     {
       "parameters": {
@@ -54,7 +63,10 @@
       "name": "Process Data",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [640, 240]
+      "position": [
+        640,
+        240
+      ]
     },
     {
       "parameters": {
@@ -66,7 +78,10 @@
       "name": "Sticky 2 Process",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [600, 40]
+      "position": [
+        600,
+        40
+      ]
     },
     {
       "parameters": {
@@ -77,7 +92,10 @@
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [880, 240]
+      "position": [
+        880,
+        240
+      ]
     },
     {
       "parameters": {
@@ -89,7 +107,10 @@
       "name": "Sticky 3 Respond",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [840, 40]
+      "position": [
+        840,
+        40
+      ]
     }
   ],
   "connections": {

@@ -172,11 +172,13 @@
     },
     {
       "parameters": {
-        "options": {}
+        "options": {
+          "responseMode": "lastNode"
+        }
       },
       "name": "Chat Trigger",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.1,
+      "typeVersion": 1.4,
       "position": [
         -448,
         528

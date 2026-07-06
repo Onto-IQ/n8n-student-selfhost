@@ -11,7 +11,10 @@
       "name": "Note: Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [200, -80]
+      "position": [
+        200,
+        -80
+      ]
     },
     {
       "parameters": {
@@ -50,7 +53,10 @@
       "name": "Form Trigger",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.5,
-      "position": [400, 240],
+      "position": [
+        400,
+        240
+      ],
       "webhookId": "refund-claim-linear"
     },
     {
@@ -63,7 +69,10 @@
       "name": "Note: Form",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [160, 160]
+      "position": [
+        160,
+        160
+      ]
     },
     {
       "parameters": {
@@ -76,7 +85,10 @@
       "name": "Intent Classifier",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [680, 240]
+      "position": [
+        680,
+        240
+      ]
     },
     {
       "parameters": {
@@ -88,7 +100,10 @@
       "name": "Note: Intent",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [660, 400]
+      "position": [
+        660,
+        400
+      ]
     },
     {
       "parameters": {
@@ -98,7 +113,10 @@
       "name": "OpenAI Chat Model 1",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
-      "position": [680, 480],
+      "position": [
+        680,
+        480
+      ],
       "credentials": {
         "openAiApi": {
           "id": "YOUR_OPENAI_CREDENTIAL",
@@ -126,12 +144,16 @@
             }
           ],
           "combinator": "and"
-        }
+        },
+        "options": {}
       },
       "name": "Filter Check",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [980, 240]
+      "position": [
+        980,
+        240
+      ]
     },
     {
       "parameters": {
@@ -143,7 +165,10 @@
       "name": "Note: Filter",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [960, 400]
+      "position": [
+        960,
+        400
+      ]
     },
     {
       "parameters": {
@@ -156,7 +181,10 @@
       "name": "Policy Validator",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [1280, 240]
+      "position": [
+        1280,
+        240
+      ]
     },
     {
       "parameters": {
@@ -168,14 +196,20 @@
       "name": "Note: Policy",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1260, 400]
+      "position": [
+        1260,
+        400
+      ]
     },
     {
       "parameters": {},
       "name": "Vector Store Tool",
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1.1,
-      "position": [1500, 240]
+      "position": [
+        1500,
+        240
+      ]
     },
     {
       "parameters": {
@@ -185,7 +219,10 @@
       "name": "In-Memory Vector Store",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
       "typeVersion": 1.3,
-      "position": [1500, 400]
+      "position": [
+        1500,
+        400
+      ]
     },
     {
       "parameters": {
@@ -195,7 +232,10 @@
       "name": "OpenAI Chat Model 2",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
-      "position": [1280, 560],
+      "position": [
+        1280,
+        560
+      ],
       "credentials": {
         "openAiApi": {
           "id": "YOUR_OPENAI_CREDENTIAL",
@@ -208,7 +248,10 @@
       "name": "Embeddings OpenAI",
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.1,
-      "position": [1500, 560],
+      "position": [
+        1500,
+        560
+      ],
       "credentials": {
         "openAiApi": {
           "id": "YOUR_OPENAI_CREDENTIAL",
@@ -227,7 +270,10 @@
       "name": "Response Generator",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [1700, 240]
+      "position": [
+        1700,
+        240
+      ]
     },
     {
       "parameters": {
@@ -239,7 +285,10 @@
       "name": "Note: Response",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1680, 400]
+      "position": [
+        1680,
+        400
+      ]
     },
     {
       "parameters": {
@@ -249,7 +298,10 @@
       "name": "OpenAI Chat Model 3",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
-      "position": [1700, 560],
+      "position": [
+        1700,
+        560
+      ],
       "credentials": {
         "openAiApi": {
           "id": "YOUR_OPENAI_CREDENTIAL",
@@ -269,7 +321,10 @@
       "name": "Send Gmail",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [1960, 240],
+      "position": [
+        1960,
+        240
+      ],
       "credentials": {
         "gmailOAuth2": {
           "id": "YOUR_GMAIL_CREDENTIAL",
@@ -287,7 +342,10 @@
       "name": "Note: Gmail",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1940, 400]
+      "position": [
+        1940,
+        400
+      ]
     },
     {
       "parameters": {
@@ -299,7 +357,10 @@
       "name": "Note: Manual Review",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [980, 560]
+      "position": [
+        980,
+        560
+      ]
     },
     {
       "parameters": {
@@ -311,7 +372,10 @@
       "name": "Note: Comparison",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1280, 720]
+      "position": [
+        1280,
+        720
+      ]
     }
   ],
   "connections": {

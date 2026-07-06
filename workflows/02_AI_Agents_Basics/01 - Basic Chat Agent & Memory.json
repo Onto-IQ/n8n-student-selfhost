@@ -17,10 +17,14 @@
       ]
     },
     {
-      "parameters": {},
+      "parameters": {
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
       "name": "When chat message received",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.1,
+      "typeVersion": 1.4,
       "position": [
         380,
         240
@@ -29,11 +33,12 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ .chatInput }}"
+        "text": "={{ $json.chatInput }}",
+        "options": {}
       },
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.7,
+      "typeVersion": 3.1,
       "position": [
         600,
         240
@@ -56,11 +61,12 @@
     },
     {
       "parameters": {
-        "sessionKey": "={{ $json.session_id || \"demo-session\" }}"
+        "sessionKey": "={{ $json.session_id || \"demo-session\" }}",
+        "contextWindowLength": 5
       },
       "name": "Window Buffer Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.2,
+      "typeVersion": 1.3,
       "position": [
         740,
         440

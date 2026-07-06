@@ -77,7 +77,9 @@
       "parameters": {
         "options": {
           "systemMessage": "คุณเป็นผู้ช่วย HR อัจฉริยะของบริษัท สมสมัยงาน AI จำกัด\n\n**บทบาท:**\n- ตอบคำถามพนักงานเกี่ยวกับนโยบายการเดินทางและเบิกจ่าย\n- ใช้เครื่องมือ 'Vector Store Tool' เพื่อหาข้อมูลที่ถูกต้อง\n- จำบทสนทนาก่อนหน้าเพื่อตอบอย่างต่อเนื่อง\n\n**คำแนะนำ:**\n- ถ้าไม่แน่ใจ ให้บอกว่าจะสอบถาม HR ก่อน\n- ตอบด้วยภาษาที่สุภาพและเป็นกันเอง"
-        }
+        },
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}"
       },
       "id": "0b493b2f-6940-4947-88ae-37ad66a23ba5",
       "name": "AI Agent",
@@ -86,11 +88,13 @@
         1600,
         48
       ],
-      "typeVersion": 2
+      "typeVersion": 3.1
     },
     {
       "parameters": {
-        "options": {}
+        "options": {
+          "responseMode": "lastNode"
+        }
       },
       "id": "de9adc08-603c-42da-bb3e-ef9bc76a72a9",
       "name": "When chat message received",
@@ -100,7 +104,7 @@
         48
       ],
       "webhookId": "4091fa09-fb9a-4039-9411-7104d213f601",
-      "typeVersion": 1.1
+      "typeVersion": 1.4
     },
     {
       "parameters": {
@@ -127,7 +131,9 @@
       }
     },
     {
-      "parameters": {},
+      "parameters": {
+        "contextWindowLength": 5
+      },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [

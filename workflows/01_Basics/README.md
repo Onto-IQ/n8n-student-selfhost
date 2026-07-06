@@ -10,7 +10,7 @@
 |-------|------|--------|----------|
 | 01 | `01-Learn-JSON-Basics.json` | JSON พื้นฐาน | เรียนรู้ Key-Value Pair, Data Types (String, Number, Boolean, Array, Object, Null) |
 | 02 | `02-Flow-Control-Demo.json` | Flow Control - IF/Switch | สาธิตการใช้ IF Node และ Switch Node แยกกรณี |
-| 03 | `03-Flow-Control-Demo-Loop.json` | Flow Control - Loop | สาธิตการใช้ Loop Node และ Item Lists วนซ้ำข้อมูล |
+| 03 | `03-Flow-Control-Demo-Loop.json` | Flow Control - Loop | สาธิตการใช้ Loop Node และ Split Out วนซ้ำข้อมูล |
 | 04 | `04-Data-Transformation.json` | Data Transformation | แปลงข้อมูลด้วย Edit Fields (Set) และ Code Node |
 | 05 | `05-Working-with-External-APIs.json` | External APIs | เรียนรู้ GET/POST Request และ Authentication |
 | 06 | `06-Webhooks-and-Triggers.json` | Webhooks & Triggers | เปิดรับข้อมูลจากภายนอกด้วย Webhook Node |
@@ -32,7 +32,7 @@
 - Merge Node: รวมผลลัพธ์จากหลายทาง
 
 ### บทที่ 3: Flow Control - Loop (วนซ้ำ)
-- Item Lists: แยก Array เป็นรายบุคคล
+- Split Out: แยก Array เป็นรายบุคคล
 - Loop Node: วนทำงานทีละรายการ
 - Set Node: ประมวลผลแต่ละรายการ
 
@@ -53,7 +53,7 @@
 
 ## 🚀 วิธีใช้งาน
 
-1. เปิด n8n (เวอร์ชัน 2.8.3 ขึ้นไป)
+1. เปิด n8n (เวอร์ชัน 2.28.6 ขึ้นไป)
 2. สร้าง Workflow ใหม่
 3. Copy-Paste เนื้อหาจากไฟล์ JSON หรือใช้ **Import from File**
 4. อ่าน Sticky Notes ตามลำดับที่ให้ไว้
@@ -63,7 +63,7 @@
 
 ## ⚙️ Requirements
 
-- n8n version **2.8.3** ขึ้นไป
+- n8n version **2.28.6** ขึ้นไป
 - ไม่ต้องใช้ API Key สำหรับบทเรียนพื้นฐาน (ยกเว้นบทที่ 5)
 
 ---

@@ -45,23 +45,27 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "28062599-a554-44e1-add7-5104ddce1e19",
               "name": "my_name",
-              "value": "Alice"
+              "value": "Alice",
+              "type": "string"
             },
             {
+              "id": "06696bdb-da23-4cf5-9c8a-dbca154e48fc",
               "name": "my_city",
-              "value": "Bangkok"
+              "value": "Bangkok",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "01 - String (ข้อความ)",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         608,
         240
@@ -85,23 +89,27 @@
     },
     {
       "parameters": {
-        "values": {
-          "number": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "038531fa-772b-4300-8781-004b3990e00c",
               "name": "age",
-              "value": 25
+              "value": 25,
+              "type": "number"
             },
             {
+              "id": "9c6ac7e3-6381-404f-940a-7c69d3b234cc",
               "name": "price",
-              "value": 199.5
+              "value": 199.5,
+              "type": "number"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "02 - Number (ตัวเลข)",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         832,
         240
@@ -125,22 +133,27 @@
     },
     {
       "parameters": {
-        "values": {
-          "boolean": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "e7155b0e-d0cb-4631-aff0-26f688e73954",
               "name": "is_active",
-              "value": true
+              "value": true,
+              "type": "boolean"
             },
             {
-              "name": "is_vip"
+              "id": "b124dd53-b71f-415d-a68d-e45b626473c9",
+              "name": "is_vip",
+              "value": false,
+              "type": "boolean"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "03 - Boolean (จริง/เท็จ)",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1040,
         240
@@ -165,19 +178,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "04b4c050-4771-43ee-b8b3-de1db00b12cf",
               "name": "hobbies",
-              "value": "[\"reading\", \"gaming\", \"cooking\"]"
+              "value": "[\"reading\", \"gaming\", \"cooking\"]",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "04 - Array (รายการ)",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1264,
         240
@@ -201,19 +216,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "82f36b0b-a008-41fb-974b-f047d8a2d101",
               "name": "student_data",
-              "value": "{\"name\": \"Alice\", \"age\": 25, \"grade\": \"A\"}"
+              "value": "{\"name\": \"Alice\", \"age\": 25, \"grade\": \"A\"}",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "05 - Object (โครงสร้าง)",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1488,
         240
@@ -238,19 +255,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "84f89921-f74d-44d6-94bb-349d2b2944b3",
               "name": "middle_name",
-              "value": "null"
+              "value": "null",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "06 - Null (ค่าว่าง)",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1712,
         240
@@ -275,19 +294,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "93e3a5d0-ad4c-4f40-bdd9-16fe23d40e64",
               "name": "greeting",
-              "value": "=Hello {{ $json.my_name }}, you are {{ $('02 - Number (ตัวเลข)').item.json.age }} years old!"
+              "value": "=Hello {{ $json.my_name }}, you are {{ $('02 - Number (ตัวเลข)').item.json.age }} years old!",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "07 - Using Expressions",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1920,
         240

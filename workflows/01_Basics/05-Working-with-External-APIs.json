@@ -11,14 +11,20 @@
       "name": "Sticky 0 Intro",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [260, 40]
+      "position": [
+        260,
+        40
+      ]
     },
     {
       "parameters": {},
       "name": "When clicking Test workflow",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [380, 240]
+      "position": [
+        380,
+        240
+      ]
     },
     {
       "parameters": {
@@ -30,7 +36,10 @@
       "name": "Sticky 1 GET",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [540, 40]
+      "position": [
+        540,
+        40
+      ]
     },
     {
       "parameters": {
@@ -43,7 +52,10 @@
       "name": "Get Random Joke",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [600, 240]
+      "position": [
+        600,
+        240
+      ]
     },
     {
       "parameters": {
@@ -55,7 +67,10 @@
       "name": "Sticky 2 POST",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [800, 40]
+      "position": [
+        800,
+        40
+      ]
     },
     {
       "parameters": {
@@ -69,7 +84,10 @@
       "name": "Send to HttpBin",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [840, 240]
+      "position": [
+        840,
+        240
+      ]
     },
     {
       "parameters": {
@@ -81,7 +99,10 @@
       "name": "Sticky 3 Auth",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1060, 40]
+      "position": [
+        1060,
+        40
+      ]
     }
   ],
   "connections": {

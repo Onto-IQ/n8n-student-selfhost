@@ -97,7 +97,7 @@ workflows/
 |------|--------|
 | 01-Learn-JSON-Basics.json | JSON พื้นฐาน |
 | 02-Flow-Control-Demo.json | IF และ Switch Node |
-| 03-Flow-Control-Demo-Loop.json | Loop และ Item Lists |
+| 03-Flow-Control-Demo-Loop.json | Loop และ Split Out |
 | 04-Data-Transformation.json | Edit Fields และ Code Node |
 | 05-Working-with-External-APIs.json | HTTP Request GET/POST |
 | 06-Webhooks-and-Triggers.json | Webhook Node |
@@ -126,7 +126,7 @@ workflows/
 
 ## ⚙️ Requirements
 
-- n8n เวอร์ชัน **2.8.3** ขึ้นไป
+- n8n เวอร์ชัน **2.28.6** ขึ้นไป
 - OpenAI API Key (สำหรับ AI Agents)
 - LINE API (สำหรับ LINE Chat)
 - Google OAuth (สำหรับ Google Workspace)
@@ -137,7 +137,7 @@ workflows/
 ## 📝 หมายเหตุ
 
 - ทุก Workflow มี Sticky Notes ภาษาไทยสำหรับอธิบายแต่ละ Node
-- Workflows ทดสอบและรองรับ n8n เวอร์ชัน **2.8.3** ขึ้นไป
+- Workflows ทดสอบและรองรับ n8n เวอร์ชัน **2.28.6** ขึ้นไป
 - อ่านคำอธิบายจาก Sticky Notes ตามลำดับหมายเลข
 - ลองกด **Test step** ทีละ Node เพื่อดูผลลัพธ์
 

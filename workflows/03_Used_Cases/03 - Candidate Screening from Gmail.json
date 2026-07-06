@@ -11,7 +11,10 @@
       "name": "Note: Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [240, 40]
+      "position": [
+        240,
+        40
+      ]
     },
     {
       "parameters": {
@@ -24,7 +27,10 @@
       "name": "Gmail Trigger",
       "type": "n8n-nodes-base.gmailTrigger",
       "typeVersion": 1,
-      "position": [400, 320],
+      "position": [
+        400,
+        320
+      ],
       "webhookId": "candidate-screening-gmail",
       "credentials": {
         "gmailOAuth2": {
@@ -43,7 +49,10 @@
       "name": "Note: Gmail",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [200, 240]
+      "position": [
+        200,
+        240
+      ]
     },
     {
       "parameters": {
@@ -52,7 +61,10 @@
       "name": "Extract Candidate Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [680, 320]
+      "position": [
+        680,
+        320
+      ]
     },
     {
       "parameters": {
@@ -64,26 +76,39 @@
       "name": "Note: Extract",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [660, 480]
+      "position": [
+        660,
+        480
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": false, "typeValidation": "strict" },
+          "options": {
+            "caseSensitive": false,
+            "typeValidation": "strict"
+          },
           "conditions": [
             {
               "id": "has-resume",
               "leftValue": "={{ $json.hasResume }}",
               "rightValue": true,
-              "operator": { "type": "boolean", "operation": "equals" }
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
             }
           ]
-        }
+        },
+        "options": {}
       },
       "name": "Has Resume?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [960, 320]
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        320
+      ]
     },
     {
       "parameters": {
@@ -95,7 +120,10 @@
       "name": "Note: Check",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [920, 480]
+      "position": [
+        920,
+        480
+      ]
     },
     {
       "parameters": {
@@ -110,7 +138,10 @@
       "name": "Download Job Description",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [1280, 160],
+      "position": [
+        1280,
+        160
+      ],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "YOUR_DRIVE_CREDENTIAL",
@@ -126,7 +157,10 @@
       "name": "Extract Job Description",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
-      "position": [1520, 160]
+      "position": [
+        1520,
+        160
+      ]
     },
     {
       "parameters": {
@@ -138,7 +172,10 @@
       "name": "Note: JobDesc",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1440, 40]
+      "position": [
+        1440,
+        40
+      ]
     },
     {
       "parameters": {
@@ -148,7 +185,10 @@
       "name": "Loop Attachments",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [1280, 320]
+      "position": [
+        1280,
+        320
+      ]
     },
     {
       "parameters": {
@@ -160,7 +200,10 @@
       "name": "Note: Loop",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1240, 440]
+      "position": [
+        1240,
+        440
+      ]
     },
     {
       "parameters": {
@@ -168,13 +211,20 @@
           "values": [
             {
               "conditions": {
-                "options": { "caseSensitive": false, "typeValidation": "strict", "version": 2 },
+                "options": {
+                  "caseSensitive": false,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
                 "conditions": [
                   {
                     "id": "pdf-check",
                     "leftValue": "={{ $json.attachments[0].filename?.toLowerCase() }}",
                     "rightValue": ".pdf",
-                    "operator": { "type": "string", "operation": "contains" }
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
                   }
                 ],
                 "combinator": "and"
@@ -184,13 +234,20 @@
             },
             {
               "conditions": {
-                "options": { "caseSensitive": false, "typeValidation": "strict", "version": 2 },
+                "options": {
+                  "caseSensitive": false,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
                 "conditions": [
                   {
                     "id": "doc-check",
                     "leftValue": "={{ $json.attachments[0].filename?.toLowerCase() }}",
                     "rightValue": ".doc",
-                    "operator": { "type": "string", "operation": "contains" }
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
                   }
                 ],
                 "combinator": "and"
@@ -200,13 +257,20 @@
             },
             {
               "conditions": {
-                "options": { "caseSensitive": false, "typeValidation": "strict", "version": 2 },
+                "options": {
+                  "caseSensitive": false,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
                 "conditions": [
                   {
                     "id": "txt-check",
                     "leftValue": "={{ $json.attachments[0].filename?.toLowerCase() }}",
                     "rightValue": ".txt",
-                    "operator": { "type": "string", "operation": "contains" }
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
                   }
                 ],
                 "combinator": "and"
@@ -221,7 +285,10 @@
       "name": "File Type Switch",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
-      "position": [1520, 320]
+      "position": [
+        1520,
+        320
+      ]
     },
     {
       "parameters": {
@@ -233,7 +300,10 @@
       "name": "Note: Switch",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1480, 480]
+      "position": [
+        1480,
+        480
+      ]
     },
     {
       "parameters": {
@@ -243,7 +313,10 @@
       "name": "Extract PDF",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
-      "position": [1800, 240]
+      "position": [
+        1800,
+        240
+      ]
     },
     {
       "parameters": {
@@ -253,7 +326,10 @@
       "name": "Extract DOC/TXT",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
-      "position": [1800, 400]
+      "position": [
+        1800,
+        400
+      ]
     },
     {
       "parameters": {
@@ -265,7 +341,10 @@
       "name": "AI Agent Screening",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [2080, 320]
+      "position": [
+        2080,
+        320
+      ]
     },
     {
       "parameters": {
@@ -277,7 +356,10 @@
       "name": "Note: AI",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [2040, 480]
+      "position": [
+        2040,
+        480
+      ]
     },
     {
       "parameters": {
@@ -287,7 +369,10 @@
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
-      "position": [2080, 560],
+      "position": [
+        2080,
+        560
+      ],
       "credentials": {
         "openAiApi": {
           "id": "YOUR_OPENAI_CREDENTIAL",
@@ -302,7 +387,10 @@
       "name": "Structured Output",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
-      "position": [2320, 560]
+      "position": [
+        2320,
+        560
+      ]
     },
     {
       "parameters": {
@@ -334,17 +422,61 @@
           },
           "matchingColumns": [],
           "schema": [
-            { "id": "Received At", "displayName": "Received At", "type": "string" },
-            { "id": "Email", "displayName": "Email", "type": "string" },
-            { "id": "Firstname", "displayName": "Firstname", "type": "string" },
-            { "id": "Lastname", "displayName": "Lastname", "type": "string" },
-            { "id": "Gender", "displayName": "Gender", "type": "string" },
-            { "id": "Age", "displayName": "Age", "type": "string" },
-            { "id": "Education", "displayName": "Education", "type": "string" },
-            { "id": "Matching Score", "displayName": "Matching Score", "type": "string" },
-            { "id": "Hire", "displayName": "Hire", "type": "string" },
-            { "id": "Recommendation", "displayName": "Recommendation", "type": "string" },
-            { "id": "Subject", "displayName": "Subject", "type": "string" }
+            {
+              "id": "Received At",
+              "displayName": "Received At",
+              "type": "string"
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "type": "string"
+            },
+            {
+              "id": "Firstname",
+              "displayName": "Firstname",
+              "type": "string"
+            },
+            {
+              "id": "Lastname",
+              "displayName": "Lastname",
+              "type": "string"
+            },
+            {
+              "id": "Gender",
+              "displayName": "Gender",
+              "type": "string"
+            },
+            {
+              "id": "Age",
+              "displayName": "Age",
+              "type": "string"
+            },
+            {
+              "id": "Education",
+              "displayName": "Education",
+              "type": "string"
+            },
+            {
+              "id": "Matching Score",
+              "displayName": "Matching Score",
+              "type": "string"
+            },
+            {
+              "id": "Hire",
+              "displayName": "Hire",
+              "type": "string"
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "type": "string"
+            },
+            {
+              "id": "Subject",
+              "displayName": "Subject",
+              "type": "string"
+            }
           ]
         },
         "options": {}
@@ -352,7 +484,10 @@
       "name": "Save to Google Sheets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
-      "position": [2360, 320],
+      "position": [
+        2360,
+        320
+      ],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "YOUR_SHEETS_CREDENTIAL",
@@ -370,7 +505,10 @@
       "name": "Note: Sheets",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [2320, 160]
+      "position": [
+        2320,
+        160
+      ]
     },
     {
       "parameters": {
@@ -383,7 +521,10 @@
       "name": "Send Confirmation Email",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
-      "position": [2600, 320],
+      "position": [
+        2600,
+        320
+      ],
       "credentials": {
         "gmailOAuth2": {
           "id": "YOUR_GMAIL_CREDENTIAL",
@@ -401,7 +542,10 @@
       "name": "Note: Reply",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [2560, 480]
+      "position": [
+        2560,
+        480
+      ]
     },
     {
       "parameters": {
@@ -413,7 +557,10 @@
       "name": "Note: Setup",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [2440, 680]
+      "position": [
+        2440,
+        680
+      ]
     }
   ],
   "connections": {

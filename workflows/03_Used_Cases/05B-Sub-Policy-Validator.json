@@ -8,7 +8,10 @@
       "name": "Note: Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [200, -100],
+      "position": [
+        200,
+        -100
+      ],
       "id": "note-overview"
     },
     {
@@ -18,7 +21,10 @@
       "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
-      "position": [400, 240],
+      "position": [
+        400,
+        240
+      ],
       "id": "trigger"
     },
     {
@@ -28,7 +34,10 @@
       "name": "Note: Trigger",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [160, 160],
+      "position": [
+        160,
+        160
+      ],
       "id": "note-trigger"
     },
     {
@@ -42,7 +51,10 @@
       "name": "Validate Policy",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [680, 240],
+      "position": [
+        680,
+        240
+      ],
       "id": "validator"
     },
     {
@@ -52,7 +64,10 @@
       "name": "Note: Validator",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [660, 400],
+      "position": [
+        660,
+        400
+      ],
       "id": "note-validator"
     },
     {
@@ -63,7 +78,10 @@
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
-      "position": [680, 560],
+      "position": [
+        680,
+        560
+      ],
       "id": "openai",
       "credentials": {
         "openAiApi": {
@@ -80,7 +98,10 @@
       "name": "Vector Store Tool",
       "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
       "typeVersion": 1.1,
-      "position": [980, 200],
+      "position": [
+        980,
+        200
+      ],
       "id": "vector-tool"
     },
     {
@@ -88,7 +109,10 @@
       "name": "Embeddings OpenAI",
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.1,
-      "position": [1180, 400],
+      "position": [
+        1180,
+        400
+      ],
       "id": "embeddings",
       "credentials": {
         "openAiApi": {
@@ -105,7 +129,10 @@
       "name": "In-Memory Vector Store",
       "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
       "typeVersion": 1.3,
-      "position": [980, 360],
+      "position": [
+        980,
+        360
+      ],
       "id": "vector-store"
     },
     {
@@ -115,7 +142,10 @@
       "name": "Note: RAG",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [960, 520],
+      "position": [
+        960,
+        520
+      ],
       "id": "note-rag"
     },
     {
@@ -126,7 +156,10 @@
       "name": "Output Parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1,
-      "position": [1280, 240],
+      "position": [
+        1280,
+        240
+      ],
       "id": "parser"
     },
     {
@@ -136,7 +169,10 @@
       "name": "Note: Parser",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1260, 400],
+      "position": [
+        1260,
+        400
+      ],
       "id": "note-parser"
     }
   ],

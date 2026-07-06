@@ -9,7 +9,10 @@
           "responseMode": "lastNode"
         }
       },
-      "position": [380, 240],
+      "position": [
+        380,
+        240
+      ],
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
       "waitBetweenTries": 1,
@@ -25,7 +28,10 @@
           "systemMessage": "=You are a helpful AI assistant with access to various tools.\n\n## Available Tools:\n1. **Calculator** - Use for any mathematical calculations\n2. **Wikipedia** - Use for general knowledge and facts\n3. **Weather API** - Use to get current weather for any city\n\nWhen a user asks something that requires using a tool, you MUST call the appropriate tool first before responding."
         }
       },
-      "position": [600, 240],
+      "position": [
+        600,
+        240
+      ],
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1
     },
@@ -38,7 +44,10 @@
           "temperature": 0.7
         }
       },
-      "position": [460, 480],
+      "position": [
+        460,
+        480
+      ],
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
       "credentials": {
@@ -55,15 +64,21 @@
         "contextWindowLength": 5,
         "sessionKey": "={{ $json.session_id || 'demo-session-tools' }}"
       },
-      "position": [620, 480],
+      "position": [
+        620,
+        480
+      ],
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.2
+      "typeVersion": 1.3
     },
     {
       "id": "calc-tool-01",
       "name": "Calculator",
       "parameters": {},
-      "position": [800, 480],
+      "position": [
+        800,
+        480
+      ],
       "type": "@n8n/n8n-nodes-langchain.toolCalculator",
       "typeVersion": 1
     },
@@ -71,7 +86,10 @@
       "id": "wiki-tool-01",
       "name": "Wikipedia",
       "parameters": {},
-      "position": [960, 480],
+      "position": [
+        960,
+        480
+      ],
       "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
       "typeVersion": 1
     },
@@ -84,7 +102,10 @@
         "height": 160,
         "width": 480
       },
-      "position": [260, 40],
+      "position": [
+        260,
+        40
+      ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
     },
@@ -97,7 +118,10 @@
         "height": 180,
         "width": 440
       },
-      "position": [800, 40],
+      "position": [
+        800,
+        40
+      ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
     },
@@ -110,7 +134,10 @@
         "height": 140,
         "width": 320
       },
-      "position": [780, 660],
+      "position": [
+        780,
+        660
+      ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
     },
@@ -123,7 +150,10 @@
         "height": 140,
         "width": 380
       },
-      "position": [1120, 660],
+      "position": [
+        1120,
+        660
+      ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
     },
@@ -136,7 +166,10 @@
         "height": 140,
         "width": 320
       },
-      "position": [260, 400],
+      "position": [
+        260,
+        400
+      ],
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1
     }

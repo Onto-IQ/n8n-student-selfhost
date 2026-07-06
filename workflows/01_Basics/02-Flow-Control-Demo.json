@@ -46,27 +46,33 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "951804d6-6d95-4552-ad29-d2c00d727a99",
               "name": "name",
-              "value": "Alice"
+              "value": "Alice",
+              "type": "string"
             },
             {
+              "id": "e2294ffc-fc60-4245-9dd7-9e3d03eab3a3",
               "name": "score",
-              "value": "85"
+              "value": "85",
+              "type": "string"
             },
             {
+              "id": "8d39a27f-2184-4832-a622-2ade4c3dc776",
               "name": "type",
-              "value": "student"
+              "value": "student",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "Mock Student",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         608,
         240
@@ -91,18 +97,29 @@
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
             {
-              "value1": "={{ $json.type }}",
-              "operation": "equals",
-              "value2": "vip"
+              "id": "f381d3cd-d1b7-4cd1-9a38-c2c4b38fc6cc",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "vip",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
-          ]
-        }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
       "name": "Check VIP Status",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
+      "typeVersion": 2.3,
       "position": [
         832,
         240
@@ -127,19 +144,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "2f094c82-da81-4b10-8881-4aec991b157c",
               "name": "result",
-              "value": "VIP Member - Auto Pass!"
+              "value": "VIP Member - Auto Pass!",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "VIP Result",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1152,
         224
@@ -178,19 +197,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "50dddb49-183b-4349-baa2-2f6b8cdfa3f8",
               "name": "result",
-              "value": "Grade A - Excellent!"
+              "value": "Grade A - Excellent!",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "Grade A Result",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1472,
         240
@@ -199,19 +220,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "f6e8f28a-38d5-4115-b05c-c3ea42b9e9f9",
               "name": "result",
-              "value": "Grade B - Pass"
+              "value": "Grade B - Pass",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "Grade B Result",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1472,
         448
@@ -220,19 +243,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "options": {},
+        "assignments": {
+          "assignments": [
             {
+              "id": "61bff207-57fa-4278-a1bb-c7c162db49c0",
               "name": "result",
-              "value": "Grade F - Fail"
+              "value": "Grade F - Fail",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
       "name": "Grade F Result",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1488,
         624

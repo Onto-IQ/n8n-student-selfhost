@@ -152,7 +152,7 @@ Output Parser → IF Node → Gmail/LINE
 - ลดจาก 20+ nodes เหลือ ~12 nodes
 - ไม่มี Code Node ซับซ้อน
 - Sub-Workflows แยกจัดการง่าย
-- ใช้ n8n 2.8.x Standard Pattern
+- ใช้ n8n 2.28.x Standard Pattern
 
 ### Sub-Workflows สำหรับ 05B
 
@@ -168,7 +168,7 @@ Output Parser → IF Node → Gmail/LINE
 ## 🚀 วิธีใช้งาน
 
 ### Requirements
-- n8n version **2.8.3** ขึ้นไป
+- n8n version **2.28.6** ขึ้นไป
 - Credentials ตามแต่ละ Workflow:
   - OpenAI API Key (สำหรับ AI Agents)
   - Google OAuth (สำหรับ Google Workspace)

@@ -88,7 +88,7 @@
 ## 🚀 วิธีใช้งาน
 
 ### Requirements
-- n8n version **2.8.3** ขึ้นไป
+- n8n version **2.28.6** ขึ้นไป
 - OpenAI API Key (สำหรับทุกบทยกเว้น MCP Server)
 
 ### ขั้นตอนการเริ่มต้น

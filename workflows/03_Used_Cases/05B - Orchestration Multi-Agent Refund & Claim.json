@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "🎭 **05B - Multi-Agent Refund & Claim (2026 Pattern)**\n\n**แนวคิดปี 2026:** ใช้ AI Agent + toolWorkflow แทนการสร้าง Sub-Agents ซ้อนซ้อน\n\n**สถาปัตยกรรมใหม่:**\n```\nForm → Main AI Agent (Orchestrator)\n              ↓ (เรียก Tools)\n    ├→ toolWorkflow: Intent Classifier\n    ├→ toolWorkflow: Policy Validator\n    ├→ toolWorkflow: Finance Calculator\n    └→ toolWorkflow: QA Reviewer\n              ↓\n    Output Parser → IF → Gmail\n              ↓ (ไม่ผ่าน)\n         วนกลับ Agent\n```\n\n**จุดเด่น:**\n✅ ลดจาก 20+ nodes เหลือ ~12 nodes\n✅ ใช้ toolWorkflow (n8n 2.8.x standard)\n✅ ไม่มี Code Node ซับซ้อน\n✅ Sub-Workflows แยกจัดการง่าย",
+        "content": "🎭 **05B - Multi-Agent Refund & Claim (2026 Pattern)**\n\n**แนวคิดปี 2026:** ใช้ AI Agent + toolWorkflow แทนการสร้าง Sub-Agents ซ้อนซ้อน\n\n**สถาปัตยกรรมใหม่:**\n```\nForm → Main AI Agent (Orchestrator)\n              ↓ (เรียก Tools)\n    ├→ toolWorkflow: Intent Classifier\n    ├→ toolWorkflow: Policy Validator\n    ├→ toolWorkflow: Finance Calculator\n    └→ toolWorkflow: QA Reviewer\n              ↓\n    Output Parser → IF → Gmail\n              ↓ (ไม่ผ่าน)\n         วนกลับ Agent\n```\n\n**จุดเด่น:**\n✅ ลดจาก 20+ nodes เหลือ ~12 nodes\n✅ ใช้ toolWorkflow (n8n 2.28.x standard)\n✅ ไม่มี Code Node ซับซ้อน\n✅ Sub-Workflows แยกจัดการง่าย",
         "height": 460,
         "width": 560,
         "color": 6
@@ -146,7 +146,7 @@
       },
       "name": "Window Buffer Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1,
+      "typeVersion": 1.3,
       "position": [
         -1344,
         496
@@ -364,7 +364,7 @@
     },
     {
       "parameters": {
-        "content": "📋 **Output Parser (Structured)**\n\n**หน้าที่:** กำหนด Schema ให้ AI\nตอบเป็น JSON ที่มี structure\n\n**Schema ที่กำหนด:**\n• intent: REFUND/REPLACEMENT/SUPPORT\n• policy_passed: true/false\n• final_amount: number\n• approved: true/false\n• draft_email: string\n\n💡 ใช้ n8n 2.8.x outputParserStructured\nเพื่อผลลัพธ์ที่ควบคุมได้",
+        "content": "📋 **Output Parser (Structured)**\n\n**หน้าที่:** กำหนด Schema ให้ AI\nตอบเป็น JSON ที่มี structure\n\n**Schema ที่กำหนด:**\n• intent: REFUND/REPLACEMENT/SUPPORT\n• policy_passed: true/false\n• final_amount: number\n• approved: true/false\n• draft_email: string\n\n💡 ใช้ n8n 2.28.x outputParserStructured\nเพื่อผลลัพธ์ที่ควบคุมได้",
         "height": 324,
         "width": 284,
         "color": 3
@@ -498,7 +498,7 @@
     },
     {
       "parameters": {
-        "content": "📚 **ความรู้ปี 2026: toolWorkflow Pattern**\n\n**สถาปัตยกรรมใหม่ (n8n 2.8.x):**\n```\n[Form] → [AI Agent] → [Output Parser] → [IF] → [Gmail]\n              ↓ ↑\n        [toolWorkflow Tools]\n              ↓\n    [Sub-Workflows ย่อย]\n```\n\n**ทำไมดีกว่าเดิม:**\n| ของเก่า | ของใหม่ |\n|--------|--------|\n| Sub-Agents ซ้อนใน workflow เดียว | แยกเป็น Sub-Workflows |\n| State Manager + Code Node | Memory + Agent จัดการเอง |\n| Loop Gatekeeper ซับซ้อน | IF Node ธรรมดา |\n| 20+ nodes | ~12 nodes |\n\n**การสร้าง Sub-Workflow:**\n1. สร้าง Workflow ใหม่สำหรับแต่ละ Agent\n2. ใช้ Execute Workflow Trigger รับข้อมูล\n3. ทำงานเสร็จ Return ผลลัพธ์\n4. ใน Main Workflow ใช้ toolWorkflow เรียก\n\n💡 สะอาด จัดการง่าย ติดตั้งสะดวก",
+        "content": "📚 **ความรู้ปี 2026: toolWorkflow Pattern**\n\n**สถาปัตยกรรมใหม่ (n8n 2.28.x):**\n```\n[Form] → [AI Agent] → [Output Parser] → [IF] → [Gmail]\n              ↓ ↑\n        [toolWorkflow Tools]\n              ↓\n    [Sub-Workflows ย่อย]\n```\n\n**ทำไมดีกว่าเดิม:**\n| ของเก่า | ของใหม่ |\n|--------|--------|\n| Sub-Agents ซ้อนใน workflow เดียว | แยกเป็น Sub-Workflows |\n| State Manager + Code Node | Memory + Agent จัดการเอง |\n| Loop Gatekeeper ซับซ้อน | IF Node ธรรมดา |\n| 20+ nodes | ~12 nodes |\n\n**การสร้าง Sub-Workflow:**\n1. สร้าง Workflow ใหม่สำหรับแต่ละ Agent\n2. ใช้ Execute Workflow Trigger รับข้อมูล\n3. ทำงานเสร็จ Return ผลลัพธ์\n4. ใน Main Workflow ใช้ toolWorkflow เรียก\n\n💡 สะอาด จัดการง่าย ติดตั้งสะดวก",
         "height": 480,
         "width": 600,
         "color": 6

@@ -8,7 +8,10 @@
       "name": "Note: Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [200, -100],
+      "position": [
+        200,
+        -100
+      ],
       "id": "note-overview"
     },
     {
@@ -18,7 +21,10 @@
       "name": "Execute Workflow Trigger",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
-      "position": [400, 240],
+      "position": [
+        400,
+        240
+      ],
       "id": "trigger"
     },
     {
@@ -28,7 +34,10 @@
       "name": "Note: Trigger",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [160, 160],
+      "position": [
+        160,
+        160
+      ],
       "id": "note-trigger"
     },
     {
@@ -42,7 +51,10 @@
       "name": "Review Quality",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [680, 240],
+      "position": [
+        680,
+        240
+      ],
       "id": "reviewer"
     },
     {
@@ -52,7 +64,10 @@
       "name": "Note: Reviewer",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [660, 400],
+      "position": [
+        660,
+        400
+      ],
       "id": "note-reviewer"
     },
     {
@@ -63,7 +78,10 @@
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
-      "position": [680, 560],
+      "position": [
+        680,
+        560
+      ],
       "id": "openai",
       "credentials": {
         "openAiApi": {
@@ -80,7 +98,10 @@
       "name": "Output Parser",
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1,
-      "position": [980, 240],
+      "position": [
+        980,
+        240
+      ],
       "id": "parser"
     },
     {
@@ -90,7 +111,10 @@
       "name": "Note: Parser",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [960, 400],
+      "position": [
+        960,
+        400
+      ],
       "id": "note-parser"
     }
   ],

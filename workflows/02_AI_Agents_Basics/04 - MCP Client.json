@@ -11,16 +11,24 @@
       "name": "Note: Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [240, -40]
+      "position": [
+        240,
+        -40
+      ]
     },
     {
       "parameters": {
-        "options": {}
+        "options": {
+          "responseMode": "lastNode"
+        }
       },
       "name": "Chat Trigger",
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
-      "typeVersion": 1.1,
-      "position": [400, 240],
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        240
+      ],
       "webhookId": "mcp-client-demo"
     },
     {
@@ -33,7 +41,10 @@
       "name": "Note: Chat",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [200, 160]
+      "position": [
+        200,
+        160
+      ]
     },
     {
       "parameters": {
@@ -46,7 +57,10 @@
       "name": "AI Agent",
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [680, 240]
+      "position": [
+        680,
+        240
+      ]
     },
     {
       "parameters": {
@@ -58,7 +72,10 @@
       "name": "Note: Agent",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [660, 400]
+      "position": [
+        660,
+        400
+      ]
     },
     {
       "parameters": {
@@ -68,7 +85,10 @@
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
-      "position": [680, 480],
+      "position": [
+        680,
+        480
+      ],
       "credentials": {
         "openAiApi": {
           "id": "YOUR_OPENAI_CREDENTIAL",
@@ -84,7 +104,10 @@
       "name": "MCP Client",
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
       "typeVersion": 1.1,
-      "position": [960, 480]
+      "position": [
+        960,
+        480
+      ]
     },
     {
       "parameters": {
@@ -96,7 +119,10 @@
       "name": "Note: MCP Client",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [920, 640]
+      "position": [
+        920,
+        640
+      ]
     },
     {
       "parameters": {
@@ -108,7 +134,10 @@
       "name": "Note: Education",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1280, 200]
+      "position": [
+        1280,
+        200
+      ]
     },
     {
       "parameters": {
@@ -120,7 +149,10 @@
       "name": "Note: Setup",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1320, 560]
+      "position": [
+        1320,
+        560
+      ]
     }
   ],
   "connections": {

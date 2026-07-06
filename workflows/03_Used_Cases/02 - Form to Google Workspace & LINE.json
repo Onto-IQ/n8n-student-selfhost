@@ -11,7 +11,10 @@
       "name": "Note: Overview",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [240, 40]
+      "position": [
+        240,
+        40
+      ]
     },
     {
       "parameters": {
@@ -43,11 +46,21 @@
               "requiredField": true,
               "fieldOptions": {
                 "values": [
-                  { "option": "📞 ขอคำปรึกษา" },
-                  { "option": "🔧 แจ้งปัญหา" },
-                  { "option": "💼 สนใจบริการ" },
-                  { "option": "🤝 ร่วมงานกับเรา" },
-                  { "option": "❓ อื่นๆ" }
+                  {
+                    "option": "📞 ขอคำปรึกษา"
+                  },
+                  {
+                    "option": "🔧 แจ้งปัญหา"
+                  },
+                  {
+                    "option": "💼 สนใจบริการ"
+                  },
+                  {
+                    "option": "🤝 ร่วมงานกับเรา"
+                  },
+                  {
+                    "option": "❓ อื่นๆ"
+                  }
                 ]
               }
             },
@@ -57,9 +70,15 @@
               "requiredField": true,
               "fieldOptions": {
                 "values": [
-                  { "option": "🔴 เร่งด่วน (ภายใน 24 ชม.)" },
-                  { "option": "🟠 ปานกลาง (ภายใน 3 วัน)" },
-                  { "option": "🟢 ทั่วไป (ภายใน 7 วัน)" }
+                  {
+                    "option": "🔴 เร่งด่วน (ภายใน 24 ชม.)"
+                  },
+                  {
+                    "option": "🟠 ปานกลาง (ภายใน 3 วัน)"
+                  },
+                  {
+                    "option": "🟢 ทั่วไป (ภายใน 7 วัน)"
+                  }
                 ]
               }
             },
@@ -82,7 +101,10 @@
       "name": "n8n Form Trigger",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.2,
-      "position": [400, 320],
+      "position": [
+        400,
+        320
+      ],
       "webhookId": "form-submit-workspace"
     },
     {
@@ -95,7 +117,10 @@
       "name": "Note: Form",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [200, 240]
+      "position": [
+        200,
+        240
+      ]
     },
     {
       "parameters": {
@@ -104,7 +129,10 @@
       "name": "Process Form Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [680, 320]
+      "position": [
+        680,
+        320
+      ]
     },
     {
       "parameters": {
@@ -116,7 +144,10 @@
       "name": "Note: Process",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [660, 480]
+      "position": [
+        660,
+        480
+      ]
     },
     {
       "parameters": {
@@ -147,16 +178,56 @@
           },
           "matchingColumns": [],
           "schema": [
-            { "id": "Timestamp", "displayName": "Timestamp", "type": "string" },
-            { "id": "Name", "displayName": "Name", "type": "string" },
-            { "id": "Email", "displayName": "Email", "type": "string" },
-            { "id": "Phone", "displayName": "Phone", "type": "string" },
-            { "id": "Topic", "displayName": "Topic", "type": "string" },
-            { "id": "Urgency", "displayName": "Urgency", "type": "string" },
-            { "id": "Priority", "displayName": "Priority", "type": "string" },
-            { "id": "Appointment", "displayName": "Appointment", "type": "string" },
-            { "id": "Details", "displayName": "Details", "type": "string" },
-            { "id": "Status", "displayName": "Status", "type": "string" }
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "type": "string"
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "type": "string"
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "type": "string"
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "type": "string"
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "type": "string"
+            },
+            {
+              "id": "Urgency",
+              "displayName": "Urgency",
+              "type": "string"
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "type": "string"
+            },
+            {
+              "id": "Appointment",
+              "displayName": "Appointment",
+              "type": "string"
+            },
+            {
+              "id": "Details",
+              "displayName": "Details",
+              "type": "string"
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "type": "string"
+            }
           ]
         },
         "options": {}
@@ -164,7 +235,10 @@
       "name": "Add to Google Sheets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
-      "position": [960, 160],
+      "position": [
+        960,
+        160
+      ],
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "YOUR_SHEETS_CREDENTIAL",
@@ -182,26 +256,39 @@
       "name": "Note: Sheets",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [920, 0]
+      "position": [
+        920,
+        0
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "typeValidation": "strict" },
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
           "conditions": [
             {
               "id": "has-appointment",
               "leftValue": "={{ $json.appointmentDate }}",
               "rightValue": "",
-              "operator": { "type": "string", "operation": "notEquals" }
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
             }
           ]
-        }
+        },
+        "options": {}
       },
       "name": "Has Appointment?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [960, 320]
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        320
+      ]
     },
     {
       "parameters": {
@@ -216,13 +303,18 @@
         "additionalFields": {
           "summary": "🗓️ นัดหมาย: {{ $json.topic }}",
           "description": "👤 {{ $json.name }}\\n📧 {{ $json.email }}\\n📞 {{ $json.phone }}\\n\\n📝 {{ $json.details }}",
-          "attendees": ["={{ $json.email }}"]
+          "attendees": [
+            "={{ $json.email }}"
+          ]
         }
       },
       "name": "Create Calendar Event",
       "type": "n8n-nodes-base.googleCalendar",
       "typeVersion": 1,
-      "position": [1280, 240],
+      "position": [
+        1280,
+        240
+      ],
       "credentials": {
         "googleCalendarOAuth2Api": {
           "id": "YOUR_CALENDAR_CREDENTIAL",
@@ -240,7 +332,10 @@
       "name": "Note: Calendar",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1240, 80]
+      "position": [
+        1240,
+        80
+      ]
     },
     {
       "parameters": {
@@ -251,7 +346,10 @@
       "name": "Create Google Doc",
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [1280, 400],
+      "position": [
+        1280,
+        400
+      ],
       "credentials": {
         "googleDocsOAuth2Api": {
           "id": "YOUR_DOCS_CREDENTIAL",
@@ -269,7 +367,10 @@
       "name": "Note: Docs",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1240, 540]
+      "position": [
+        1240,
+        540
+      ]
     },
     {
       "parameters": {
@@ -285,7 +386,10 @@
       "name": "Save to Drive",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [1560, 320],
+      "position": [
+        1560,
+        320
+      ],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "YOUR_DRIVE_CREDENTIAL",
@@ -303,26 +407,39 @@
       "name": "Note: Drive",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1520, 480]
+      "position": [
+        1520,
+        480
+      ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "typeValidation": "strict" },
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
           "conditions": [
             {
               "id": "high-priority-check",
               "leftValue": "={{ $json.priority }}",
               "rightValue": "HIGH",
-              "operator": { "type": "string", "operation": "equals" }
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
           ]
-        }
+        },
+        "options": {}
       },
       "name": "High Priority?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [1560, 160]
+      "typeVersion": 2.3,
+      "position": [
+        1560,
+        160
+      ]
     },
     {
       "parameters": {
@@ -339,7 +456,10 @@
       "name": "LINE Push Message",
       "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
       "typeVersion": 1,
-      "position": [1840, 120],
+      "position": [
+        1840,
+        120
+      ],
       "credentials": {
         "lineMessagingApi": {
           "id": "YOUR_LINE_CREDENTIAL",
@@ -357,7 +477,10 @@
       "name": "Note: LINE",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1800, 0]
+      "position": [
+        1800,
+        0
+      ]
     },
     {
       "parameters": {
@@ -366,7 +489,10 @@
       "name": "Form Completed",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
-      "position": [1840, 320]
+      "position": [
+        1840,
+        320
+      ]
     },
     {
       "parameters": {
@@ -378,7 +504,10 @@
       "name": "Note: Response",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1800, 440]
+      "position": [
+        1800,
+        440
+      ]
     },
     {
       "parameters": {
@@ -390,7 +519,10 @@
       "name": "Note: Tips",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [1640, 600]
+      "position": [
+        1640,
+        600
+      ]
     }
   ],
   "connections": {

@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "📚 **แนวทางการสอน Loop (การวนซ้ำ)**\n\nWorkflow นี้สาธิตการใช้งาน:\n• Item Lists (Split Out) - แยกข้อมูล Array เป็นรายบุคคล\n• Loop Node - วนทำงานทีละรายการจนครบ\n• Set Node - ประมวลผลแต่ละรายการ",
+        "content": "📚 **แนวทางการสอน Loop (การวนซ้ำ)**\n\nWorkflow นี้สาธิตการใช้งาน:\n• Split Out Node - แยกข้อมูล Array เป็นรายบุคคล\n• Loop Node - วนทำงานทีละรายการจนครบ\n• Set Node - ประมวลผลแต่ละรายการ",
         "width": 400,
         "height": 140,
         "color": 6
@@ -43,18 +43,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "44f91397-01e9-4c23-9006-6ff1913ef6ce",
               "name": "students",
-              "value": "={{ [ { \"name\": \"Alice\", \"score\": 85 }, { \"name\": \"Bob\", \"score\": 40 }, { \"name\": \"Charlie\", \"score\": 92 } ] }}"
+              "value": "={{ [ { \"name\": \"Alice\", \"score\": 85 }, { \"name\": \"Bob\", \"score\": 40 }, { \"name\": \"Charlie\", \"score\": 92 } ] }}",
+              "type": "string"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "name": "Mock Array",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         600,
         240
@@ -62,7 +65,7 @@
     },
     {
       "parameters": {
-        "content": "✂️ **ขั้นตอนที่ 2: แยก Array (Split Out)**\n\nใช้ Item Lists โหมด Split Out\nแยก Array 1 ก้อน ให้กลายเป็น 3 Items (3 แถว)\nเพื่อเตรียมส่งให้ Loop ทำงานทีละคน",
+        "content": "✂️ **ขั้นตอนที่ 2: แยก Array (Split Out)**\n\nใช้ Split Out Node\nแยก Array 1 ก้อน ให้กลายเป็น 3 Items (3 แถว)\nเพื่อเตรียมส่งให้ Loop ทำงานทีละคน",
         "width": 300,
         "height": 140,
         "color": 3
@@ -81,12 +84,13 @@
         "options": {}
       },
       "name": "Split to Items",
-      "type": "n8n-nodes-base.itemLists",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
       "position": [
         820,
         240
-      ]
+      ],
+      "id": "18947f8c-ed2d-4307-8575-8599ba6e718a"
     },
     {
       "parameters": {
@@ -133,18 +137,21 @@
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "4b77d512-d571-4562-bfd0-decf5844de7d",
               "name": "message",
-              "value": "={{ $json.score >= 50 ? \"Pass!\" : \"Fail!\" }}"
+              "value": "={{ $json.score >= 50 ? \"Pass!\" : \"Fail!\" }}",
+              "type": "string"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "name": "Process Student",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
+      "typeVersion": 3.4,
       "position": [
         1300,
         240
