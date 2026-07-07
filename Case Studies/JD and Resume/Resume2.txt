@@ -1,0 +1,65 @@
+Senior Data Analyst Resume
+
+Name: Siriporn Wongsathit
+Contact:
+Phone: +66 89-123-4567
+Email: siriporn.w@example.com
+LinkedIn: linkedin.com/in/siripornw
+
+Summary:
+Highly skilled Senior Data Analyst with over 10 years of experience in Thailand’s leading companies, providing data-driven insights to improve business performance. Expertise in data modeling, statistical analysis, and business intelligence tools such as Power BI, Excel, SQL, and Python. Proven ability to collaborate with cross-functional teams to deliver impactful insights that support strategic decision-making.
+
+Professional Experience
+Senior Data Analyst
+Siam Technology Co., Ltd., Bangkok, Thailand
+January 2018 – Present
+
+Led data analysis projects across departments, delivering actionable insights that increased operational efficiency by 20%.
+Developed and maintained interactive dashboards in Power BI to monitor key business metrics, reducing reporting time by 30%.
+Conducted statistical analysis and predictive modeling to identify trends, improve forecasting, and support data-driven decision-making.
+Collaborated with IT teams to improve data quality and optimize database structures, ensuring data integrity and accessibility.
+Mentored junior analysts on data visualization and analysis techniques, enhancing team capabilities in data-driven reporting.
+Key Achievements:
+
+Spearheaded a data transformation project that reduced reporting errors by 15%.
+Enhanced sales forecasting accuracy by 10% through advanced statistical techniques and predictive models.
+Data Analyst
+Bangkok Solutions Co., Ltd., Bangkok, Thailand
+May 2013 – December 2017
+
+Analyzed large datasets to support marketing and sales teams, increasing campaign effectiveness by 25%.
+Designed and implemented automated reporting systems in Excel and Power BI, reducing manual reporting time by 40%.
+Provided senior management with ad hoc reports to support strategic decision-making.
+Built and optimized complex data models in SQL, improving report generation speed and efficiency.
+Key Achievements:
+
+Led a data consolidation project that integrated data from multiple sources, improving data accessibility and reducing silos.
+Implemented data validation processes that increased data accuracy by 20%.
+Education
+Master of Science in Data Science
+Chulalongkorn University, Bangkok, Thailand
+Graduated: 2012
+
+Bachelor of Science in Mathematics
+Chulalongkorn University, Bangkok, Thailand
+Graduated: 2010
+
+Technical Skills
+Tools: Power BI, Tableau, Excel (Advanced), SQL, Python, R, Power Query
+Languages: SQL, DAX, Python, R
+Database Systems: SQL Server, MySQL, PostgreSQL
+Data Modeling: Predictive Analytics, Regression Analysis, Time Series Forecasting
+Visualization: Power BI, Tableau, Excel Charts
+Other: ETL, Data Warehousing, Agile Methodology
+Certifications
+Microsoft Certified: Data Analyst Associate
+Certified Power BI Specialist
+SQL for Data Science (Coursera)
+Projects
+Customer Retention Model: Developed a machine learning model to predict customer churn, helping reduce churn by 18% in six months.
+Sales Dashboard: Designed an executive sales performance dashboard, enabling quicker insights and data-driven decisions.
+Soft Skills
+Strong problem-solving and analytical skills
+Excellent communication and presentation abilities
+Team leadership and mentoring experience
+Time management and project management skills

@@ -1,0 +1,11 @@
+{
+  "Firstname": "Mana",
+  "Lastname": "Jaidee",
+  "Gender": "Male",
+  "Age": 32,
+  "Education": "Master's Degree",
+  "Power BI Skill": "Yes",
+  "Matching Score": 85,
+  "Hire": "Hire",
+  "Recommendation": "Recommendation Text"
+}

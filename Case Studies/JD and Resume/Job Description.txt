@@ -1,0 +1,33 @@
+Job Description
+Title : Senior Data Analyst
+
+Job Summary:
+As a Senior Data Analyst, you will play a crucial role in analyzing complex datasets to provide actionable insights that support strategic business decisions. You will collaborate with cross-functional teams, including marketing, finance, operations, and product development, to deliver data-driven solutions that enhance performance and drive growth.
+
+Key Responsibilities:
+
+Collect, analyze, and interpret large datasets from multiple sources to generate insights that inform business strategy.
+Develop and maintain advanced data models, dashboards, and reports using tools such as Power BI, Tableau, and Excel.
+Conduct deep-dive analyses to identify trends, patterns, and opportunities for optimization across various business functions.
+Collaborate with stakeholders to understand their data needs and deliver customized solutions that drive business value.
+Provide guidance and mentorship to junior data analysts and team members, fostering a culture of continuous learning and improvement.
+Ensure data quality, accuracy, and consistency across all analytical outputs.
+Communicate complex data insights in a clear and actionable manner to both technical and non-technical stakeholders.
+Stay up-to-date with industry trends and emerging technologies in data analytics, and implement best practices to enhance the organization’s analytical capabilities.
+Work closely with IT and data engineering teams to ensure seamless data integration and accessibility.
+Qualifications:
+
+Bachelor’s or Master’s degree in Data Science, Statistics, Mathematics, Computer Science, or a related field.
+Minimum of 5-7 years of experience in data analysis, with a strong track record of delivering impactful insights.
+Proficiency in data analysis tools such as SQL, R, Python, and advanced Excel.
+Experience with data visualization tools like Power BI, Tableau, or similar platforms.
+Strong understanding of statistical methods and data modeling techniques.
+Excellent problem-solving skills with the ability to think critically and analytically.
+Strong communication skills, with the ability to convey complex findings to a non-technical audience.
+Experience in mentoring or leading a team of analysts is preferred.
+Ability to manage multiple projects and meet deadlines in a fast-paced environment.
+Preferred Skills:
+
+Experience in [specific industry or sector, e.g., finance, healthcare, e-commerce].
+Familiarity with machine learning algorithms and predictive modeling.
+Knowledge of cloud-based data platforms such as AWS, Azure, or Google Cloud.

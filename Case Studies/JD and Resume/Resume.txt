@@ -1,0 +1,61 @@
+Natasha Wongsawat
+Silom, Bangkok, Thailand
+Phone: +66 9X-XXX-XXXX
+Email: natasha.wongsawat@email.com
+LinkedIn: linkedin.com/in/natashawongsawat
+[Portfolio Website] (if applicable)
+
+Objective
+Experienced Senior Data Analyst with 3 years of expertise in data analysis, statistical modeling, and business intelligence. Proficient in using data to drive strategic decisions, optimize processes, and support business growth. Seeking to contribute my analytical skills and passion for data to a dynamic organization.
+
+Professional Experience
+Senior Data Analyst
+Bangkok Tech Solutions, Silom, Bangkok, Thailand
+July 2022 – Present
+
+Spearheaded data analysis projects that informed key business decisions across various departments.
+Designed and implemented interactive dashboards using Power BI, improving data accessibility for stakeholders.
+Analyzed customer behavior data to optimize marketing campaigns, resulting in a 20% increase in customer retention.
+Collaborated with cross-functional teams to ensure data accuracy and integrity across all platforms.
+Provided mentorship and guidance to junior analysts, enhancing the overall team performance.
+Data Analyst
+Chao Phraya Analytics, Bangkok, Thailand
+June 2021 – June 2022
+
+Conducted in-depth data analysis to support financial forecasting and budgeting processes.
+Automated complex reporting processes, leading to a 30% reduction in report generation time.
+Developed and maintained SQL scripts for data extraction and transformation from various databases.
+Worked closely with the sales team to analyze and interpret sales data, leading to improved sales strategies.
+Junior Data Analyst
+Siam Data Insights, Bangkok, Thailand
+August 2020 – May 2021
+
+Assisted in the preparation of detailed analytical reports for senior management.
+Performed data cleaning and validation tasks, ensuring the quality and reliability of data used for analysis.
+Supported the development of predictive models to forecast market trends and customer behavior.
+Education
+Bachelor of Science in Data Science
+Chulalongkorn University, Bangkok, Thailand
+Graduated: May 2020
+
+Relevant Coursework: Data Mining, Machine Learning, Statistical Analysis, Data Visualization, Database Management
+Skills
+Data Analysis: Advanced Excel, SQL, Python, R
+Data Visualization: Power BI, Tableau
+Databases: MySQL, Microsoft SQL Server
+Statistical Tools: SPSS, SAS
+Other: ETL Processes, Data Warehousing, Predictive Modeling, Data Cleaning, Data Wrangling
+Certifications
+Microsoft Certified: Data Analyst Associate
+Tableau Desktop Specialist
+Certified Analytics Professional (CAP)
+Projects
+Customer Retention Model
+
+Developed a predictive model to identify at-risk customers, which led to a 20% increase in retention rates.
+Sales Data Visualization
+
+Created dynamic dashboards to visualize sales performance, enabling real-time tracking and decision-making.
+Languages
+Thai: Native
+English: Fluent
