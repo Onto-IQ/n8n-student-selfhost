@@ -1,0 +1,5 @@
+# Normalize line endings across OS
+* text=auto
+
+# สคริปต์นี้รันใน container Linux — ต้องเป็น LF เสมอ (CRLF จะทำให้ bash พัง)
+init-data.sh text eol=lf

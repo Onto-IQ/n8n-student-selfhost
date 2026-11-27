@@ -1,0 +1,16 @@
+# ไฟล์ความลับ — ห้าม commit เด็ดขาด
+.env
+
+# ข้อมูลที่นักเรียนเอาเข้ามาแลกเปลี่ยนผ่าน workflow (mounted ที่ /files ใน n8n)
+n8n-files/*
+!n8n-files/README.txt
+
+# ไฟล์สำรองข้อมูล
+*.tgz
+*.tar.gz
+backups/
+
+# ระบบปฏิบัติการ / editor
+.DS_Store
+Thumbs.db
+.zcode/

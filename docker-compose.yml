@@ -1,0 +1,120 @@
+# ============================================================================
+# n8n Student Selfhost — Docker Compose
+# โครงสร้าง: Cloudflare Edge → cloudflared (tunnel) → n8n → PostgreSQL
+# ตั้งค่าทั้งหมดอยู่ที่ไฟล์ .env (คัดลอกจาก .env.example แล้วกรอกค่าของคุณเอง)
+# เอกสารประกอบ: README.md
+# ============================================================================
+
+name: n8n-student-selfhost
+
+services:
+  # ------------------------------------------------------------------
+  # PostgreSQL — ฐานข้อมูลของ n8n (production best practice ตามตัวอย่าง
+  # ทางการของ n8n: https://github.com/n8n-io/n8n-hosting)
+  # ------------------------------------------------------------------
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      # บัญชี admin ของ Postgres (ใช้สร้างบัญชีงานให้ n8n ผ่าน init-data.sh)
+      - POSTGRES_USER=${POSTGRES_USER:?กรุณาตั้งค่า Postgres ในไฟล์ .env (ดู .env.example)}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?กรุณาตั้งค่า Postgres ในไฟล์ .env (ดู .env.example)}
+      - POSTGRES_DB=${POSTGRES_DB:-n8n}
+      # บัญชีงานที่ n8n ใช้เชื่อมต่อจริง (ไม่ใช้บัญชี admin)
+      - POSTGRES_NON_ROOT_USER=${POSTGRES_NON_ROOT_USER:?กรุณาตั้งค่า Postgres ในไฟล์ .env (ดู .env.example)}
+      - POSTGRES_NON_ROOT_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD:?กรุณาตั้งค่า Postgres ในไฟล์ .env (ดู .env.example)}
+      # postgres:18 ย้าย data dir เริ่มต้น — กำหนดตายตัวเพื่อให้ volume
+      # ยังใช้ได้เหมือนเดิมเมื่ออัปเกรดเวอร์ชัน (แนวปฏิบัติของ n8n-hosting)
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # สคริปต์สร้างบัญชี non-root — รันครั้งแรกครั้งเดียวโดย image ของ Postgres เอง
+      - ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB:-n8n}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [n8n]
+
+  # ------------------------------------------------------------------
+  # n8n — ตัว automation engine
+  # ------------------------------------------------------------------
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:${N8N_VERSION:-2.49.7}
+    restart: unless-stopped
+    # ผูกกับ 127.0.0.1 เท่านั้น — ไม่เปิดให้เครื่องอื่นใน LAN เห็น
+    # ใช้เป็นทางเข้าสำรอง http://localhost:5678 เวลา tunnel มีปัญหา
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      # --- Webhook / URL ผ่าน Cloudflare Tunnel ---
+      # WEBHOOK_HOST ต้องตรงกับ Public Hostname ที่ตั้งไว้ใน Cloudflare dashboard
+      - N8N_HOST=${WEBHOOK_HOST:?กรุณาตั้ง WEBHOOK_HOST ในไฟล์ .env เช่น n8n.example.com}
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${WEBHOOK_HOST}/
+      # n8n อยู่หลัง proxy 1 ชั้น (cloudflared) — ต้องประกาศให้ n8n รู้
+      - N8N_PROXY_HOPS=1
+      # อนุญาตให้ login ผ่าน http://localhost สำรองได้ (https ผ่าน tunnel ใช้ได้ปกติ)
+      - N8N_SECURE_COOKIE=false
+
+      # --- ความปลอดภัย ---
+      # กุญแจเข้ารหัส credentials — ต้องตั้งใน .env มิฉะนั้น compose จะไม่รัน (fail-fast)
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:?กรุณาตั้ง N8N_ENCRYPTION_KEY ในไฟล์ .env}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      # จำกัดให้ workflow อ่าน/เขียนไฟล์ได้เฉพาะโฟลเดอร์ /files เท่านั้น
+      - N8N_RESTRICT_FILE_ACCESS_TO=/files
+
+      # --- ฐานข้อมูล PostgreSQL ---
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB:-n8n}
+      - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+
+      # --- ภาษา / เวลา ---
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Bangkok}
+      - TZ=${TZ:-Asia/Bangkok}
+
+      # --- เก็บข้อมูลไฟล์ binary ลงดิสก์ ไม่อัดลงฐานข้อมูล ---
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+
+      # --- ปิดการเก็บสถิติ/โฆษณา เหมาะกับใช้ในห้องเรียน ---
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_PERSONALIZATION_ENABLED=false
+      - N8N_HIRING_BANNER_ENABLED=false
+    volumes:
+      # ข้อมูลสำคัญของ n8n (encryption keys, logs, settings) ต้อง persist ลง volume เสมอ
+      - n8n_data:/home/node/.n8n
+      # โฟลเดอร์แลกเปลี่ยนไฟล์ระหว่างเครื่องนักเรียนกับ workflow (Read/Write File node)
+      - ./n8n-files:/files
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks: [n8n]
+
+  # ------------------------------------------------------------------
+  # cloudflared — Cloudflare Tunnel connector (token-based, remotely-managed)
+  # ไม่เปิด port ใด ๆ เข้าเครื่อง ออกแบบเชื่อมต่อไป Cloudflare เท่านั้น
+  # ------------------------------------------------------------------
+  cloudflared:
+    image: cloudflare/cloudflared:${CLOUDFLARED_VERSION:-2026.11.0}
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN:?กรุณาวาง TUNNEL_TOKEN จาก Cloudflare Zero Trust ลงในไฟล์ .env}
+    depends_on:
+      - n8n
+    networks: [n8n]
+
+volumes:
+  n8n_data:
+  postgres_data:
+
+networks:
+  n8n:
